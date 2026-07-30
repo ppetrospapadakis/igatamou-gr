@@ -106,8 +106,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 3. ACTION 1: STROKING HAND OVERLAY (🫳)
+    // 3. ACTION 1: STROKING HAND OVERLAY & MEOW SEPARATION
     // ----------------------------------------------------
+    // Clicking "💖 Δώσε ένα Χάδι!" button -> Triggers petting hand action
     function triggerPettingAction(e) {
         count++;
         if (petCountEl) petCountEl.textContent = count;
@@ -139,8 +140,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    if (petBtn) petBtn.addEventListener('click', triggerPettingAction);
-    if (mascotInteractive) mascotInteractive.addEventListener('click', triggerPettingAction);
+    if (petBtn) {
+        petBtn.addEventListener('click', triggerPettingAction);
+    }
+
+    // Clicking "Πίεσε με για νιαούρισμα! 🐾" -> ONLY plays meow sound & cat jump!
+    if (mascotInteractive) {
+        mascotInteractive.addEventListener('click', () => {
+            playCatSound('meow');
+            triggerCatJump();
+            if (purrStatusEl) {
+                purrStatusEl.textContent = '😸 Νιάου! 🐾';
+                setTimeout(() => {
+                    purrStatusEl.textContent = '💤';
+                }, 2500);
+            }
+        });
+    }
 
     // ----------------------------------------------------
     // 4. ACTION 2: SOCCER BALL FLYING FROM LEFT OVERLAY (⚽)
