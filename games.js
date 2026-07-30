@@ -188,16 +188,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function clearArenaContainers() {
+        if (optionsGrid) {
+            optionsGrid.innerHTML = '';
+            optionsGrid.hidden = true;
+        }
+        if (memoryBoard) {
+            memoryBoard.innerHTML = '';
+            memoryBoard.hidden = true;
+        }
+        memoryFlippedCards = [];
+        memoryMatchedPairs = 0;
+    }
+
     function showCategoryMenu() {
         if (gameArena) gameArena.hidden = true;
         if (categoryMenu) categoryMenu.hidden = false;
         currentCategory = null;
+
+        // Reset arena clean
+        clearArenaContainers();
     }
 
     function startCategoryGame(categoryKey) {
         currentCategory = categoryKey;
         if (categoryMenu) categoryMenu.hidden = true;
         if (gameArena) gameArena.hidden = false;
+
+        // Reset arena clean before starting any new game
+        clearArenaContainers();
 
         // Set Title
         const catTitles = {
@@ -232,6 +251,10 @@ document.addEventListener('DOMContentLoaded', () => {
             showCategoryCompleted();
             return;
         }
+
+        // Ensure memory board is hidden for multiple choice questions
+        if (memoryBoard) memoryBoard.hidden = true;
+        if (optionsGrid) optionsGrid.hidden = false;
 
         const qData = currentQuestions[currentQIndex];
         if (questionNumber) questionNumber.textContent = `Ερώτηση ${currentQIndex + 1} από ${currentQuestions.length}`;
@@ -347,7 +370,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (questionNumber) questionNumber.textContent = "ΟΛΟΚΛΗΡΩΣΗ!";
         if (questionText) questionText.textContent = "🎉 Συγχαρητήρια! Ολοκλήρωσες όλες τις ερωτήσεις!";
         if (visualHelper) visualHelper.textContent = "🏆 Μάζεψες πολλούς πόντους & έκανες τη Μάγκα πανευτυχή!";
-        if (optionsGrid) optionsGrid.innerHTML = '';
+        if (optionsGrid) {
+            optionsGrid.innerHTML = '';
+            optionsGrid.hidden = false;
+        }
+        if (memoryBoard) memoryBoard.hidden = true;
 
         const restartBtn = document.createElement('button');
         restartBtn.className = 'btn btn-games-cta';
@@ -364,14 +391,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. MEMORY GAME ENGINE (🧩)
     // ----------------------------------------------------
     function setupMemoryGame() {
-        if (optionsGrid) optionsGrid.hidden = true;
-        if (memoryBoard) memoryBoard.hidden = false;
+        if (optionsGrid) {
+            optionsGrid.innerHTML = '';
+            optionsGrid.hidden = true;
+        }
+        if (memoryBoard) {
+            memoryBoard.innerHTML = '';
+            memoryBoard.hidden = false;
+        }
 
         if (questionNumber) questionNumber.textContent = "Γατο-Memory";
         if (questionText) questionText.textContent = "🧩 Βρες όλα τα ζευγάρια με τις γατούλες!";
         if (visualHelper) visualHelper.textContent = "";
 
-        memoryBoard.innerHTML = '';
         memoryFlippedCards = [];
         memoryMatchedPairs = 0;
 
