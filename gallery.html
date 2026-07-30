@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>igatamou.gr 🐾 | Γατο-Gallery - Οι Γατούλες της Παρέας μας!</title>
+    <meta name="description" content="Δες τις πιο γλυκές γατούλες & ανέβασε τη φωτογραφία της δικής σου γατούλας στο igatamou.gr!">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="gallery-page-body">
+
+    <!-- Floating Background Paws -->
+    <div class="bg-decorations" aria-hidden="true">
+        <span class="floating-paw paw-1">📸</span>
+        <span class="floating-paw paw-2">💖</span>
+        <span class="floating-paw paw-3">🐾</span>
+        <span class="floating-paw paw-4">🐱</span>
+        <span class="floating-paw paw-5">✨</span>
+        <span class="floating-paw paw-6">🎀</span>
+    </div>
+
+    <div class="page-wrapper">
+        <!-- Top Navbar -->
+        <header class="header games-header">
+            <a href="index.html" class="back-home-btn">
+                ⬅️ <span>Αρχική</span>
+            </a>
+
+            <div class="gallery-nav-actions">
+                <button id="openUploadBtn" class="btn btn-upload-cat">
+                    📷 Ανέβασε τη Γατούλα σου! 🐾
+                </button>
+                <a href="admin.html" class="admin-link-btn" title="Περιοχή Διαχειριστή">
+                    🔒 Admin Login
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="category-menu-card gallery-main-card">
+                <div class="menu-title-box">
+                    <span class="cat-hero-emoji">📸🐱</span>
+                    <h1>Γατο-Gallery: Οι Γατούλες μας!</h1>
+                    <p>Δες όλες τις εγκεκριμένες γατούλες της παρέας μας & δώσε τους ένα γατο-χάδι! 💖</p>
+                </div>
+
+                <!-- Gallery Grid -->
+                <div id="galleryGrid" class="gallery-grid">
+                    <!-- Dynamic cat cards injected here by gallery.js -->
+                </div>
+
+                <!-- Empty State Message (shown if no approved cats yet) -->
+                <div id="emptyGallery" class="empty-gallery-card" hidden>
+                    <span class="empty-icon">🐱💬</span>
+                    <h3>Δεν υπάρχουν ακόμα φωτογραφίες στο Gallery!</h3>
+                    <p>Γίνε ο/η πρώτος/η που θα ανεβάσει τη γατούλα του!</p>
+                    <button class="btn btn-games-cta openUploadTrigger">
+                        📷 Ανέβασε τη Γατούλα σου Τώρα! 🐾
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- UPLOAD PHOTO MODAL -->
+        <div id="uploadModal" class="modal-overlay" hidden>
+            <div class="modal-card upload-modal-card">
+                <button id="closeUploadBtn" class="close-modal-btn">✖</button>
+                <h2>📸 Ανέβαστε τη Γατούλα σου!</h2>
+                <p>Συμπλήρωσε τα στοιχεία & διάλεξε μια όμορφη φωτογραφία!</p>
+
+                <form id="catUploadForm" class="upload-form">
+                    <div class="form-group">
+                        <label for="catNameInput">Όνομα Γατούλας: *</label>
+                        <input type="text" id="catNameInput" placeholder="π.χ. Μιλού, Ψιψίνος, Φοίβος" required class="input-field">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ownerNameInput">Το Όνομά σου (Ιδιοκτήτης/ρια): *</label>
+                        <input type="text" id="ownerNameInput" placeholder="π.χ. Μαρία (8 ετών)" required class="input-field">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="catBioInput">Λίγα λόγια για τη γατούλα σου: (προαιρετικό)</label>
+                        <input type="text" id="catBioInput" placeholder="π.χ. Της αρέσει να κοιμάται στον ήλιο!" class="input-field">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="catPhotoInput">Φωτογραφία Γατούλας: *</label>
+                        <input type="file" id="catPhotoInput" accept="image/*" required class="input-file">
+                        <small class="file-hint">💡 Η εικόνα συμπιέζεται αυτόματα για γρήγορη φόρτωση!</small>
+                    </div>
+
+                    <!-- Image Preview Container -->
+                    <div id="imagePreviewBox" class="image-preview-box" hidden>
+                        <img id="previewImg" src="" alt="Προεπισκόπηση">
+                    </div>
+
+                    <button type="submit" id="submitUploadBtn" class="btn btn-submit-upload">
+                        🚀 Αποστολή για Έγκριση! 🐾
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- SUCCESS CONFIRMATION MODAL -->
+        <div id="successModal" class="modal-overlay" hidden>
+            <div class="modal-card success-modal-card">
+                <button id="closeSuccessBtn" class="close-modal-btn">✖</button>
+                <div class="success-icon">💖🐱</div>
+                <h2>Ευχαριστούμε Πολύ!</h2>
+                <p class="success-msg-text">
+                    💖 Η φωτογραφία της γατούλας σου στάλθηκε και περιμένει την έγκριση της <strong>Μάγκας</strong> για να δημοσιευτεί στο Γατο-Gallery! 🐾✨
+                </p>
+                <button id="okSuccessBtn" class="btn btn-games-cta">
+                    👍 Τέλεια!
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© igatamou.gr • Σχεδιασμένο με πολύ αγάπη & γατο-αγάπη! 🐾</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script src="gallery.js"></script>
+</body>
+</html>

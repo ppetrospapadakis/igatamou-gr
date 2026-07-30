@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>igatamou.gr 🐾 | Admin Panel - Έγκριση Φωτογραφιών</title>
+    <meta name="description" content="Περιοχή Διαχειριστή για έγκριση φωτογραφιών γατών στο igatamou.gr.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-page-body">
+
+    <div class="page-wrapper">
+        <!-- Top Navbar -->
+        <header class="header games-header">
+            <a href="gallery.html" class="back-home-btn">
+                ⬅️ <span>Πίσω στο Gallery</span>
+            </a>
+
+            <div id="adminHeaderActions" class="gallery-nav-actions" hidden>
+                <span class="admin-badge-label">👑 Admin Panel</span>
+                <button id="adminLogoutBtn" class="btn btn-back-menu">
+                    🚪 Έξοδος
+                </button>
+            </div>
+        </header>
+
+        <!-- PASSWORD LOGIN MODAL (Shows when not logged in) -->
+        <div id="adminLoginCard" class="category-menu-card admin-login-card">
+            <div class="menu-title-box">
+                <span class="cat-hero-emoji">🔐🐱</span>
+                <h1>Περιοχή Διαχειριστή (Admin)</h1>
+                <p>Δώσε τον κωδικό πρόσβασης για να διαχειριστείς τις φωτογραφίες γατών!</p>
+            </div>
+
+            <form id="adminLoginForm" class="admin-login-form">
+                <div class="form-group">
+                    <label for="adminPasswordInput">Κωδικός Πρόσβασης (Password):</label>
+                    <input type="password" id="adminPasswordInput" placeholder="Γράψε τον κωδικό..." required class="input-field">
+                </div>
+                <div id="loginErrorMsg" class="login-error-msg" hidden>
+                    ❌ Λάθος κωδικός! Δοκίμασε ξανά!
+                </div>
+                <button type="submit" class="btn btn-submit-upload">
+                    🔓 Είσοδος στο Admin Panel
+                </button>
+            </form>
+        </div>
+
+        <!-- ADMIN DASHBOARD CONTENT (Hidden until logged in) -->
+        <main id="adminDashboard" class="main-content" hidden>
+            <div class="category-menu-card admin-dashboard-card">
+                <div class="menu-title-box">
+                    <h1>👑 Διαχείριση Φωτογραφιών</h1>
+                    <p>Έγκρινε ή απόρριψε τις φωτογραφίες που έστειλαν οι χρήστες!</p>
+                </div>
+
+                <!-- Tabs & Counter Header -->
+                <div class="admin-tabs">
+                    <button class="admin-tab-btn active" id="tabPendingBtn">
+                        ⏳ Αναμονή Εγκρίσεων (<span id="pendingCount">0</span>)
+                    </button>
+                    <button class="admin-tab-btn" id="tabApprovedBtn">
+                        ✅ Δημοσιευμένες (<span id="approvedCount">0</span>)
+                    </button>
+                </div>
+
+                <!-- PENDING APPROVALS SECTION -->
+                <div id="sectionPending" class="admin-section">
+                    <h3 class="section-title">⏳ Φωτογραφίες που περιμένουν την έγκριση της Μάγκας:</h3>
+                    <div id="pendingGrid" class="admin-cats-grid">
+                        <!-- Injected dynamically by gallery.js -->
+                    </div>
+                    <div id="emptyPending" class="empty-gallery-card" hidden>
+                        <span class="empty-icon">✅✨</span>
+                        <h3>Δεν υπάρχουν φωτογραφίες σε αναμονή!</h3>
+                        <p>Όλες οι φωτογραφίες έχουν ελεγχθεί!</p>
+                    </div>
+                </div>
+
+                <!-- APPROVED CATS SECTION -->
+                <div id="sectionApproved" class="admin-section" hidden>
+                    <h3 class="section-title">✅ Φωτογραφίες που είναι ήδη Live στο Gallery:</h3>
+                    <div id="approvedAdminGrid" class="admin-cats-grid">
+                        <!-- Injected dynamically by gallery.js -->
+                    </div>
+                    <div id="emptyApproved" class="empty-gallery-card" hidden>
+                        <span class="empty-icon">📷</span>
+                        <h3>Δεν υπάρχουν ακόμα εγκεκριμένες φωτογραφίες.</h3>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© igatamou.gr • Admin Panel 🐾</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script src="gallery.js"></script>
+</body>
+</html>
