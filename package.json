@@ -1,0 +1,16 @@
+{
+  "name": "igatamou-gr",
+  "version": "1.0.0",
+  "description": "Η Γάτα Μου - Fun Cat Website for Kids & Cat Lovers",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "cats",
+    "kids",
+    "igatamou"
+  ],
+  "author": "",
+  "license": "ISC"
+}
