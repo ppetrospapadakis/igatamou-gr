@@ -58,7 +58,7 @@
                     Ετοιμάζεται το πιο <span class="gradient-text">Γατίσιο & Παιχνιδιάρικο</span> Site! 🐱✨
                 </h1>
 
-                <!-- Mascot Showcase Container (Pristine Hero Section) -->
+                <!-- Mascot Showcase Container -->
                 <div class="mascot-container">
                     <div class="mascot-frame-wrapper" id="mascotInteractive" title="Κάνε κλικ για να χαϊδέψεις τη Μάγκα!">
                         <div class="mascot-sparkle sparkle-tl">✨</div>
@@ -97,6 +97,14 @@
                     </div>
                 </div>
 
+                <!-- Interactive Sound & Toy Bar (MOVED UP: RIGHT BELOW MASCOT CONTAINER & ABOVE DESIGNER STORY) -->
+                <div class="interactive-toys">
+                    <button class="toy-btn" id="btnBall">⚽ Ρίξε Μπάλα</button>
+                    <button class="toy-btn" id="btnYarn">🧶 Δώσε Κουβάρι</button>
+                    <button class="toy-btn" id="btnTreat">🐟 Δώσε Ψαράκι</button>
+                </div>
+                <div id="toyFeedback" class="toy-feedback"></div>
+
                 <!-- Product Designer Announcement Card -->
                 <div class="designer-story">
                     <div class="story-header">
@@ -109,7 +117,7 @@
                     </p>
                 </div>
 
-                <!-- GAMES SECTION (PLACED LOWER DOWN SO HOMEPAGE REMAINS PRISTINE & UNTOUCHED AT TOP) -->
+                <!-- GAMES SECTION -->
                 <div class="games-callout-card games-section-lower">
                     <div class="callout-badge">🆕 ΝΕΑ ΕΝΟΤΗΤΑ!</div>
                     <h2>🎮 Έλα να Παίξουμε & να Μάθουμε με τη Μάγκα! 🐱✨</h2>
@@ -125,19 +133,11 @@
                     <form id="notifyForm" class="notify-form">
                         <input type="email" id="emailInput" placeholder="Γράψε το email σου εδώ..." required class="input-email">
                         <button type="submit" class="btn btn-submit">
-                            <span>Ειδοποίησέ με!</span> 🐱
+                            <span>Ειδοποιήσέ με!</span> 🐱
                         </button>
                     </form>
                     <div id="notifyMessage" class="notify-message" hidden></div>
                 </div>
-
-                <!-- Cute Interactive Sound & Toy Bar -->
-                <div class="interactive-toys">
-                    <button class="toy-btn" id="btnBall">⚽ Ρίξε Μπάλα</button>
-                    <button class="toy-btn" id="btnYarn">🧶 Δώσε Κουβάρι</button>
-                    <button class="toy-btn" id="btnTreat">🐟 Δώσε Ψαράκι</button>
-                </div>
-                <div id="toyFeedback" class="toy-feedback"></div>
             </div>
         </main>
 

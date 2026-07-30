@@ -86,6 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const trophyModal = document.getElementById('trophyModal');
     const closeTrophyBtn = document.getElementById('closeTrophyBtn');
 
+    // Ensure Modal is hidden on load
+    if (trophyModal) {
+        trophyModal.hidden = true;
+    }
+
     // Update Initial Score UI
     updateScoreUI();
 
@@ -114,6 +119,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeTrophyBtn) {
         closeTrophyBtn.addEventListener('click', () => {
             if (trophyModal) trophyModal.hidden = true;
+        });
+    }
+
+    if (trophyModal) {
+        trophyModal.addEventListener('click', (e) => {
+            if (e.target === trophyModal) {
+                trophyModal.hidden = true;
+            }
         });
     }
 
@@ -338,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const restartBtn = document.createElement('button');
         restartBtn.className = 'btn btn-games-cta';
-        restartBtn.textContent = '🔄 Παίξε Ξανά αυτή την Καρηγορία!';
+        restartBtn.textContent = '🔄 Παίξε Ξανά αυτή την Κατηγορία!';
         restartBtn.addEventListener('click', () => startCategoryGame(currentCategory));
         optionsGrid.appendChild(restartBtn);
 
