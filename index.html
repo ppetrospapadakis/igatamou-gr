@@ -3,50 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Η Γάτα Μου | igatamou.gr 🐾</title>
+    <title>igatamou.gr 🐾 | Έρχεται Σύντομα - Η Μάγκας & η 7χρονη Designer μας!</title>
+    <meta name="description" content="Το πιο γατίσιο και παιδικό site igatamou.gr έρχεται σύντομα! Γνωρίστε τη γατούλα μας τη Μάγκας (ναι, είναι κορίτσι!) σε σχεδιασμό της 7χρονης Product Designer μας.">
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="header">
-        <div class="logo">
-            <span class="cat-emoji">🐾</span>
-            <h1>igatamou.gr</h1>
-        </div>
-        <nav class="nav">
-            <a href="#gallery" class="nav-link">Γκαλερί 🐱</a>
-            <a href="#upload" class="nav-link btn-accent">Ανέβασε τη Γάτα σου! 📸</a>
-        </nav>
-    </header>
+    <!-- Floating Paws Background Elements -->
+    <div class="bg-decorations" aria-hidden="true">
+        <span class="floating-paw paw-1">🐾</span>
+        <span class="floating-paw paw-2">🎀</span>
+        <span class="floating-paw paw-3">🐾</span>
+        <span class="floating-paw paw-4">🧶</span>
+        <span class="floating-paw paw-5">✨</span>
+        <span class="floating-paw paw-6">🐾</span>
+    </div>
 
-    <main class="container">
-        <section class="hero">
-            <div class="hero-badge">✨ Το πιο γατίσιο site του κόσμου!</div>
-            <h2 class="hero-title">Καλώς ήρθατε στο igatamou.gr 🐱🐾</h2>
-            <p class="hero-sub">Εδώ μοιραζόμαστε τις πιο όμορφες, αστείες και χαριτωμένες φωτογραφίες και βίντεο με γάτες!</p>
-            <div class="hero-actions">
-                <a href="#upload" class="btn btn-primary">Στείλε τη Φωτογραφία σου 🐾</a>
-                <a href="#gallery" class="btn btn-secondary">Δες τις Γάτες 😸</a>
+    <!-- Main Wrapper -->
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🐾</span>
+                <span class="logo-text">igatamou<span class="highlight">.gr</span></span>
             </div>
-        </section>
+            <div class="designer-badge">
+                <span class="badge-icon">🎨</span>
+                <span class="badge-text">Lead Designer: <strong>Η 7χρονη κόρη μας!</strong></span>
+            </div>
+        </header>
 
-        <section id="gallery" class="section">
-            <h3 class="section-title">Οι Γάτες μας 🐾</h3>
-            <div class="gallery-grid" id="catGallery">
-                <div class="cat-card placeholder-card">
-                    <div class="cat-img-box">😸</div>
-                    <h4>Σύντομα κοντά σας!</h4>
-                    <p>Στείλτε την πρώτη φωτογραφία γάτας για να εμφανιστεί εδώ!</p>
+        <!-- Main Content Hero Section -->
+        <main class="main-content">
+            <div class="card-hero">
+                <!-- Status Tag -->
+                <div class="status-pill">
+                    <span class="pulse-dot"></span>
+                    <span>ΕΡΧΕΤΑΙ ΣΥΝΤΟΜΑ • COMING SOON</span>
                 </div>
-            </div>
-        </section>
-    </main>
 
-    <footer class="footer">
-        <p>Φτιαγμένο με 🐾 και αγάπη στο <strong>igatamou.gr</strong></p>
-    </footer>
+                <!-- Main Title -->
+                <h1 class="main-title">
+                    Ετοιμάζεται το πιο <span class="gradient-text">Γατίσιο & Παιχνιδιάρικο</span> Site! 🐱✨
+                </h1>
+
+                <!-- Mascot Showcase Container -->
+                <div class="mascot-container">
+                    <div class="mascot-frame-wrapper" id="mascotInteractive" title="Κάνε κλικ για να χαϊδέψεις τη Μάγκας!">
+                        <div class="mascot-sparkle sparkle-tl">✨</div>
+                        <div class="mascot-sparkle sparkle-tr">💖</div>
+                        <div class="mascot-sparkle sparkle-bl">🌸</div>
+                        <div class="mascot-sparkle sparkle-br">🐾</div>
+                        <img src="magkas.jpg" alt="Η γατούλα Μάγκας με το ροζ κορδελάκι της" class="mascot-img" id="mascotImage">
+                        <div class="mascot-hover-hint">Πίεσε με για νιαούρισμα! 🐾</div>
+                    </div>
+
+                    <!-- Mascot Identity Card -->
+                    <div class="mascot-info">
+                        <div class="name-tag">
+                            <span class="cat-emoji">🐱</span>
+                            <h2>Η Γατούλα μας: <span class="cat-name">"Μάγκας"</span></h2>
+                            <span class="gender-ribbon">🎀 ΚΟΡΙΤΣΙ 🎀</span>
+                        </div>
+                        
+                        <!-- Gender Clarification Banner -->
+                        <div class="gender-notice">
+                            <div class="notice-icon">📢</div>
+                            <div class="notice-text">
+                                <strong>Προσοχή!</strong> Μην μπερδεύεστε από το όνομα! Η Μάγκας είναι μια γλυκύτατη, ναζιάρα <u>θηλυκή γατούλα</u> (κορίτσι) με ροζ κορδελάκι! 🎀👧🐾
+                            </div>
+                        </div>
+
+                        <!-- Interactive Petting Counter -->
+                        <div class="petting-box">
+                            <button id="petBtn" class="btn btn-pet">
+                                🐾 Χάιδεψε τη Μάγκας! 
+                            </button>
+                            <div class="pet-count-display">
+                                Χάιδεψες τη Μάγκας <strong id="petCount">0</strong> φορές! <span id="purrStatus">💤</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Designer Announcement Card -->
+                <div class="designer-story">
+                    <div class="story-header">
+                        <span class="story-icon">👑</span>
+                        <h3>Ποιος σχεδιάζει το igatamou.gr;</h3>
+                    </div>
+                    <p class="story-body">
+                        Η <strong>7χρονη Product Designer</strong> μας ετοιμάζει αυτή τη στιγμή τις πιο όμορφες ζωγραφιές, τα πιο αστεία γατο-παιχνίδια και το περιεχόμενο του site! 🎨 
+                        Μόλις μας παραδώσει το υλικό, η σελίδα θα γεμίσει παιχνίδια & εκπλήξεις για όλα τα παιδιά!
+                    </p>
+                </div>
+
+                <!-- Email Notify / Interactive Box -->
+                <div class="notify-card">
+                    <h3>Θέλεις να μάθεις πρώτος/η μόλις είμαστε έτοιμοι; 🚀</h3>
+                    <form id="notifyForm" class="notify-form">
+                        <input type="email" id="emailInput" placeholder="Γράψε το email σου εδώ..." required class="input-email">
+                        <button type="submit" class="btn btn-submit">
+                            <span>Ειδοποίησέ με!</span> 🐱
+                        </button>
+                    </form>
+                    <div id="notifyMessage" class="notify-message" hidden></div>
+                </div>
+
+                <!-- Cute Interactive Sound & Toy Bar -->
+                <div class="interactive-toys">
+                    <button class="toy-btn" id="btnBall">⚽ Ρίξε Μπάλα</button>
+                    <button class="toy-btn" id="btnYarn">🧶 Δώσε Κουβάρι</button>
+                    <button class="toy-btn" id="btnTreat">🐟 Δώσε Ψαράκι</button>
+                </div>
+                <div id="toyFeedback" class="toy-feedback"></div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© igatamou.gr • Σχεδιασμένο με πολύ αγάπη, γατο-νιαουρίσματα 🐾 & παιδική φαντασία!</p>
+        </footer>
+    </div>
 
     <script src="app.js"></script>
 </body>
