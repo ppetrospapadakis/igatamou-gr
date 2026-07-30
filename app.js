@@ -190,12 +190,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             setTimeout(() => {
                 triggerCatJump();
-                spawnScreenBanner('🧶 Μπλέχτηκε στο ροζ κουβάρι! 🎀');
+                spawnScreenBanner('🧶 Μπλέχτηκε στο κουβάρι! 🎀');
                 spawnCatParticles(['🎀', '🧶', '✨', '💖']);
             }, 600);
 
             if (toyFeedback) {
-                toyFeedback.textContent = '🧶 Η Μάγκας μπλέχτηκε στο ροζ κουβάρι και κάνει τούμπες! 🎀';
+                toyFeedback.textContent = '🧶 Η Μάγκας μπλέχτηκε στο κουβάρι και κάνει τούμπες! 🎀';
             }
 
             setTimeout(() => yarn.remove(), 1650);
