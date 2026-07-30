@@ -97,12 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     // 3. EVENT LISTENERS
     // ----------------------------------------------------
-
-    // Category Card Clicks
     document.querySelectorAll('.category-card').forEach(card => {
         card.addEventListener('click', () => {
-            const catKey = card.getAttribute('data-category');
-            startCategoryGame(catKey);
+            const cat = card.getAttribute('data-category');
+            startCategoryGame(cat);
         });
     });
 
@@ -122,27 +120,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (trophyModal) {
-        trophyModal.addEventListener('click', (e) => {
-            if (e.target === trophyModal) {
-                trophyModal.hidden = true;
-            }
-        });
-    }
-
     // ----------------------------------------------------
-    // 4. GAME FLOW CONTROLLER
+    // 4. GAME ENGINE LOGIC
     // ----------------------------------------------------
-
     function updateScoreUI() {
         if (scoreDisplay) scoreDisplay.textContent = score;
         if (streakCount) streakCount.textContent = streak;
 
-        // Update Trophies Progress
-        checkTrophies();
-    }
-
-    function checkTrophies() {
+        // Check Trophy Unlocks
         const t1 = document.getElementById('trophy1');
         const t2 = document.getElementById('trophy2');
         const t3 = document.getElementById('trophy3');
@@ -150,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const statusT2 = document.getElementById('statusT2');
         const statusT3 = document.getElementById('statusT3');
 
-        // Reset badge name by default if score < 50
         if (score < 50 && trophyBadgeName) {
             trophyBadgeName.textContent = 'Τα Κύπελλά σου';
         }
@@ -206,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (categoryMenu) categoryMenu.hidden = false;
         currentCategory = null;
 
-        // Reset arena clean
         clearArenaContainers();
     }
 
@@ -215,10 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (categoryMenu) categoryMenu.hidden = true;
         if (gameArena) gameArena.hidden = false;
 
-        // Reset arena clean before starting any new game
         clearArenaContainers();
 
-        // Set Title
         const catTitles = {
             math: "🧮 Μαθηματικά",
             spelling: "✏️ Ορθογραφία",
@@ -233,12 +214,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (categoryKey === 'memory') {
             setupMemoryGame();
         } else {
-            // Standard Multiple Choice Games
             if (optionsGrid) optionsGrid.hidden = false;
             if (memoryBoard) memoryBoard.hidden = true;
 
             currentQuestions = [...(gameDatabase[categoryKey] || [])];
-            // Shuffle questions
             currentQuestions.sort(() => Math.random() - 0.5);
             currentQIndex = 0;
             renderCurrentQuestion();
@@ -247,12 +226,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderCurrentQuestion() {
         if (currentQIndex >= currentQuestions.length) {
-            // Completed category round!
             showCategoryCompleted();
             return;
         }
 
-        // Ensure memory board is hidden for multiple choice questions
         if (memoryBoard) memoryBoard.hidden = true;
         if (optionsGrid) optionsGrid.hidden = false;
 
@@ -261,10 +238,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (questionText) questionText.textContent = qData.q;
         if (visualHelper) visualHelper.textContent = qData.helper || '';
 
-        // Options
         if (optionsGrid) {
             optionsGrid.innerHTML = '';
-            // Shuffle options
             const opts = [...qData.opts].sort(() => Math.random() - 0.5);
             opts.forEach(optText => {
                 const btn = document.createElement('button');
@@ -275,26 +250,21 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Reset Cat Speech
         if (catSpeechBubble) {
             catSpeechBubble.textContent = `💬 "Σκέψου καλά και πάτα τη σωστή απάντηση! 🐾"`;
         }
     }
 
     function handleOptionClick(btn, selectedOption, correctAnswer) {
-        // Disable all options during feedback
         const allBtns = document.querySelectorAll('.option-btn');
         allBtns.forEach(b => b.disabled = true);
 
         if (selectedOption === correctAnswer) {
-            // CORRECT ANSWER
-            btn.classList.add('correct-choice');
+            btn.classList.add('correct-pop');
             streak++;
             score += 10;
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
-
-            // Reaction Trigger
             triggerRightAnswerReaction();
 
             setTimeout(() => {
@@ -303,33 +273,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 1500);
 
         } else {
-            // INCORRECT ANSWER (Pedagogical Encouraging Feedback)
-            btn.classList.add('wrong-choice');
+            btn.classList.add('wrong-pop');
             streak = 0;
             updateScoreUI();
-
-            // Reaction Trigger for Incorrect
             triggerWrongAnswerReaction();
 
             setTimeout(() => {
                 allBtns.forEach(b => b.disabled = false);
-                btn.classList.remove('wrong-choice');
+                btn.classList.remove('wrong-pop');
             }, 1400);
         }
     }
 
     function triggerRightAnswerReaction() {
-        // Audio
         playCatSoundEffect('correct');
 
-        // Cat Jump Animation
         if (companionCatImg) {
             companionCatImg.classList.remove('happy-jump');
             void companionCatImg.offsetWidth;
             companionCatImg.classList.add('happy-jump');
         }
 
-        // Cat Speech Bubble
         const happyPhrases = [
             '🎉 "ΜΠΡΑΒΟ! Είσαι φοβερός/ή! 🌟"',
             '😻 "ΤΕΛΕΙΑ! Έφαγα λαχταριστό ψαράκι! 🐟"',
@@ -340,10 +304,9 @@ document.addEventListener('DOMContentLoaded', () => {
             catSpeechBubble.textContent = happyPhrases[Math.floor(Math.random() * happyPhrases.length)];
         }
 
-        // Spawn Flying Treat Screen Banner
         const banners = ['🌟 ΣΩΣΤΟ! +10 ΠΟΝΤΟΙ! 🪙', '😻 ΜΠΡΑΒΟ! ΤΕΛΕΙΑ! ✨', '🎉 ΕΙΣΑΙ ΦΟΒΕΡΟΣ/Η! 🐾'];
         const bannerText = banners[Math.floor(Math.random() * banners.length)];
-        
+
         const banner = document.createElement('div');
         banner.className = 'screen-pop-banner';
         banner.textContent = bannerText;
@@ -352,10 +315,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function triggerWrongAnswerReaction() {
-        // Audio
         playCatSoundEffect('wrong');
 
-        // Encourage Speech
         const encouragePhrases = [
             '🐾 "Δεν πειράζει! Δοκίμασε ξανά, πιστεύω σε σένα! 💖"',
             '🌸 "Σχεδόν το βρήκες! Ξαναπροσπάθησε! ✨"',
@@ -388,7 +349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 5. MEMORY GAME ENGINE (🧩)
+    // 5. MEMORY GAME ENGINE (🧩) - PRETTY 3D TILES
     // ----------------------------------------------------
     function setupMemoryGame() {
         if (optionsGrid) {
@@ -407,15 +368,26 @@ document.addEventListener('DOMContentLoaded', () => {
         memoryFlippedCards = [];
         memoryMatchedPairs = 0;
 
-        // Duplicate and shuffle cards
+        // Duplicate and shuffle 8 pairs
         const deck = [...memoryEmojis, ...memoryEmojis].sort(() => Math.random() - 0.5);
 
         deck.forEach((emoji, index) => {
             const card = document.createElement('div');
-            card.className = 'memory-card-item';
+            card.className = 'memory-card-tile';
             card.setAttribute('data-emoji', emoji);
             card.setAttribute('data-index', index);
-            card.textContent = '❓';
+
+            // 3D Inner Card Structure
+            card.innerHTML = `
+                <div class="memory-card-inner">
+                    <div class="memory-card-front">
+                        <span class="memory-emoji">${emoji}</span>
+                    </div>
+                    <div class="memory-card-back">
+                        <span class="memory-paw">🐾</span>
+                    </div>
+                </div>
+            `;
 
             card.addEventListener('click', () => handleMemoryCardClick(card, emoji));
             memoryBoard.appendChild(card);
@@ -430,9 +402,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
         if (memoryFlippedCards.length >= 2) return;
 
-        // Flip card
+        playCatSoundEffect('click');
+
+        // Flip Card 3D
         card.classList.add('flipped');
-        card.textContent = emoji;
         memoryFlippedCards.push({ card, emoji });
 
         if (memoryFlippedCards.length === 2) {
@@ -451,65 +424,72 @@ document.addEventListener('DOMContentLoaded', () => {
                 memoryFlippedCards = [];
 
                 if (memoryMatchedPairs === memoryEmojis.length) {
-                    setTimeout(showCategoryCompleted, 1000);
+                    // ALL PAIRS MATCHED!
+                    setTimeout(() => {
+                        showCategoryCompleted();
+                    }, 1200);
                 }
             } else {
-                // NO MATCH
+                // NO MATCH - FLIP BACK
+                triggerWrongAnswerReaction();
                 setTimeout(() => {
                     c1.card.classList.remove('flipped');
                     c2.card.classList.remove('flipped');
-                    c1.card.textContent = '❓';
-                    c2.card.textContent = '❓';
                     memoryFlippedCards = [];
-                }, 1000);
+                }, 1100);
             }
         }
     }
 
-    // ----------------------------------------------------
-    // 6. AUDIO SYNTHESIZER FOR GAME EFFECTS
-    // ----------------------------------------------------
+    // Sound FX Helper
     function playCatSoundEffect(type) {
         try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!AudioContext) return;
             const ctx = new AudioContext();
-            const now = ctx.currentTime;
 
             if (type === 'correct') {
-                const freqs = [523.25, 659.25, 783.99, 1046.50];
-                freqs.forEach((f, i) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(f, now + i * 0.08);
-                    gain.gain.setValueAtTime(0, now + i * 0.08);
-                    gain.gain.linearRampToValueAtTime(0.25, now + i * 0.08 + 0.02);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.25);
-
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(now + i * 0.08);
-                    osc.stop(now + i * 0.08 + 0.28);
-                });
-            } else if (type === 'wrong') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
+                const now = ctx.currentTime;
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(450, now);
-                osc.frequency.exponentialRampToValueAtTime(350, now + 0.3);
-
-                gain.gain.setValueAtTime(0, now);
-                gain.gain.linearRampToValueAtTime(0.15, now + 0.05);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
                 osc.connect(gain);
                 gain.connect(ctx.destination);
                 osc.start(now);
-                osc.stop(now + 0.38);
+                osc.stop(now + 0.5);
+            } else if (type === 'wrong') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const now = ctx.currentTime;
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.linearRampToValueAtTime(150, now + 0.3);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'click') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const now = ctx.currentTime;
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.08);
             }
         } catch (e) {
-            console.log('Game audio error');
+            console.log('Audio Context error');
         }
     }
 });
