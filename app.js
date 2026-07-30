@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mascotImg.classList.add('happy-jump');
     }
 
-    // Helper: Spawn Screen-Wide Banner Overlay (e.g., "⚽ ΓΚΟΛ! 🐾", "🐟 ΜΙΑΜ! ΝΑΜ ΝΑΜ!")
+    // Helper: Spawn Screen-Wide Banner Overlay
     function spawnScreenBanner(text) {
         const banner = document.createElement('div');
         banner.className = 'screen-pop-banner';
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = emailInput ? emailInput.value.trim() : '';
             if (email && notifyMessage) {
                 notifyMessage.hidden = false;
-                notifyMessage.innerHTML = `🎉 Τέλεια! Το email <strong>${email}</strong> καταχωρήθηκε! Η Μάγκας και η 7χρονη Designer μας θα σε ειδοποιήσουν αμέσως μόλις ανοίξουμε! 🐾🎀`;
+                notifyMessage.innerHTML = `🎉 Τέλεια! Το email <strong>${email}</strong> καταχωρήθηκε! Η Μάγκας και η Αριάδνη θα σε ειδοποιήσουν αμέσως μόλις ανοίξουμε! 🐾🎀`;
                 notifyForm.reset();
                 playCatSound('meow');
                 triggerCatJump();
