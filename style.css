@@ -857,6 +857,13 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     border-color: var(--primary);
 }
 
+.btn-like-cat.already-liked {
+    background: linear-gradient(135deg, #ff7597 0%, #ff4757 100%) !important;
+    color: #ffffff !important;
+    border-color: #ff4757 !important;
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3) !important;
+}
+
 .btn-like-cat.heart-pop {
     animation: heartPopAnim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }

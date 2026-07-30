@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. DATA STORAGE INITIALIZATION
     // ----------------------------------------------------
     const STORAGE_KEY = 'igatamou_user_cats';
+    const LIKED_CATS_KEY = 'igatamou_liked_cats';
     const ADMIN_AUTH_KEY = 'igatamou_admin_logged_in';
 
     // Initial sample approved cats if empty
@@ -36,6 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(cats));
     }
 
+    function getLikedCatIds() {
+        try {
+            return JSON.parse(localStorage.getItem(LIKED_CATS_KEY) || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
     // ----------------------------------------------------
     // 2. PUBLIC GALLERY PAGE LOGIC (gallery.html)
     // ----------------------------------------------------
@@ -58,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderPublicGallery() {
         const cats = getCatsData();
+        const likedCatIds = getLikedCatIds();
         const approvedCats = cats.filter(c => c.status === 'approved');
 
         if (!galleryGrid) return;
@@ -71,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (emptyGallery) emptyGallery.hidden = true;
 
         approvedCats.forEach(cat => {
+            const isLiked = likedCatIds.includes(cat.id);
             const card = document.createElement('div');
             card.className = 'cat-gallery-card';
             card.innerHTML = `
@@ -85,8 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     ${cat.bio ? `<p class="cat-card-bio">"${cat.bio}"</p>` : ''}
                     <div class="cat-card-footer">
-                        <button class="btn-like-cat" data-id="${cat.id}">
-                            💖 <span class="like-count">${cat.likes || 0}</span> <small>Χάδια</small>
+                        <button class="btn-like-cat ${isLiked ? 'already-liked' : ''}" data-id="${cat.id}">
+                            💖 <span class="like-count">${cat.likes || 0}</span> <small>${isLiked ? 'Χαϊδεύτηκε!' : 'Χάδια'}</small>
                         </button>
                         <span class="cat-date">${cat.date || ''}</span>
                     </div>
@@ -97,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Like Button Event Listeners
         document.querySelectorAll('.btn-like-cat').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', () => {
                 const catId = btn.getAttribute('data-id');
                 handleLikeCat(catId, btn);
             });
@@ -105,19 +116,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleLikeCat(catId, btnEl) {
-        const cats = getCatsData();
-        const cat = cats.find(c => c.id === catId);
-        if (cat) {
-            cat.likes = (cat.likes || 0) + 1;
-            saveCatsData(cats);
+        const likedCatIds = getLikedCatIds();
+        const isAlreadyLiked = likedCatIds.includes(catId);
 
-            // Update UI
-            const countEl = btnEl.querySelector('.like-count');
-            if (countEl) countEl.textContent = cat.likes;
+        // Playful Heart Animation on every click
+        btnEl.classList.remove('heart-pop');
+        void btnEl.offsetWidth;
+        btnEl.classList.add('heart-pop');
 
-            // Heart animation
-            btnEl.classList.add('heart-pop');
-            setTimeout(() => btnEl.classList.remove('heart-pop'), 400);
+        if (!isAlreadyLiked) {
+            // UNIQUE LIKE: First time this user pets this cat! Increment score by 1.
+            likedCatIds.push(catId);
+            localStorage.setItem(LIKED_CATS_KEY, JSON.stringify(likedCatIds));
+
+            const cats = getCatsData();
+            const cat = cats.find(c => c.id === catId);
+            if (cat) {
+                cat.likes = (cat.likes || 0) + 1;
+                saveCatsData(cats);
+
+                // Update UI Counter & Style
+                const countEl = btnEl.querySelector('.like-count');
+                if (countEl) countEl.textContent = cat.likes;
+
+                btnEl.classList.add('already-liked');
+                const labelSmall = btnEl.querySelector('small');
+                if (labelSmall) labelSmall.textContent = 'Χαϊδεύτηκε!';
+            }
         }
     }
 
