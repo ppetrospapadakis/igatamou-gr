@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const visualHelper = document.getElementById('visualHelper');
     const optionsGrid = document.getElementById('optionsGrid');
     const memoryBoard = document.getElementById('memoryBoard');
+    const companionCatFrame = document.getElementById('companionCatFrame');
     const companionCatImg = document.getElementById('companionCatImg');
     const catSpeechBubble = document.getElementById('catSpeechBubble');
     const mascotCrown = document.getElementById('mascotCrown');
@@ -251,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (catSpeechBubble) {
+            catSpeechBubble.className = 'cat-speech-bubble';
             catSpeechBubble.textContent = `💬 "Σκέψου καλά και πάτα τη σωστή απάντηση! 🐾"`;
         }
     }
@@ -285,25 +287,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ----------------------------------------------------
+    // RICH GRAPHICAL MASCOT REACTIONS FOR ALL GAMES
+    // ----------------------------------------------------
     function triggerRightAnswerReaction() {
         playCatSoundEffect('correct');
 
+        // Joyful Cat Avatar Animations
         if (companionCatImg) {
-            companionCatImg.classList.remove('happy-jump');
-            void companionCatImg.offsetWidth;
-            companionCatImg.classList.add('happy-jump');
+            companionCatImg.className = 'companion-cat-img happy-cat-jump';
+        }
+        if (companionCatFrame) {
+            companionCatFrame.className = 'companion-cat-frame cat-halo-correct';
         }
 
+        // Speech Bubble styling & joyful meow phrases
         const happyPhrases = [
-            '🎉 "ΜΠΡΑΒΟ! Είσαι φοβερός/ή! 🌟"',
-            '😻 "ΤΕΛΕΙΑ! Έφαγα λαχταριστό ψαράκι! 🐟"',
+            '🎉 "ΜΠΡΑΒΟ! Είσαι αστέρι! 😻✨"',
+            '😻 "ΝΙΑΟΥ! Τέλεια απάντηση! 🐟"',
             '✨ "ΣΩΣΤΑ! Κέρδισες +10 Γατο-Νομίσματα! 🪙"',
             '💖 "ΕΞΑΙΡΕΤΙΚΑ! Η Αριάδνη και εγώ σε χειροκροτούμε! 👏"'
         ];
         if (catSpeechBubble) {
+            catSpeechBubble.className = 'cat-speech-bubble bubble-correct';
             catSpeechBubble.textContent = happyPhrases[Math.floor(Math.random() * happyPhrases.length)];
         }
 
+        // Spawn Floating Celebration Emojis around Cat Avatar Frame
+        spawnCatCompanionParticles(['🎉', '✨', '⭐', '😻', '💖', '🐟'], true);
+
+        // Screen-wide Banner
         const banners = ['🌟 ΣΩΣΤΟ! +10 ΠΟΝΤΟΙ! 🪙', '😻 ΜΠΡΑΒΟ! ΤΕΛΕΙΑ! ✨', '🎉 ΕΙΣΑΙ ΦΟΒΕΡΟΣ/Η! 🐾'];
         const bannerText = banners[Math.floor(Math.random() * banners.length)];
 
@@ -317,13 +330,49 @@ document.addEventListener('DOMContentLoaded', () => {
     function triggerWrongAnswerReaction() {
         playCatSoundEffect('wrong');
 
+        // Sad/Confused Cat Avatar Animations
+        if (companionCatImg) {
+            companionCatImg.className = 'companion-cat-img sad-cat-wiggle';
+        }
+        if (companionCatFrame) {
+            companionCatFrame.className = 'companion-cat-frame cat-halo-wrong';
+        }
+
+        // Speech Bubble styling & encouraging phrases
         const encouragePhrases = [
             '🐾 "Δεν πειράζει! Δοκίμασε ξανά, πιστεύω σε σένα! 💖"',
             '🌸 "Σχεδόν το βρήκες! Ξαναπροσπάθησε! ✨"',
             '🤗 "Μην ανησυχείς! Μέσα από τα λάθη μαθαίνουμε! 🌟"'
         ];
         if (catSpeechBubble) {
+            catSpeechBubble.className = 'cat-speech-bubble bubble-wrong';
             catSpeechBubble.textContent = encouragePhrases[Math.floor(Math.random() * encouragePhrases.length)];
+        }
+
+        // Spawn Puzzled Sweatdrop/Sad Emojis around Cat Avatar Frame
+        spawnCatCompanionParticles(['💧', '🤔', '❓', '😿', '💭'], false);
+    }
+
+    function spawnCatCompanionParticles(emojis, isCorrect) {
+        if (!companionCatFrame) return;
+        const rect = companionCatFrame.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                const p = document.createElement('div');
+                p.className = `companion-particle ${isCorrect ? 'particle-correct' : 'particle-wrong'}`;
+                p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                const offsetX = (Math.random() - 0.5) * 70;
+                const offsetY = (Math.random() - 0.5) * 70;
+                p.style.left = `${centerX + offsetX}px`;
+                p.style.top = `${centerY + offsetY}px`;
+                
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1200);
+            }, i * 100);
         }
     }
 
@@ -344,6 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
         optionsGrid.appendChild(restartBtn);
 
         if (catSpeechBubble) {
+            catSpeechBubble.className = 'cat-speech-bubble bubble-correct';
             catSpeechBubble.textContent = '👑 "Είσαι αληθινός/ή Master! Πάμε να παίξουμε κι άλλα παιχνίδια! 🐾"';
         }
     }
@@ -368,7 +418,6 @@ document.addEventListener('DOMContentLoaded', () => {
         memoryFlippedCards = [];
         memoryMatchedPairs = 0;
 
-        // Duplicate and shuffle 8 pairs
         const deck = [...memoryEmojis, ...memoryEmojis].sort(() => Math.random() - 0.5);
 
         deck.forEach((emoji, index) => {
@@ -377,7 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
             card.setAttribute('data-emoji', emoji);
             card.setAttribute('data-index', index);
 
-            // 3D Inner Card Structure
             card.innerHTML = `
                 <div class="memory-card-inner">
                     <div class="memory-card-front">
@@ -394,6 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (catSpeechBubble) {
+            catSpeechBubble.className = 'cat-speech-bubble';
             catSpeechBubble.textContent = '🧩 "Άνοιξε τις κάρτες και βρες τα όμοια ζευγάρια! 🐾"';
         }
     }
@@ -404,7 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         playCatSoundEffect('click');
 
-        // Flip Card 3D
         card.classList.add('flipped');
         memoryFlippedCards.push({ card, emoji });
 
@@ -424,13 +472,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 memoryFlippedCards = [];
 
                 if (memoryMatchedPairs === memoryEmojis.length) {
-                    // ALL PAIRS MATCHED!
                     setTimeout(() => {
                         showCategoryCompleted();
                     }, 1200);
                 }
             } else {
-                // NO MATCH - FLIP BACK
+                // NO MATCH
                 triggerWrongAnswerReaction();
                 setTimeout(() => {
                     c1.card.classList.remove('flipped');
@@ -449,32 +496,34 @@ document.addEventListener('DOMContentLoaded', () => {
             const ctx = new AudioContext();
 
             if (type === 'correct') {
+                // Joyful Meow + Chime
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 const now = ctx.currentTime;
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(523.25, now); // C5
-                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
-                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                osc.frequency.setValueAtTime(650, now);
+                osc.frequency.exponentialRampToValueAtTime(950, now + 0.15);
+                osc.frequency.exponentialRampToValueAtTime(500, now + 0.4);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
                 osc.connect(gain);
                 gain.connect(ctx.destination);
                 osc.start(now);
-                osc.stop(now + 0.5);
+                osc.stop(now + 0.45);
             } else if (type === 'wrong') {
+                // Sad Gentle Meow
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 const now = ctx.currentTime;
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(220, now);
-                osc.frequency.linearRampToValueAtTime(150, now + 0.3);
-                gain.gain.setValueAtTime(0.15, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(450, now);
+                osc.frequency.exponentialRampToValueAtTime(320, now + 0.35);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
                 osc.connect(gain);
                 gain.connect(ctx.destination);
                 osc.start(now);
-                osc.stop(now + 0.3);
+                osc.stop(now + 0.4);
             } else if (type === 'click') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
