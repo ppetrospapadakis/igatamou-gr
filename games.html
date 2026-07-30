@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>igatamou.gr 🐾 | Εκπαιδευτικά Παιχνίδια με τη Μάγκα!</title>
+    <meta name="description" content="Παίξε & Μάθε με τη Μάγκα! Μαθηματικά, Ορθογραφία, Αγγλικά, Γρίφοι, Γεωγραφία & Παιχνίδια Μνήμης για παιδιά Δημοτικού στο igatamou.gr.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="games-page-body">
+
+    <!-- Floating Background Paws -->
+    <div class="bg-decorations" aria-hidden="true">
+        <span class="floating-paw paw-1">🐾</span>
+        <span class="floating-paw paw-2">⭐</span>
+        <span class="floating-paw paw-3">🐾</span>
+        <span class="floating-paw paw-4">🐟</span>
+        <span class="floating-paw paw-5">✨</span>
+        <span class="floating-paw paw-6">🐾</span>
+    </div>
+
+    <div class="page-wrapper">
+        <!-- Top Games Navbar -->
+        <header class="header games-header">
+            <a href="index.html" class="back-home-btn">
+                ⬅️ <span>Αρχική</span>
+            </a>
+
+            <div class="score-trophy-bar">
+                <!-- Score Counter -->
+                <div class="score-pill" title="Τα Γατο-Νομίσματά σου!">
+                    <span class="coin-icon">🪙</span>
+                    <span id="scoreDisplay">0</span> <small>Πόντοι</small>
+                </div>
+
+                <!-- Trophy Progress Badge Button -->
+                <button id="trophyBtn" class="trophy-btn" title="Δες τα Κύπελλά σου!">
+                    🏆 <span id="trophyBadgeName">Μικρός Γατο-Εξερευνητής</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Arena Container -->
+        <main class="main-content">
+            <!-- CATEGORY SELECTOR MENU (Shows by default) -->
+            <div id="categoryMenu" class="category-menu-card">
+                <div class="menu-title-box">
+                    <span class="cat-hero-emoji">🎓🐱</span>
+                    <h1>Γατο-Σχολείο: Διάλεξε Παιχνίδι!</h1>
+                    <p>Μάζεψε πόντους, κάνε τη Μάγκα χαρούμενη & γίνε Master Γατο-Επιστήμονας!</p>
+                </div>
+
+                <!-- Categories Grid -->
+                <div class="categories-grid">
+                    <!-- 1. Math -->
+                    <div class="category-card math-card" data-category="math">
+                        <div class="cat-icon-badge">🧮</div>
+                        <h3>1. Μαθηματικά</h3>
+                        <p>Πρόσθεση, Αφαίρεση, Πολλαπλασιασμός & Διαίρεση έως 100!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
+
+                    <!-- 2. Spelling -->
+                    <div class="category-card spelling-card" data-category="spelling">
+                        <div class="cat-icon-badge">✏️</div>
+                        <h3>2. Ορθογραφία</h3>
+                        <p>Συμπλήρωσε τα σωστά φωνήεντα (ο/ω, η/οι/ει/ι/υ, αι/ε)!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
+
+                    <!-- 3. English -->
+                    <div class="category-card english-card" data-category="english">
+                        <div class="cat-icon-badge">🇬🇧</div>
+                        <h3>3. Αγγλικά (English Cats)</h3>
+                        <p>Αντιστοίχισε ελληνικές λέξεις & φράσεις με αγγλικές!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
+
+                    <!-- 4. Riddles & Logic -->
+                    <div class="category-card riddles-card" data-category="riddles">
+                        <div class="cat-icon-badge">💡</div>
+                        <h3>4. Γρίφοι & Σκέψη</h3>
+                        <p>Έξυπνοι γρίφοι & αινίγματα για κοφτερό μυαλό!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
+
+                    <!-- 5. Nature & Animals -->
+                    <div class="category-card nature-card" data-category="nature">
+                        <div class="cat-icon-badge">🌿</div>
+                        <h3>5. Γνώσεις & Φύση</h3>
+                        <p>Μάθε για τα θηλαστικά, τα ζώα & την υγιεινή διατροφή!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
+
+                    <!-- 6. Geography -->
+                    <div class="category-card geo-card" data-category="geography">
+                        <div class="cat-icon-badge">🗺️</div>
+                        <h3>6. Γεωγραφία</h3>
+                        <p>Πόλεις σε νησιά, Ήπειροι & Χώρες του κόσμου!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
+
+                    <!-- 7. Memory Game -->
+                    <div class="category-card memory-card" data-category="memory">
+                        <div class="cat-icon-badge">🧩</div>
+                        <h3>7. Γατο-Memory</h3>
+                        <p>Βρες τα ζευγάρια με τις χαριτωμένες γατούλες!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GAME ARENA CARD (Hidden by default, shown when category selected) -->
+            <div id="gameArena" class="game-arena-card" hidden>
+                <!-- Arena Header Bar -->
+                <div class="arena-header">
+                    <button id="backToMenuBtn" class="btn btn-back-menu">
+                        ⬅️ Πίσω στα Παιχνίδια
+                    </button>
+                    <div id="arenaCategoryTitle" class="arena-cat-title">
+                        🧮 Μαθηματικά
+                    </div>
+                    <div class="arena-streak">
+                        🔥 Σερί: <strong id="streakCount">0</strong>
+                    </div>
+                </div>
+
+                <!-- Quiz Area & Mascot Reactions Grid -->
+                <div class="arena-content-grid">
+                    <!-- Question & Options Column -->
+                    <div class="quiz-column">
+                        <!-- Question Card -->
+                        <div class="question-card">
+                            <div id="questionNumber" class="q-number">Ερώτηση 1</div>
+                            <h2 id="questionText">Πόσο κάνει 5 + 5;</h2>
+                            <div id="visualHelper" class="visual-helper"></div>
+                        </div>
+
+                        <!-- Quiz Options Grid (For Multiple Choice Games) -->
+                        <div id="optionsGrid" class="options-grid">
+                            <!-- Options injected dynamically by JS -->
+                        </div>
+
+                        <!-- Memory Board (For Memory Game only) -->
+                        <div id="memoryBoard" class="memory-board" hidden>
+                            <!-- Cards injected dynamically by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Mascot Reaction Companion Column -->
+                    <div class="mascot-companion-column">
+                        <div class="companion-box">
+                            <!-- Mascot Crown / Trophy Hat (Appears when unlocked) -->
+                            <div id="mascotCrown" class="mascot-crown" hidden>👑</div>
+                            
+                            <!-- Mascot Frame -->
+                            <div class="companion-cat-frame" id="companionCatFrame">
+                                <img src="magkas.jpg" alt="Η Μάγκας" id="companionCatImg" class="companion-cat-img">
+                            </div>
+
+                            <!-- Mascot Live Speech Bubble -->
+                            <div class="cat-speech-bubble" id="catSpeechBubble">
+                                💬 "Πάμε να παίξουμε! Διάλεξε τη σωστή απάντηση! 🐾"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Trophy Badges Modal -->
+        <div id="trophyModal" class="modal-overlay" hidden>
+            <div class="modal-card">
+                <button id="closeTrophyBtn" class="close-modal-btn">✖</button>
+                <h2>🏆 Τα Κύπελλα & τα Παράσημά σου!</h2>
+                <p>Μάζεψε Γατο-Νομίσματα για να ξεκλειδώσεις όλα τα παράσημα!</p>
+
+                <div class="trophies-list">
+                    <div class="trophy-item unlocked" id="trophy1">
+                        <span class="t-icon">🥉</span>
+                        <div class="t-info">
+                            <h4>Μικρός Γατο-Εξερευνητής</h4>
+                            <p>Φτάσε τους 50 πόντους!</p>
+                        </div>
+                        <span class="t-status">Ξεκλειδώθηκε! ✅</span>
+                    </div>
+
+                    <div class="trophy-item" id="trophy2">
+                        <span class="t-icon">🥈</span>
+                        <div class="t-info">
+                            <h4>Γατο-Σοφός</h4>
+                            <p>Φτάσε τους 100 πόντους!</p>
+                        </div>
+                        <span class="t-status" id="statusT2">🔒 100 Πόντοι</span>
+                    </div>
+
+                    <div class="trophy-item" id="trophy3">
+                        <span class="t-icon">🥇👑</span>
+                        <div class="t-info">
+                            <h4>Master Γατο-Επιστήμονας!</h4>
+                            <p>Φτάσε τους 200 πόντους & κάνε τη Μάγκα πανευτυχή!</p>
+                        </div>
+                        <span class="t-status" id="statusT3">🔒 200 Πόντοι</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© igatamou.gr • Σχεδιασμένο με πολύ αγάπη & παιδαγωγική φροντίδα! 🐾</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script src="games.js"></script>
+</body>
+</html>
