@@ -162,6 +162,12 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     display: flex;
     align-items: center;
     gap: 10px;
+    text-decoration: none;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.logo:hover {
+    transform: scale(1.04);
 }
 
 .logo-icon {
@@ -1895,4 +1901,199 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     color: white;
     border-color: var(--primary);
     transform: scale(1.1);
+}
+
+/* ---------------------------------------------------- */
+/* MOBILE RESPONSIVE REDESIGN (SMARTPHONES & TABLETS)  */
+/* ---------------------------------------------------- */
+
+@media (max-width: 768px) {
+    .page-wrapper {
+        padding: 12px !important;
+    }
+
+    /* Header Mobile Rules */
+    .header {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 14px !important;
+        padding: 16px 14px !important;
+        border-radius: 24px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .logo {
+        justify-content: center !important;
+    }
+
+    .logo-text {
+        font-size: 1.55rem !important;
+    }
+
+    .logo-icon {
+        font-size: 1.8rem !important;
+    }
+
+    .header-nav-right {
+        justify-content: center !important;
+        width: 100% !important;
+        gap: 8px !important;
+        flex-wrap: wrap !important;
+    }
+
+    .nav-gallery-btn, .nav-games-btn {
+        font-size: 0.88rem !important;
+        padding: 8px 14px !important;
+        flex: 1 1 auto !important;
+        text-align: center !important;
+        justify-content: center !important;
+    }
+
+    .designer-badge {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 6px 12px !important;
+        font-size: 0.82rem !important;
+    }
+
+    /* Hero & Card Padding */
+    .card-hero, .category-menu-card, .game-arena-card, .gallery-main-card {
+        padding: 24px 16px !important;
+        border-radius: 26px !important;
+    }
+
+    .main-title {
+        font-size: 1.7rem !important;
+        line-height: 1.3 !important;
+        margin-bottom: 25px !important;
+    }
+
+    .mascot-container {
+        padding: 20px 14px !important;
+        border-radius: 24px !important;
+        gap: 18px !important;
+    }
+
+    .mascot-frame-wrapper {
+        width: 160px !important;
+        height: 160px !important;
+    }
+
+    .name-tag {
+        justify-content: center !important;
+    }
+
+    .name-tag h2 {
+        font-size: 1.45rem !important;
+    }
+
+    .gender-notice {
+        padding: 12px 14px !important;
+        font-size: 0.88rem !important;
+    }
+
+    .petting-box {
+        justify-content: center !important;
+    }
+
+    .btn-pet {
+        width: 100% !important;
+        padding: 12px 20px !important;
+        font-size: 1.05rem !important;
+    }
+
+    .interactive-toys {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 10px !important;
+    }
+
+    .toy-btn {
+        width: 100% !important;
+        padding: 12px 18px !important;
+        font-size: 1rem !important;
+    }
+
+    /* Games & Gallery Mobile Grids */
+    .categories-grid, .gallery-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .category-card {
+        padding: 20px 16px !important;
+    }
+
+    .score-trophy-bar {
+        width: 100% !important;
+        justify-content: center !important;
+        gap: 10px !important;
+    }
+
+    .score-pill, .trophy-btn {
+        font-size: 0.88rem !important;
+        padding: 6px 14px !important;
+    }
+
+    .arena-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        text-align: center !important;
+        gap: 10px !important;
+    }
+
+    .arena-cat-title {
+        font-size: 1.35rem !important;
+    }
+
+    .arena-content-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .question-card {
+        padding: 18px 14px !important;
+    }
+
+    .question-card h2 {
+        font-size: 1.35rem !important;
+    }
+
+    .options-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .option-btn {
+        padding: 14px 16px !important;
+        font-size: 1.1rem !important;
+    }
+
+    .memory-board {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 8px !important;
+    }
+
+    .memory-card-tile {
+        height: 80px !important;
+    }
+
+    .memory-paw {
+        font-size: 1.8rem !important;
+    }
+
+    .memory-emoji {
+        font-size: 2.5rem !important;
+    }
+
+    .modal-card {
+        padding: 25px 18px !important;
+        border-radius: 24px !important;
+    }
+
+    .screen-pop-banner {
+        font-size: 1.4rem !important;
+        padding: 10px 20px !important;
+        white-space: normal !important;
+        text-align: center !important;
+        max-width: 90vw !important;
+    }
 }
