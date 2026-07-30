@@ -133,26 +133,45 @@ document.addEventListener('DOMContentLoaded', () => {
         const t1 = document.getElementById('trophy1');
         const t2 = document.getElementById('trophy2');
         const t3 = document.getElementById('trophy3');
+        const statusT1 = document.getElementById('statusT1');
         const statusT2 = document.getElementById('statusT2');
         const statusT3 = document.getElementById('statusT3');
+
+        // Reset badge name by default if score < 50
+        if (score < 50 && trophyBadgeName) {
+            trophyBadgeName.textContent = 'Τα Κύπελλά σου';
+        }
 
         // Trophy 1: 50 pts
         if (score >= 50 && t1) {
             t1.classList.add('unlocked');
+            if (statusT1) statusT1.textContent = 'Ξεκλειδώθηκε! ✅';
             if (trophyBadgeName) trophyBadgeName.textContent = '🥉 Μικρός Γατο-Εξερευνητής';
+        } else if (t1) {
+            t1.classList.remove('unlocked');
+            if (statusT1) statusT1.textContent = '🔒 50 Πόντοι';
         }
+
         // Trophy 2: 100 pts
         if (score >= 100 && t2) {
             t2.classList.add('unlocked');
             if (statusT2) statusT2.textContent = 'Ξεκλειδώθηκε! ✅';
             if (trophyBadgeName) trophyBadgeName.textContent = '🥈 Γατο-Σοφός';
+        } else if (t2) {
+            t2.classList.remove('unlocked');
+            if (statusT2) statusT2.textContent = '🔒 100 Πόντοι';
         }
+
         // Trophy 3: 200 pts
         if (score >= 200 && t3) {
             t3.classList.add('unlocked');
             if (statusT3) statusT3.textContent = 'Ξεκλειδώθηκε! 👑';
             if (trophyBadgeName) trophyBadgeName.textContent = '🥇 Master Γατο-Επιστήμονας!';
             if (mascotCrown) mascotCrown.hidden = false;
+        } else if (t3) {
+            t3.classList.remove('unlocked');
+            if (statusT3) statusT3.textContent = '🔒 200 Πόντοι';
+            if (mascotCrown) mascotCrown.hidden = true;
         }
     }
 
@@ -319,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const restartBtn = document.createElement('button');
         restartBtn.className = 'btn btn-games-cta';
-        restartBtn.textContent = '🔄 Παίξε Ξανά αυτή την Κατηγορία!';
+        restartBtn.textContent = '🔄 Παίξε Ξανά αυτή την Καρηγορία!';
         restartBtn.addEventListener('click', () => startCategoryGame(currentCategory));
         optionsGrid.appendChild(restartBtn);
 
@@ -413,7 +432,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const now = ctx.currentTime;
 
             if (type === 'correct') {
-                // Cheerful chime: C5 -> E5 -> G5 -> C6
                 const freqs = [523.25, 659.25, 783.99, 1046.50];
                 freqs.forEach((f, i) => {
                     const osc = ctx.createOscillator();
@@ -430,7 +448,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     osc.stop(now + i * 0.08 + 0.28);
                 });
             } else if (type === 'wrong') {
-                // Gentle low meow sound (non-jarring)
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'sine';
