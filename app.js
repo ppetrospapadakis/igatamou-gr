@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 osc.frequency.exponentialRampToValueAtTime(450, now + 0.45);
 
                 gain.gain.setValueAtTime(0, now);
-                gain.gain.linearRampToValueAtTime(0.3, now + 0.08);
+                gain.gain.linearRampToValueAtTime(0.35, now + 0.08);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
 
                 osc.connect(gain);
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const now = ctx.currentTime;
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(85, now);
-                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.setValueAtTime(0.25, now);
                 gain.gain.linearRampToValueAtTime(0, now + 0.7);
 
                 osc.connect(gain);
@@ -59,10 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Helper: Get center coordinates of an element
-    function getCenterCoords(el) {
-        if (!el) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-        const rect = el.getBoundingClientRect();
+    // Helper: Get exact screen coordinates of mascot cat image
+    function getCatCoords() {
+        const target = mascotImg || mascotInteractive;
+        if (!target) return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+        const rect = target.getBoundingClientRect();
         return {
             x: rect.left + rect.width / 2,
             y: rect.top + rect.height / 2
@@ -77,71 +78,59 @@ document.addEventListener('DOMContentLoaded', () => {
         mascotImg.classList.add('happy-jump');
     }
 
-    // Helper: Spawn Floating Particles
-    function spawnParticle(x, y, emoji = '💖') {
-        const p = document.createElement('div');
-        p.className = 'floating-heart';
-        p.textContent = emoji;
-        p.style.left = `${x - 14}px`;
-        p.style.top = `${y - 14}px`;
-        const randomTx = (Math.random() - 0.5) * 100;
-        p.style.setProperty('--tx', `${randomTx}px`);
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 1200);
+    // Helper: Spawn Screen-Wide Banner Overlay (e.g., "⚽ ΓΚΟΛ! 🐾", "🐟 ΜΙΑΜ! ΝΑΜ ΝΑΜ!")
+    function spawnScreenBanner(text) {
+        const banner = document.createElement('div');
+        banner.className = 'screen-pop-banner';
+        banner.textContent = text;
+        document.body.appendChild(banner);
+        setTimeout(() => banner.remove(), 1450);
     }
 
-    // Helper: Spawn Action Pop Text (e.g., "ΓΚΟΛ!", "ΜΙΑΜ!", "PURRR!")
-    function spawnPopText(x, y, text) {
-        const pop = document.createElement('div');
-        pop.className = 'action-pop-text';
-        pop.textContent = text;
-        pop.style.setProperty('--posX', `${x - 60}px`);
-        pop.style.setProperty('--posY', `${y - 30}px`);
-        document.body.appendChild(pop);
-        setTimeout(() => pop.remove(), 1250);
+    // Helper: Spawn Floating Emoji Particles around Cat
+    function spawnCatParticles(emojis = ['💖', '🎀', '🐾', '✨']) {
+        const coords = getCatCoords();
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                const p = document.createElement('div');
+                p.className = 'floating-heart';
+                p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                p.style.setProperty('--startX', `${coords.x + (Math.random() - 0.5) * 80}px`);
+                p.style.setProperty('--startY', `${coords.y + (Math.random() - 0.5) * 80}px`);
+                const randomTx = (Math.random() - 0.5) * 120;
+                p.style.setProperty('--tx', `${randomTx}px`);
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1250);
+            }, i * 120);
+        }
     }
 
     // ----------------------------------------------------
-    // 3. ACTION 1: PETTING HAND ANIMATION (🖐️ -> 🫳)
+    // 3. ACTION 1: STROKING HAND OVERLAY (🫳)
     // ----------------------------------------------------
     function triggerPettingAction(e) {
         count++;
         if (petCountEl) petCountEl.textContent = count;
         localStorage.setItem('igatamou_pet_count', count.toString());
 
-        // Play Sound
         playCatSound('meow');
-
-        // Cat Jump Animation
         triggerCatJump();
 
-        // 1. Spawn Stroking Hand Overlay over Mascot
-        if (mascotInteractive) {
-            const hand = document.createElement('div');
-            hand.className = 'anim-hand-stroke';
-            hand.textContent = '🫳';
-            mascotInteractive.appendChild(hand);
-            setTimeout(() => hand.remove(), 1000);
+        const coords = getCatCoords();
 
-            // 2. Spawn Purr Wave Text
-            const purrText = document.createElement('div');
-            purrText.className = 'purr-wave-text';
-            purrText.textContent = '🎶 Purrr... ✨';
-            mascotInteractive.appendChild(purrText);
-            setTimeout(() => purrText.remove(), 1200);
-        }
+        // Spawn Big Hand Overlay
+        const hand = document.createElement('div');
+        hand.className = 'screen-overlay-item overlay-hand-stroke';
+        hand.textContent = '🫳';
+        hand.style.setProperty('--targetX', `${coords.x}px`);
+        hand.style.setProperty('--targetY', `${coords.y}px`);
+        document.body.appendChild(hand);
+        setTimeout(() => hand.remove(), 1450);
 
-        // 3. Spawn Hearts & Sparkles around Cat
-        const mascotCoords = getCenterCoords(mascotInteractive);
-        const emojis = ['💖', '🎀', '🐾', '🌸', '✨', '😻'];
-        for (let i = 0; i < 4; i++) {
-            setTimeout(() => {
-                const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-                spawnParticle(mascotCoords.x + (Math.random() - 0.5) * 60, mascotCoords.y + (Math.random() - 0.5) * 60, randomEmoji);
-            }, i * 150);
-        }
+        // Banner & Particles
+        spawnScreenBanner('🎶 Purrrr... Χάδια! 💖');
+        spawnCatParticles(['💖', '🎀', '🐾', '🌸', '✨']);
 
-        // Status update
         if (purrStatusEl) {
             purrStatusEl.textContent = '😸 Νιάου! Η Μάγκας λατρεύει τα χάδια!';
             setTimeout(() => {
@@ -154,111 +143,93 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mascotInteractive) mascotInteractive.addEventListener('click', triggerPettingAction);
 
     // ----------------------------------------------------
-    // 4. ACTION 2: SOCCER BALL BOUNCE ANIMATION (⚽)
+    // 4. ACTION 2: SOCCER BALL FLYING FROM LEFT OVERLAY (⚽)
     // ----------------------------------------------------
     if (btnBall) {
         btnBall.addEventListener('click', (e) => {
-            const start = getCenterCoords(btnBall);
-            const target = getCenterCoords(mascotInteractive);
+            const coords = getCatCoords();
 
-            // Create Flying Ball
             const ball = document.createElement('div');
-            ball.className = 'anim-flying-ball';
+            ball.className = 'screen-overlay-item overlay-ball-fly';
             ball.textContent = '⚽';
-            ball.style.setProperty('--startX', `${start.x}px`);
-            ball.style.setProperty('--startY', `${start.y}px`);
-            ball.style.setProperty('--targetX', `${target.x}px`);
-            ball.style.setProperty('--targetY', `${target.y}px`);
+            ball.style.setProperty('--targetX', `${coords.x}px`);
+            ball.style.setProperty('--targetY', `${coords.y}px`);
             document.body.appendChild(ball);
 
-            // Sound
             playCatSound('meow');
 
-            // Trigger reaction midway
             setTimeout(() => {
                 triggerCatJump();
-                spawnPopText(target.x, target.y - 40, '⚽ ΓΚΟΛ! 🐾');
-                for (let i = 0; i < 3; i++) {
-                    spawnParticle(target.x + (Math.random() - 0.5) * 40, target.y, '⭐');
-                }
-            }, 500);
+                spawnScreenBanner('⚽ ΓΚΟΛ! Η Μάγκας έπιασε τη μπάλα! 🐾');
+                spawnCatParticles(['⭐', '⚽', '✨', '🐾']);
+            }, 550);
 
             if (toyFeedback) {
                 toyFeedback.textContent = '⚽ Η Μάγκας έκανε φοβερό άλμα και έπιασε τη μπάλα! 🐾';
             }
 
-            setTimeout(() => ball.remove(), 1400);
+            setTimeout(() => ball.remove(), 1550);
         });
     }
 
     // ----------------------------------------------------
-    // 5. ACTION 3: YARN BALL ROLLING ANIMATION (🧶)
+    // 5. ACTION 3: YARN BALL ROLLING FROM RIGHT OVERLAY (🧶)
     // ----------------------------------------------------
     if (btnYarn) {
         btnYarn.addEventListener('click', (e) => {
-            const start = getCenterCoords(btnYarn);
-            const target = getCenterCoords(mascotInteractive);
+            const coords = getCatCoords();
 
             const yarn = document.createElement('div');
-            yarn.className = 'anim-flying-yarn';
+            yarn.className = 'screen-overlay-item overlay-yarn-roll';
             yarn.textContent = '🧶';
-            yarn.style.setProperty('--startX', `${start.x}px`);
-            yarn.style.setProperty('--startY', `${start.y}px`);
-            yarn.style.setProperty('--targetX', `${target.x}px`);
-            yarn.style.setProperty('--targetY', `${target.y}px`);
+            yarn.style.setProperty('--targetX', `${coords.x}px`);
+            yarn.style.setProperty('--targetY', `${coords.y}px`);
             document.body.appendChild(yarn);
 
             playCatSound('meow');
 
             setTimeout(() => {
                 triggerCatJump();
-                spawnPopText(target.x, target.y - 40, '🧶 ΜΠΛΕΧΤΗΚΕ! 🎀');
-                for (let i = 0; i < 3; i++) {
-                    spawnParticle(target.x + (Math.random() - 0.5) * 50, target.y, '🎀');
-                }
+                spawnScreenBanner('🧶 Μπλέχτηκε στο ροζ κουβάρι! 🎀');
+                spawnCatParticles(['🎀', '🧶', '✨', '💖']);
             }, 600);
 
             if (toyFeedback) {
                 toyFeedback.textContent = '🧶 Η Μάγκας μπλέχτηκε στο ροζ κουβάρι και κάνει τούμπες! 🎀';
             }
 
-            setTimeout(() => yarn.remove(), 1500);
+            setTimeout(() => yarn.remove(), 1650);
         });
     }
 
     // ----------------------------------------------------
-    // 6. ACTION 4: FISH TREAT ANIMATION (🐟)
+    // 6. ACTION 4: FISH TREAT SWIMMING OVERLAY (🐟)
     // ----------------------------------------------------
     if (btnTreat) {
         btnTreat.addEventListener('click', (e) => {
-            const start = getCenterCoords(btnTreat);
-            const target = getCenterCoords(mascotInteractive);
+            const coords = getCatCoords();
 
             const fish = document.createElement('div');
-            fish.className = 'anim-flying-fish';
+            fish.className = 'screen-overlay-item overlay-fish-swim';
             fish.textContent = '🐟';
-            fish.style.setProperty('--startX', `${start.x}px`);
-            fish.style.setProperty('--startY', `${start.y}px`);
-            fish.style.setProperty('--targetX', `${target.x}px`);
-            fish.style.setProperty('--targetY', `${target.y}px`);
+            fish.style.setProperty('--targetX', `${coords.x}px`);
+            fish.style.setProperty('--targetY', `${coords.y}px`);
             document.body.appendChild(fish);
 
             playCatSound('meow');
 
             setTimeout(() => {
                 triggerCatJump();
-                spawnPopText(target.x, target.y - 40, '🐟 ΜΙΑΜ! ΝΑΜ ΝΑΜ! 😻');
                 playCatSound('purr');
-                for (let i = 0; i < 4; i++) {
-                    spawnParticle(target.x + (Math.random() - 0.5) * 50, target.y, '✨');
-                }
-            }, 650);
+                spawnScreenBanner('🐟 ΜΙΑΜ! ΝΑΜ ΝΑΜ! 😻');
+                spawnCatParticles(['🐟', '✨', '😻', '🦴']);
+            }, 700);
 
             if (toyFeedback) {
                 toyFeedback.textContent = '🐟 Μιαμ! Η Μάγκας έφαγε το λαχταριστό ψαράκι! 😻✨';
             }
 
-            setTimeout(() => fish.remove(), 1300);
+            setTimeout(() => fish.remove(), 1550);
         });
     }
 
@@ -279,6 +250,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 notifyForm.reset();
                 playCatSound('meow');
                 triggerCatJump();
+                spawnScreenBanner('🚀 ΕΓΓΡΑΦΗΚΕΣ! 🐾');
+                spawnCatParticles(['🚀', '💖', '✨', '🎀']);
             }
         });
     }

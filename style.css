@@ -33,7 +33,7 @@ body {
     position: relative;
 }
 
-h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .action-pop-text {
+h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner {
     font-family: 'Fredoka', cursive, sans-serif;
 }
 
@@ -208,7 +208,6 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .action-pop-text {
     border-radius: 30px;
     border: 2px solid #ffe3ec;
     position: relative;
-    overflow: hidden;
 }
 
 @media (min-width: 650px) {
@@ -249,9 +248,9 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .action-pop-text {
 
 @keyframes catJump {
     0% { transform: scale(1) translateY(0); }
-    30% { transform: scale(1.18, 0.88) translateY(-20px) rotate(5deg); }
-    50% { transform: scale(0.95, 1.1) translateY(-35px) rotate(-5deg); }
-    70% { transform: scale(1.05, 0.95) translateY(0); }
+    30% { transform: scale(1.22, 0.82) translateY(-25px) rotate(6deg); }
+    50% { transform: scale(0.92, 1.15) translateY(-40px) rotate(-6deg); }
+    70% { transform: scale(1.08, 0.92) translateY(0); }
     100% { transform: scale(1) translateY(0); }
 }
 
@@ -502,19 +501,19 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .action-pop-text {
 .toy-btn {
     background: #ffffff;
     border: 2px solid #e2e8f0;
-    padding: 12px 22px;
+    padding: 14px 26px;
     border-radius: var(--radius-full);
     font-family: 'Fredoka', cursive, sans-serif;
-    font-size: 1rem;
+    font-size: 1.08rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.05);
 }
 
 .toy-btn:hover {
     border-color: var(--primary);
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(-3px) scale(1.06);
     background: #fff0f3;
 }
 
@@ -523,11 +522,11 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .action-pop-text {
 }
 
 .toy-feedback {
-    margin-top: 14px;
-    font-size: 1.15rem;
+    margin-top: 16px;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--purple);
-    min-height: 30px;
+    min-height: 32px;
 }
 
 /* Footer */
@@ -540,189 +539,165 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .action-pop-text {
 }
 
 /* ---------------------------------------------------- */
-/* DYNAMIC VISUAL ANIMATION OVERLAYS FOR TOYS & PETTING */
+/* HUGE SCREEN-WIDE OVERLAY ANIMATIONS (FLY IN FROM SIDES) */
 /* ---------------------------------------------------- */
 
-/* 1. Animated Stroking Hand Overlay */
-.anim-hand-stroke {
-    position: absolute;
-    font-size: 4rem;
-    z-index: 100;
-    pointer-events: none;
-    top: -20px;
-    left: 45px;
-    animation: strokeMotion 1s cubic-bezier(0.45, 0, 0.55, 1) forwards;
-}
-
-@keyframes strokeMotion {
-    0% {
-        opacity: 0;
-        transform: translateY(-30px) rotate(15deg) scale(0.8);
-    }
-    30% {
-        opacity: 1;
-        transform: translateY(15px) rotate(-10deg) scale(1.1);
-    }
-    60% {
-        transform: translateY(35px) rotate(10deg) scale(1.05);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(60px) rotate(-5deg) scale(0.9);
-    }
-}
-
-/* Purr waves text popup */
-.purr-wave-text {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Fredoka', cursive, sans-serif;
-    font-size: 1.4rem;
-    color: var(--primary);
-    font-weight: 700;
-    z-index: 105;
-    pointer-events: none;
-    animation: purrPop 1.2s ease-out forwards;
-    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.9);
-}
-
-@keyframes purrPop {
-    0% { opacity: 0; transform: translate(-50%, 10px) scale(0.6); }
-    40% { opacity: 1; transform: translate(-50%, -25px) scale(1.2); }
-    100% { opacity: 0; transform: translate(-50%, -50px) scale(1.4); }
-}
-
-/* 2. Soccer Ball Flying & Bouncing Animation */
-.anim-flying-ball {
+.screen-overlay-item {
     position: fixed;
-    font-size: 3.5rem;
-    z-index: 9999;
+    top: 0;
+    left: 0;
+    z-index: 999999;
     pointer-events: none;
-    animation: ballFlyBounce 1.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    font-size: 6rem;
+    filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.25));
 }
 
-@keyframes ballFlyBounce {
+/* 1. Petting Hand Overlay - Drops from Top of screen onto Cat's head */
+.overlay-hand-stroke {
+    animation: strokeCatAcrossScreen 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes strokeCatAcrossScreen {
     0% {
         opacity: 0;
-        transform: translate(var(--startX), var(--startY)) scale(0.3) rotate(0deg);
-    }
-    20% {
-        opacity: 1;
-        transform: translate(calc(var(--targetX) - 60px), calc(var(--targetY) - 80px)) scale(1.2) rotate(180deg);
-    }
-    40% {
-        transform: translate(var(--targetX), var(--targetY)) scale(1) rotate(360deg);
-    }
-    60% {
-        transform: translate(calc(var(--targetX) + 40px), calc(var(--targetY) - 50px)) scale(0.9) rotate(540deg);
-    }
-    80% {
-        transform: translate(calc(var(--targetX) + 70px), calc(var(--targetY) - 10px)) scale(0.95) rotate(680deg);
-    }
-    100% {
-        opacity: 0;
-        transform: translate(calc(var(--targetX) + 100px), var(--targetY)) scale(0.6) rotate(720deg);
-    }
-}
-
-/* 3. Yarn Ball Rolling Animation */
-.anim-flying-yarn {
-    position: fixed;
-    font-size: 3.5rem;
-    z-index: 9999;
-    pointer-events: none;
-    animation: yarnRoll 1.5s ease-out forwards;
-}
-
-@keyframes yarnRoll {
-    0% {
-        opacity: 0;
-        transform: translate(var(--startX), var(--startY)) rotate(0deg) scale(0.4);
-    }
-    30% {
-        opacity: 1;
-        transform: translate(calc(var(--startX) + (var(--targetX) - var(--startX)) * 0.4), calc(var(--targetY) + 20px)) rotate(360deg) scale(1.2);
-    }
-    70% {
-        transform: translate(var(--targetX), var(--targetY)) rotate(720deg) scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: translate(calc(var(--targetX) - 30px), calc(var(--targetY) - 40px)) rotate(900deg) scale(0.5);
-    }
-}
-
-/* 4. Fish Treat Swimming & Nom Nom Animation */
-.anim-flying-fish {
-    position: fixed;
-    font-size: 3.2rem;
-    z-index: 9999;
-    pointer-events: none;
-    animation: fishSwimEat 1.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-@keyframes fishSwimEat {
-    0% {
-        opacity: 0;
-        transform: translate(var(--startX), var(--startY)) scale(0.4) rotate(-20deg);
+        transform: translate(calc(var(--targetX) + 80px), calc(var(--targetY) - 300px)) scale(0.5) rotate(35deg);
     }
     35% {
         opacity: 1;
-        transform: translate(calc(var(--startX) + (var(--targetX) - var(--startX)) * 0.5), calc(var(--targetY) - 60px)) scale(1.3) rotate(15deg);
+        transform: translate(calc(var(--targetX) - 40px), calc(var(--targetY) - 100px)) scale(1.3) rotate(-10deg);
     }
-    70% {
-        transform: translate(var(--targetX), var(--targetY)) scale(1) rotate(0deg);
+    60% {
+        transform: translate(calc(var(--targetX) - 20px), calc(var(--targetY) - 70px)) scale(1.25) rotate(15deg);
     }
-    85% {
-        transform: translate(var(--targetX), var(--targetY)) scale(1.4) rotate(10deg);
+    80% {
+        transform: translate(calc(var(--targetX) - 40px), calc(var(--targetY) - 90px)) scale(1.3) rotate(-5deg);
     }
     100% {
         opacity: 0;
-        transform: translate(var(--targetX), var(--targetY)) scale(0) rotate(45deg);
+        transform: translate(calc(var(--targetX) - 60px), calc(var(--targetY) - 180px)) scale(0.8) rotate(45deg);
     }
 }
 
-/* Action Pop Text Overlay (NOM NOM, GOAL!, PURRR!) */
-.action-pop-text {
-    position: fixed;
-    z-index: 10000;
-    pointer-events: none;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #ff3366;
-    background: #ffffff;
-    padding: 6px 18px;
-    border-radius: var(--radius-full);
-    box-shadow: 0 10px 25px rgba(255, 51, 102, 0.3);
-    border: 3px solid #ffdeeb;
-    animation: popTextAnim 1.2s ease-out forwards;
+/* 2. Soccer Ball - Flies in from Left edge of screen, bounces on Cat */
+.overlay-ball-fly {
+    animation: ballFlyFromSide 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-@keyframes popTextAnim {
-    0% { opacity: 0; transform: translate(var(--posX), var(--posY)) scale(0.3) rotate(-10deg); }
-    30% { opacity: 1; transform: translate(var(--posX), calc(var(--posY) - 30px)) scale(1.2) rotate(5deg); }
-    80% { opacity: 1; transform: translate(var(--posX), calc(var(--posY) - 50px)) scale(1) rotate(0deg); }
-    100% { opacity: 0; transform: translate(var(--posX), calc(var(--posY) - 70px)) scale(0.8); }
+@keyframes ballFlyFromSide {
+    0% {
+        opacity: 0;
+        transform: translate(-120px, 60vh) scale(0.4) rotate(0deg);
+    }
+    35% {
+        opacity: 1;
+        transform: translate(calc(var(--targetX) - 120px), calc(var(--targetY) - 100px)) scale(1.4) rotate(360deg);
+    }
+    55% {
+        transform: translate(calc(var(--targetX) - 40px), calc(var(--targetY) - 40px)) scale(1.1) rotate(600deg);
+    }
+    75% {
+        transform: translate(calc(var(--targetX) + 60px), calc(var(--targetY) - 80px)) scale(1) rotate(780deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(calc(100vw + 60px), calc(var(--targetY) + 20px)) scale(0.5) rotate(1080deg);
+    }
+}
+
+/* 3. Yarn Ball - Rolls in from Right edge of screen to Cat */
+.overlay-yarn-roll {
+    animation: yarnRollFromSide 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes yarnRollFromSide {
+    0% {
+        opacity: 0;
+        transform: translate(calc(100vw + 100px), 65vh) scale(0.4) rotate(0deg);
+    }
+    40% {
+        opacity: 1;
+        transform: translate(calc(var(--targetX) + 50px), calc(var(--targetY) + 20px)) scale(1.4) rotate(-540deg);
+    }
+    70% {
+        transform: translate(calc(var(--targetX) - 40px), calc(var(--targetY) - 40px)) scale(1.15) rotate(-900deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-140px, calc(var(--targetY) - 60px)) scale(0.5) rotate(-1200deg);
+    }
+}
+
+/* 4. Fish Treat - Swims in from Left edge across the screen into Cat's mouth */
+.overlay-fish-swim {
+    animation: fishSwimFromSide 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes fishSwimFromSide {
+    0% {
+        opacity: 0;
+        transform: translate(-120px, 30vh) scale(0.4) rotate(-25deg);
+    }
+    35% {
+        opacity: 1;
+        transform: translate(calc(var(--targetX) * 0.4), calc(var(--targetY) - 100px)) scale(1.4) rotate(15deg);
+    }
+    70% {
+        transform: translate(calc(var(--targetX) - 40px), calc(var(--targetY) - 40px)) scale(1.3) rotate(-10deg);
+    }
+    85% {
+        transform: translate(calc(var(--targetX) - 30px), calc(var(--targetY) - 30px)) scale(1.6) rotate(5deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(calc(var(--targetX) - 30px), calc(var(--targetY) - 30px)) scale(0) rotate(45deg);
+    }
+}
+
+/* Huge Screen Pop Banner */
+.screen-pop-banner {
+    position: fixed;
+    top: 35vh;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000000;
+    pointer-events: none;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(135deg, #ff5e7e 0%, #9d4edd 100%);
+    padding: 14px 36px;
+    border-radius: var(--radius-full);
+    box-shadow: 0 15px 40px rgba(255, 94, 126, 0.45);
+    border: 4px solid #ffffff;
+    animation: screenBannerAnim 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    white-space: nowrap;
+}
+
+@keyframes screenBannerAnim {
+    0% { opacity: 0; transform: translate(-50%, -30%) scale(0.2) rotate(-10deg); }
+    25% { opacity: 1; transform: translate(-50%, -50%) scale(1.2) rotate(3deg); }
+    75% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translate(-50%, -80%) scale(0.7) rotate(5deg); }
 }
 
 /* Floating Heart Particle */
 .floating-heart {
     position: fixed;
+    top: 0;
+    left: 0;
     pointer-events: none;
-    font-size: 1.8rem;
-    z-index: 9999;
+    font-size: 2.2rem;
+    z-index: 999999;
     animation: heartFly 1.2s ease-out forwards;
 }
 
 @keyframes heartFly {
     0% {
         opacity: 1;
-        transform: translate(0, 0) scale(0.6);
+        transform: translate(var(--startX), var(--startY)) scale(0.6);
     }
     100% {
         opacity: 0;
-        transform: translate(var(--tx, 0px), -110px) scale(1.5);
+        transform: translate(calc(var(--startX) + var(--tx, 0px)), calc(var(--startY) - 120px)) scale(1.6);
     }
 }
