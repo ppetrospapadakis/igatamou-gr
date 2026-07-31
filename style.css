@@ -2599,21 +2599,22 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 18px;
     width: 100%;
-    max-width: 340px;
+    max-width: 360px;
+    margin: 10px auto;
 }
 
-.solitaire-baskets-row {
+.solitaire-foundations-row {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     width: 100%;
     gap: 10px;
 }
 
-.solitaire-basket {
+.solitaire-foundation-basket {
     flex: 1;
-    height: 100px;
+    height: 110px;
     background: #ffffff;
     border-radius: 20px;
     border: 3px dashed #cbd5e1;
@@ -2621,49 +2622,76 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 8px;
+    cursor: pointer;
     box-shadow: 0 6px 16px rgba(0,0,0,0.06);
     transition: all 0.2s ease;
+    position: relative;
+    padding: 6px;
 }
 
-.solitaire-basket.basket-red { border-color: #ff4757; }
-.solitaire-basket.basket-blue { border-color: #2ed573; }
-.solitaire-basket.basket-gold { border-color: #ffa502; }
+.solitaire-foundation-basket small {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 4px;
+}
 
-.solitaire-cards-deck {
+.solitaire-columns-row {
     display: flex;
+    justify-content: space-between;
+    width: 100%;
     gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
+    min-height: 180px;
 }
 
-.solitaire-card-tile {
-    width: 65px;
-    height: 85px;
+.solitaire-column-stack {
+    flex: 1;
+    background: rgba(241, 245, 249, 0.7);
+    border-radius: 20px;
+    border: 2px solid #e2e8f0;
+    padding: 8px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-height: 180px;
+    cursor: pointer;
+}
+
+.solitaire-card-item {
+    width: 66px;
+    height: 84px;
     background: #ffffff;
-    border-radius: 14px;
+    border-radius: 16px;
+    border: 3px solid #e2e8f0;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-    border: 3px solid #e2e8f0;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     user-select: none;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.solitaire-card-tile:hover {
-    transform: translateY(-4px) scale(1.06);
+.solitaire-card-item .card-suit {
+    font-size: 1.6rem;
+    line-height: 1;
 }
 
-.solitaire-card-tile.selected-card {
+.solitaire-card-item .card-val {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.solitaire-card-item.selected-card {
     border-color: var(--primary) !important;
-    transform: translateY(-8px) scale(1.1) !important;
-    box-shadow: 0 10px 22px rgba(255, 94, 126, 0.4) !important;
+    transform: scale(1.12) translateY(-4px) !important;
+    box-shadow: 0 10px 24px rgba(255, 94, 126, 0.4) !important;
+    background: #fff0f3 !important;
 }
+
 
 
 
