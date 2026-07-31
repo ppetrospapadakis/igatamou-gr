@@ -503,7 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         adminLoginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const pw = adminPasswordInput ? adminPasswordInput.value : '';
+            const pw = adminPasswordInput ? adminPasswordInput.value.trim().toLowerCase() : '';
             if (pw === 'ariadni13') {
                 localStorage.setItem(ADMIN_AUTH_KEY, 'true');
                 if (loginErrorMsg) loginErrorMsg.hidden = true;
@@ -557,6 +557,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const cats = getCatsData();
         const pendingCats = cats.filter(c => c.status === 'pending');
         const approvedCats = cats.filter(c => c.status === 'approved');
+
+        const pendingCountEl = document.getElementById('pendingCount');
+        const approvedCountEl = document.getElementById('approvedCount');
+        if (pendingCountEl) pendingCountEl.textContent = pendingCats.length;
+        if (approvedCountEl) approvedCountEl.textContent = approvedCats.length;
 
         // 1. Pending Grid
         if (adminPendingGrid) {

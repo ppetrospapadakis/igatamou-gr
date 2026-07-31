@@ -43,7 +43,7 @@
             <form id="adminLoginForm" class="admin-login-form">
                 <div class="form-group">
                     <label for="adminPasswordInput">Κωδικός Πρόσβασης (Password):</label>
-                    <input type="password" id="adminPasswordInput" placeholder="Γράψε τον κωδικό..." required class="input-field">
+                    <input type="text" id="adminPasswordInput" placeholder="Γράψε τον κωδικό..." required class="input-field" autocomplete="off">
                 </div>
                 <div id="loginErrorMsg" class="login-error-msg" hidden>
                     ❌ Λάθος κωδικός! Δοκίμασε ξανά!
@@ -55,7 +55,7 @@
         </div>
 
         <!-- ADMIN DASHBOARD CONTENT (Hidden until logged in) -->
-        <main id="adminDashboard" class="main-content" hidden>
+        <main id="adminDashboardCard" class="main-content" hidden>
             <div class="category-menu-card admin-dashboard-card">
                 <div class="menu-title-box">
                     <h1>👑 Διαχείριση Φωτογραφιών</h1>
@@ -64,10 +64,10 @@
 
                 <!-- Tabs & Counter Header -->
                 <div class="admin-tabs">
-                    <button class="admin-tab-btn active" id="tabPendingBtn">
+                    <button class="admin-tab-btn active" id="tabPending">
                         ⏳ Αναμονή Εγκρίσεων (<span id="pendingCount">0</span>)
                     </button>
-                    <button class="admin-tab-btn" id="tabApprovedBtn">
+                    <button class="admin-tab-btn" id="tabApproved">
                         ✅ Δημοσιευμένες (<span id="approvedCount">0</span>)
                     </button>
                 </div>
