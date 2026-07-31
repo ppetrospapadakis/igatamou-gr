@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Initial sample approved cat (Real Magkas Photo)
+    // Initial sample approved cat (Real Magkas Photo Album with 5 photos!)
     const sampleCats = [
         {
             id: 'cat_sample_1',
@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
             owner: 'Αριάδνη (7 ετών)',
             bio: 'Η επίσημη μασκότ μας με το ροζ κορδελάκι της! 🎀',
             image: 'magkas.jpg',
+            gallery: ['magkas.jpg', 'magkas_2.jpg', 'magkas_3.jpg', 'magkas_4.jpg', 'magkas_5.jpg'],
             status: 'approved',
             likes: 18,
             date: '30/07/2026'
@@ -39,7 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return sampleCats;
         }
         try {
-            return JSON.parse(stored);
+            const parsed = JSON.parse(stored);
+            // Ensure Magkas profile always has the 5 photos in her album
+            const magkas = parsed.find(c => c.id === 'cat_sample_1');
+            if (magkas && (!magkas.gallery || magkas.gallery.length < 5)) {
+                magkas.gallery = ['magkas.jpg', 'magkas_2.jpg', 'magkas_3.jpg', 'magkas_4.jpg', 'magkas_5.jpg'];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+            }
+            return parsed;
         } catch (e) {
             return sampleCats;
         }
@@ -66,7 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const localCats = getCatsData();
                 const map = new Map();
                 localCats.forEach(c => map.set(c.id, c));
-                data.forEach(c => map.set(c.id, c));
+                data.forEach(c => {
+                    if (typeof c.gallery === 'string') {
+                        try { c.gallery = JSON.parse(c.gallery); } catch(e) {}
+                    }
+                    map.set(c.id, c);
+                });
                 const merged = Array.from(map.values());
                 saveCatsData(merged);
                 
@@ -88,14 +101,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const emptyGallery = document.getElementById('emptyGallery');
     const uploadModal = document.getElementById('uploadModal');
     const successModal = document.getElementById('successModal');
+    const albumModal = document.getElementById('albumModal');
     const openUploadBtn = document.getElementById('openUploadBtn');
     const closeUploadBtn = document.getElementById('closeUploadBtn');
     const closeSuccessBtn = document.getElementById('closeSuccessBtn');
     const okSuccessBtn = document.getElementById('okSuccessBtn');
+    const closeAlbumBtn = document.getElementById('closeAlbumBtn');
+
     const catUploadForm = document.getElementById('catUploadForm');
     const catPhotoInput = document.getElementById('catPhotoInput');
     const imagePreviewBox = document.getElementById('imagePreviewBox');
     const previewImg = document.getElementById('previewImg');
+    const previewCountBadge = document.getElementById('previewCountBadge');
+
+    // Album Modal Elements
+    const albumCatName = document.getElementById('albumCatName');
+    const albumCatOwner = document.getElementById('albumCatOwner');
+    const albumFeaturedImg = document.getElementById('albumFeaturedImg');
+    const albumImageCounter = document.getElementById('albumImageCounter');
+    const albumThumbnails = document.getElementById('albumThumbnails');
+    const prevAlbumImg = document.getElementById('prevAlbumImg');
+    const nextAlbumImg = document.getElementById('nextAlbumImg');
+
+    let currentAlbumPhotos = [];
+    let currentAlbumIndex = 0;
 
     if (galleryGrid) {
         renderPublicGallery();
@@ -118,6 +147,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         approvedCats.forEach(cat => {
             const isLiked = likedCatIds.includes(cat.id);
+            const photoList = cat.gallery && cat.gallery.length ? cat.gallery : [cat.image];
+            const hasMultiplePhotos = photoList.length > 1;
+
             const card = document.createElement('div');
             card.className = 'cat-gallery-card';
             card.innerHTML = `
@@ -131,6 +163,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="owner-badge">👤 ${cat.owner}</span>
                     </div>
                     ${cat.bio ? `<p class="cat-card-bio">"${cat.bio}"</p>` : ''}
+                    
+                    ${photoList.length > 0 ? `
+                        <button class="btn-view-album" data-id="${cat.id}">
+                            🖼️ Δες Άλμπουμ (${photoList.length} Φωτογραφίες) 📸
+                        </button>
+                    ` : ''}
+
                     <div class="cat-card-footer">
                         <button class="btn-like-cat ${isLiked ? 'already-liked' : ''}" data-id="${cat.id}">
                             💖 <span class="like-count">${cat.likes || 0}</span> <small>${isLiked ? 'Χαϊδεύτηκε!' : 'Χάδια'}</small>
@@ -143,7 +182,79 @@ document.addEventListener('DOMContentLoaded', () => {
             const likeBtn = card.querySelector('.btn-like-cat');
             likeBtn.addEventListener('click', () => handleCatLike(cat.id, likeBtn));
 
+            const albumBtn = card.querySelector('.btn-view-album');
+            if (albumBtn) {
+                albumBtn.addEventListener('click', () => openCatAlbumModal(cat));
+            }
+
             galleryGrid.appendChild(card);
+        });
+    }
+
+    // INTERACTIVE PHOTO ALBUM MODAL LOGIC
+    function openCatAlbumModal(cat) {
+        currentAlbumPhotos = cat.gallery && cat.gallery.length ? cat.gallery : [cat.image];
+        currentAlbumIndex = 0;
+
+        if (albumCatName) albumCatName.textContent = `📸 Άλμπουμ: ${cat.name} 🐾`;
+        if (albumCatOwner) albumCatOwner.textContent = `👤 ${cat.owner}`;
+
+        updateAlbumView();
+
+        if (albumModal) albumModal.hidden = false;
+    }
+
+    function updateAlbumView() {
+        if (!currentAlbumPhotos.length) return;
+
+        const currentSrc = currentAlbumPhotos[currentAlbumIndex];
+        if (albumFeaturedImg) {
+            albumFeaturedImg.style.opacity = '0.3';
+            setTimeout(() => {
+                albumFeaturedImg.src = currentSrc;
+                albumFeaturedImg.style.opacity = '1';
+            }, 100);
+        }
+
+        if (albumImageCounter) {
+            albumImageCounter.textContent = `${currentAlbumIndex + 1} / ${currentAlbumPhotos.length}`;
+        }
+
+        // Render Thumbnails
+        if (albumThumbnails) {
+            albumThumbnails.innerHTML = '';
+            currentAlbumPhotos.forEach((src, idx) => {
+                const thumb = document.createElement('div');
+                thumb.className = `album-thumb ${idx === currentAlbumIndex ? 'active-thumb' : ''}`;
+                thumb.innerHTML = `<img src="${src}" alt="Thumbnail ${idx + 1}">`;
+                thumb.addEventListener('click', () => {
+                    currentAlbumIndex = idx;
+                    updateAlbumView();
+                });
+                albumThumbnails.appendChild(thumb);
+            });
+        }
+    }
+
+    if (prevAlbumImg) {
+        prevAlbumImg.addEventListener('click', () => {
+            if (currentAlbumPhotos.length === 0) return;
+            currentAlbumIndex = (currentAlbumIndex - 1 + currentAlbumPhotos.length) % currentAlbumPhotos.length;
+            updateAlbumView();
+        });
+    }
+
+    if (nextAlbumImg) {
+        nextAlbumImg.addEventListener('click', () => {
+            if (currentAlbumPhotos.length === 0) return;
+            currentAlbumIndex = (currentAlbumIndex + 1) % currentAlbumPhotos.length;
+            updateAlbumView();
+        });
+    }
+
+    if (closeAlbumBtn) {
+        closeAlbumBtn.addEventListener('click', () => {
+            if (albumModal) albumModal.hidden = true;
         });
     }
 
@@ -153,12 +264,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetCat = cats.find(c => c.id === catId);
         if (!targetCat) return;
 
-        // Visual Heart Pop Animation on EVERY click
         btnEl.classList.remove('heart-pop');
         void btnEl.offsetWidth; // Force reflow
         btnEl.classList.add('heart-pop');
 
-        // Only increment the persistent global count ONCE per visitor
         if (!likedCatIds.includes(catId)) {
             likedCatIds.push(catId);
             localStorage.setItem(LIKED_CATS_KEY, JSON.stringify(likedCatIds));
@@ -166,7 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
             targetCat.likes = (targetCat.likes || 0) + 1;
             saveCatsData(cats);
 
-            // Sync Like to Supabase DB
             if (supabase) {
                 supabase.from('cats').update({ likes: targetCat.likes }).eq('id', catId).then();
             }
@@ -204,21 +312,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Photo Preview & Canvas Compression
-    let compressedImageData = null;
-    let selectedFileBlob = null;
+    // Multi-Photo Preview & Canvas Compression
+    let selectedFilesArray = [];
+    let compressedImagesArray = [];
 
     if (catPhotoInput) {
         catPhotoInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
+            const files = Array.from(e.target.files);
+            if (!files.length) return;
 
-            selectedFileBlob = file;
+            selectedFilesArray = files;
+            compressedImagesArray = [];
 
-            compressImageFile(file, (base64Img) => {
-                compressedImageData = base64Img;
-                if (previewImg) previewImg.src = base64Img;
-                if (imagePreviewBox) imagePreviewBox.hidden = false;
+            let processedCount = 0;
+            files.forEach((file, index) => {
+                compressImageFile(file, (base64Img) => {
+                    compressedImagesArray[index] = base64Img;
+                    processedCount++;
+
+                    if (index === 0 && previewImg) {
+                        previewImg.src = base64Img;
+                        if (imagePreviewBox) imagePreviewBox.hidden = false;
+                    }
+
+                    if (previewCountBadge) {
+                        previewCountBadge.hidden = false;
+                        previewCountBadge.textContent = `📷 ${files.length} Φωτογραφίες`;
+                    }
+                });
             });
         });
     }
@@ -231,8 +352,8 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = event.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 800;
-                const MAX_HEIGHT = 800;
+                const MAX_WIDTH = 900;
+                const MAX_HEIGHT = 900;
                 let width = img.width;
                 let height = img.height;
 
@@ -253,13 +374,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.78);
                 callback(compressedBase64);
             };
         };
     }
 
-    // Submit Upload Form with Supabase Storage Integration
+    // Submit Upload Form with Multi-Photo Supabase Storage & Album Support
     if (catUploadForm) {
         catUploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -268,42 +389,51 @@ document.addEventListener('DOMContentLoaded', () => {
             const owner = document.getElementById('ownerNameInput').value.trim();
             const bio = document.getElementById('catBioInput').value.trim();
 
-            if (!name || !owner || !compressedImageData) {
-                alert('Παρακαλώ συμπλήρωσε όλα τα υποχρεωτικά πεδία και διάλεξε φωτογραφία!');
+            if (!name || !owner || !compressedImagesArray.length) {
+                alert('Παρακαλώ συμπλήρωσε όλα τα υποχρεωτικά πεδία και διάλεξε τουλάχιστον μία φωτογραφία!');
                 return;
             }
 
             const catId = 'cat_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
-            let imageUrl = compressedImageData;
+            const uploadedUrls = [];
 
-            // Upload image to Supabase Storage Bucket 'images'
-            if (supabase && selectedFileBlob) {
-                try {
-                    const storageFileName = `${catId}.jpg`;
-                    const { data: uploadData, error: uploadErr } = await supabase.storage
-                        .from('images')
-                        .upload(storageFileName, selectedFileBlob, {
-                            contentType: selectedFileBlob.type || 'image/jpeg',
-                            upsert: true
-                        });
+            // Upload each selected photo to Supabase Storage Bucket 'images'
+            for (let i = 0; i < selectedFilesArray.length; i++) {
+                const file = selectedFilesArray[i];
+                let fileUrl = compressedImagesArray[i] || compressedImagesArray[0];
 
-                    if (!uploadErr) {
-                        const { data: urlData } = supabase.storage.from('images').getPublicUrl(storageFileName);
-                        if (urlData && urlData.publicUrl) {
-                            imageUrl = urlData.publicUrl;
+                if (supabase && file) {
+                    try {
+                        const storageFileName = `${catId}_${i + 1}.jpg`;
+                        const { error: uploadErr } = await supabase.storage
+                            .from('images')
+                            .upload(storageFileName, file, {
+                                contentType: file.type || 'image/jpeg',
+                                upsert: true
+                            });
+
+                        if (!uploadErr) {
+                            const { data: urlData } = supabase.storage.from('images').getPublicUrl(storageFileName);
+                            if (urlData && urlData.publicUrl) {
+                                fileUrl = urlData.publicUrl;
+                            }
                         }
+                    } catch (err) {
+                        console.log('Supabase storage upload notice:', err);
                     }
-                } catch (err) {
-                    console.log('Supabase storage upload notice:', err);
                 }
+                uploadedUrls.push(fileUrl);
             }
+
+            const primaryImage = uploadedUrls[0] || compressedImagesArray[0];
 
             const newCat = {
                 id: catId,
                 name: name,
                 owner: owner,
                 bio: bio,
-                image: imageUrl,
+                image: primaryImage,
+                gallery: uploadedUrls,
                 status: 'pending', // Awaiting Admin Approval!
                 likes: 0,
                 date: new Date().toLocaleDateString('el-GR')
@@ -323,6 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         owner: newCat.owner,
                         bio: newCat.bio,
                         image: newCat.image,
+                        gallery: JSON.stringify(newCat.gallery),
                         status: newCat.status,
                         likes: newCat.likes,
                         date: newCat.date
@@ -334,8 +465,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Reset Form & Show Success Modal
             catUploadForm.reset();
-            compressedImageData = null;
-            selectedFileBlob = null;
+            selectedFilesArray = [];
+            compressedImagesArray = [];
             if (imagePreviewBox) imagePreviewBox.hidden = true;
             if (uploadModal) uploadModal.hidden = true;
             if (successModal) successModal.hidden = false;
@@ -436,6 +567,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (emptyAdminPending) emptyAdminPending.hidden = true;
 
                 pendingCats.forEach(cat => {
+                    const photoCount = cat.gallery && cat.gallery.length ? cat.gallery.length : 1;
                     const card = document.createElement('div');
                     card.className = 'admin-cat-card';
                     card.innerHTML = `
@@ -444,7 +576,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h4>${cat.name}</h4>
                             <p><strong>Ιδιοκτήτης:</strong> ${cat.owner}</p>
                             ${cat.bio ? `<p><strong>Περιγραφή:</strong> "${cat.bio}"</p>` : ''}
-                            <p><small>Ημερομηνία: ${cat.date || ''}</small></p>
+                            <p><small>Φωτογραφίες Άλμπουμ: <strong>${photoCount}</strong></small></p>
+                            <button class="btn-view-album" data-id="${cat.id}">🖼️ Προεπισκόπηση Άλμπουμ</button>
                             <div class="admin-card-actions">
                                 <button class="btn-approve" data-id="${cat.id}">✅ Έγκριση</button>
                                 <button class="btn-reject" data-id="${cat.id}">❌ Απόρριψη</button>
@@ -454,7 +587,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const approveBtn = card.querySelector('.btn-approve');
                     const rejectBtn = card.querySelector('.btn-reject');
+                    const albumBtn = card.querySelector('.btn-view-album');
 
+                    if (albumBtn) albumBtn.addEventListener('click', () => openCatAlbumModal(cat));
                     approveBtn.addEventListener('click', () => updateCatStatus(cat.id, 'approved'));
                     rejectBtn.addEventListener('click', () => updateCatStatus(cat.id, 'rejected'));
 
@@ -472,6 +607,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (emptyAdminApproved) emptyAdminApproved.hidden = true;
 
                 approvedCats.forEach(cat => {
+                    const photoCount = cat.gallery && cat.gallery.length ? cat.gallery.length : 1;
                     const card = document.createElement('div');
                     card.className = 'admin-cat-card';
                     card.innerHTML = `
@@ -480,6 +616,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h4>${cat.name}</h4>
                             <p><strong>Ιδιοκτήτης:</strong> ${cat.owner}</p>
                             <p><strong>Χάδια:</strong> 💖 ${cat.likes || 0}</p>
+                            <p><small>Φωτογραφίες Άλμπουμ: <strong>${photoCount}</strong></small></p>
+                            <button class="btn-view-album" data-id="${cat.id}">🖼️ Προβολή Άλμπουμ</button>
                             <div class="admin-card-actions">
                                 <button class="btn-reject" data-id="${cat.id}">🗑️ Διαγραφή</button>
                             </div>
@@ -487,6 +625,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
 
                     const deleteBtn = card.querySelector('.btn-reject');
+                    const albumBtn = card.querySelector('.btn-view-album');
+
+                    if (albumBtn) albumBtn.addEventListener('click', () => openCatAlbumModal(cat));
                     deleteBtn.addEventListener('click', () => updateCatStatus(cat.id, 'rejected'));
 
                     adminApprovedGrid.appendChild(card);

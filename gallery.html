@@ -94,14 +94,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="catPhotoInput">Φωτογραφία Γατούλας: *</label>
-                        <input type="file" id="catPhotoInput" accept="image/*" required class="input-file">
-                        <small class="file-hint">💡 Η εικόνα συμπιέζεται αυτόματα για γρήγορη φόρτωση!</small>
+                        <label for="catPhotoInput">Φωτογραφίες Γατούλας: *</label>
+                        <input type="file" id="catPhotoInput" accept="image/*" multiple required class="input-file">
+                        <small class="file-hint">💡 Μπορείς να διαλέξεις μία ή περισσότερες φωτογραφίες για το άλμπουμ!</small>
                     </div>
 
                     <!-- Image Preview Container -->
                     <div id="imagePreviewBox" class="image-preview-box" hidden>
                         <img id="previewImg" src="" alt="Προεπισκόπηση">
+                        <div id="previewCountBadge" class="preview-count-badge" hidden></div>
                     </div>
 
                     <button type="submit" id="submitUploadBtn" class="btn btn-submit-upload">
@@ -123,6 +124,29 @@
                 <button id="okSuccessBtn" class="btn btn-games-cta">
                     👍 Τέλεια!
                 </button>
+            </div>
+        </div>
+
+        <!-- INTERACTIVE CAT PHOTO ALBUM MODAL -->
+        <div id="albumModal" class="modal-overlay" hidden>
+            <div class="modal-card album-modal-card">
+                <button id="closeAlbumBtn" class="close-modal-btn" aria-label="Κλείσιμο">&times;</button>
+                
+                <div class="album-modal-header">
+                    <h2 id="albumCatName">📸 Φωτογραφίες της Μάγκας 🐾</h2>
+                    <span id="albumCatOwner" class="owner-badge">👤 Αριάδνη</span>
+                </div>
+
+                <!-- Main Featured Carousel Image -->
+                <div class="album-featured-wrapper">
+                    <button id="prevAlbumImg" class="album-nav-arrow arrow-left" title="Προηγούμενη">❮</button>
+                    <img id="albumFeaturedImg" src="magkas.jpg" alt="Φωτογραφία γατούλας" class="album-featured-img">
+                    <button id="nextAlbumImg" class="album-nav-arrow arrow-right" title="Επόμενη">❯</button>
+                    <span id="albumImageCounter" class="album-counter">1 / 5</span>
+                </div>
+
+                <!-- Thumbnails Strip -->
+                <div id="albumThumbnails" class="album-thumbnails-strip"></div>
             </div>
         </div>
 

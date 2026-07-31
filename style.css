@@ -2092,3 +2092,160 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
         max-width: 90vw !important;
     }
 }
+
+/* ---------------------------------------------------- */
+/* CAT PHOTO ALBUM MODAL & MULTI-PHOTO GALLERY CAROUSEL */
+/* ---------------------------------------------------- */
+
+.btn-view-album {
+    background: linear-gradient(135deg, #4ea8de 0%, #3a86ff 100%) !important;
+    color: #ffffff !important;
+    font-family: 'Fredoka', cursive, sans-serif !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    padding: 8px 16px !important;
+    border-radius: var(--radius-full) !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 12px rgba(78, 168, 222, 0.3) !important;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.btn-view-album:hover {
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 8px 18px rgba(78, 168, 222, 0.45) !important;
+}
+
+.album-modal-card {
+    max-width: 620px !important;
+    padding: 30px 24px !important;
+    background: #ffffff !important;
+}
+
+.album-modal-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.album-modal-header h2 {
+    font-size: 1.7rem !important;
+    color: #1e293b !important;
+    margin-bottom: 6px;
+}
+
+.album-featured-wrapper {
+    position: relative !important;
+    width: 100% !important;
+    height: 360px !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+    background: #0f172a !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    margin-bottom: 18px !important;
+}
+
+.album-featured-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    transition: opacity 0.3s ease;
+}
+
+.album-nav-arrow {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    color: #1e293b !important;
+    border: none !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    font-size: 1.4rem !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    z-index: 10 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2) !important;
+    transition: all 0.2s ease !important;
+}
+
+.album-nav-arrow:hover {
+    background: #ffffff !important;
+    transform: translateY(-50%) scale(1.12) !important;
+    color: var(--primary) !important;
+}
+
+.arrow-left { left: 14px !important; }
+.arrow-right { right: 14px !important; }
+
+.album-counter {
+    position: absolute !important;
+    bottom: 14px !important;
+    right: 18px !important;
+    background: rgba(15, 23, 42, 0.75) !important;
+    color: #ffffff !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    padding: 4px 14px !important;
+    border-radius: var(--radius-full) !important;
+    backdrop-filter: blur(6px) !important;
+}
+
+.album-thumbnails-strip {
+    display: flex !important;
+    gap: 10px !important;
+    overflow-x: auto !important;
+    padding: 6px 2px 10px !important;
+    scrollbar-width: thin;
+}
+
+.album-thumb {
+    width: 72px !important;
+    height: 72px !important;
+    flex-shrink: 0 !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    cursor: pointer !important;
+    border: 3px solid transparent !important;
+    opacity: 0.65 !important;
+    transition: all 0.2s ease !important;
+    background: #f1f5f9;
+}
+
+.album-thumb img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+.album-thumb:hover {
+    opacity: 1 !important;
+    transform: scale(1.05) !important;
+}
+
+.album-thumb.active-thumb {
+    border-color: var(--primary) !important;
+    opacity: 1 !important;
+    box-shadow: 0 0 12px rgba(255, 94, 126, 0.5) !important;
+}
+
+.preview-count-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--purple);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+}
+
