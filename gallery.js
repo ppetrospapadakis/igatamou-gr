@@ -1,12 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
-    // 1. DATA STORAGE INITIALIZATION
+    // 1. SUPABASE CLIENT & DATA STORAGE INITIALIZATION
     // ----------------------------------------------------
     const STORAGE_KEY = 'igatamou_user_cats';
     const LIKED_CATS_KEY = 'igatamou_liked_cats';
     const ADMIN_AUTH_KEY = 'igatamou_admin_logged_in';
 
-    // Initial sample approved cats if empty
+    const SUPABASE_URL = 'https://hqabeqlvnqdvipnspjog.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhxYWJlcWx2bnFkdmlwbnNwam9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0MDQzNDMsImV4cCI6MjEwMDk4MDM0M30.nmB5WOUN-WFQRhRxS14yCLK7X5I8OqJbWk-lRtR0yDg';
+
+    let supabase = null;
+    if (window.supabase && window.supabase.createClient) {
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+            console.log('Supabase client init error:', e);
+        }
+    }
+
+    // Initial sample approved cat (Real Magkas Photo)
     const sampleCats = [
         {
             id: 'cat_sample_1',
@@ -44,6 +56,30 @@ document.addEventListener('DOMContentLoaded', () => {
             return [];
         }
     }
+
+    // Sync from Supabase DB on page load
+    async function syncFromSupabase() {
+        if (!supabase) return;
+        try {
+            const { data, error } = await supabase.from('cats').select('*');
+            if (!error && Array.isArray(data) && data.length > 0) {
+                const localCats = getCatsData();
+                const map = new Map();
+                localCats.forEach(c => map.set(c.id, c));
+                data.forEach(c => map.set(c.id, c));
+                const merged = Array.from(map.values());
+                saveCatsData(merged);
+                
+                if (galleryGrid) renderPublicGallery();
+                if (adminApprovedGrid) renderAdminDashboard();
+            }
+        } catch (err) {
+            console.log('Supabase sync notice:', err);
+        }
+    }
+
+    // Trigger initial sync
+    syncFromSupabase();
 
     // ----------------------------------------------------
     // 2. PUBLIC GALLERY PAGE LOGIC (gallery.html)
@@ -99,65 +135,56 @@ document.addEventListener('DOMContentLoaded', () => {
                         <button class="btn-like-cat ${isLiked ? 'already-liked' : ''}" data-id="${cat.id}">
                             💖 <span class="like-count">${cat.likes || 0}</span> <small>${isLiked ? 'Χαϊδεύτηκε!' : 'Χάδια'}</small>
                         </button>
-                        <span class="cat-date">${cat.date || ''}</span>
+                        <span class="cat-date">📅 ${cat.date || ''}</span>
                     </div>
                 </div>
             `;
-            galleryGrid.appendChild(card);
-        });
 
-        // Like Button Event Listeners
-        document.querySelectorAll('.btn-like-cat').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const catId = btn.getAttribute('data-id');
-                handleLikeCat(catId, btn);
-            });
+            const likeBtn = card.querySelector('.btn-like-cat');
+            likeBtn.addEventListener('click', () => handleCatLike(cat.id, likeBtn));
+
+            galleryGrid.appendChild(card);
         });
     }
 
-    function handleLikeCat(catId, btnEl) {
+    function handleCatLike(catId, btnEl) {
         const likedCatIds = getLikedCatIds();
-        const isAlreadyLiked = likedCatIds.includes(catId);
+        const cats = getCatsData();
+        const targetCat = cats.find(c => c.id === catId);
+        if (!targetCat) return;
 
-        // Playful Heart Animation on every click
+        // Visual Heart Pop Animation on EVERY click
         btnEl.classList.remove('heart-pop');
-        void btnEl.offsetWidth;
+        void btnEl.offsetWidth; // Force reflow
         btnEl.classList.add('heart-pop');
 
-        if (!isAlreadyLiked) {
-            // UNIQUE LIKE: First time this user pets this cat! Increment score by 1.
+        // Only increment the persistent global count ONCE per visitor
+        if (!likedCatIds.includes(catId)) {
             likedCatIds.push(catId);
             localStorage.setItem(LIKED_CATS_KEY, JSON.stringify(likedCatIds));
 
-            const cats = getCatsData();
-            const cat = cats.find(c => c.id === catId);
-            if (cat) {
-                cat.likes = (cat.likes || 0) + 1;
-                saveCatsData(cats);
+            targetCat.likes = (targetCat.likes || 0) + 1;
+            saveCatsData(cats);
 
-                // Update UI Counter & Style
-                const countEl = btnEl.querySelector('.like-count');
-                if (countEl) countEl.textContent = cat.likes;
-
-                btnEl.classList.add('already-liked');
-                const labelSmall = btnEl.querySelector('small');
-                if (labelSmall) labelSmall.textContent = 'Χαϊδεύτηκε!';
+            // Sync Like to Supabase DB
+            if (supabase) {
+                supabase.from('cats').update({ likes: targetCat.likes }).eq('id', catId).then();
             }
+
+            btnEl.classList.add('already-liked');
+            const countSpan = btnEl.querySelector('.like-count');
+            const textSmall = btnEl.querySelector('small');
+            if (countSpan) countSpan.textContent = targetCat.likes;
+            if (textSmall) textSmall.textContent = 'Χαϊδεύτηκε!';
         }
     }
 
-    // Modal Triggers
+    // Modal Control
     if (openUploadBtn) {
         openUploadBtn.addEventListener('click', () => {
             if (uploadModal) uploadModal.hidden = false;
         });
     }
-
-    document.querySelectorAll('.openUploadTrigger').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (uploadModal) uploadModal.hidden = false;
-        });
-    });
 
     if (closeUploadBtn) {
         closeUploadBtn.addEventListener('click', () => {
@@ -179,11 +206,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Photo Preview & Canvas Compression
     let compressedImageData = null;
+    let selectedFileBlob = null;
 
     if (catPhotoInput) {
         catPhotoInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
+
+            selectedFileBlob = file;
 
             compressImageFile(file, (base64Img) => {
                 compressedImageData = base64Img;
@@ -223,16 +253,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Export as compressed JPEG quality 0.75
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
                 callback(compressedBase64);
             };
         };
     }
 
-    // Submit Upload Form
+    // Submit Upload Form with Supabase Storage Integration
     if (catUploadForm) {
-        catUploadForm.addEventListener('submit', (e) => {
+        catUploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const name = document.getElementById('catNameInput').value.trim();
@@ -244,28 +273,71 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            const catId = 'cat_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+            let imageUrl = compressedImageData;
+
+            // Upload image to Supabase Storage Bucket 'images'
+            if (supabase && selectedFileBlob) {
+                try {
+                    const storageFileName = `${catId}.jpg`;
+                    const { data: uploadData, error: uploadErr } = await supabase.storage
+                        .from('images')
+                        .upload(storageFileName, selectedFileBlob, {
+                            contentType: selectedFileBlob.type || 'image/jpeg',
+                            upsert: true
+                        });
+
+                    if (!uploadErr) {
+                        const { data: urlData } = supabase.storage.from('images').getPublicUrl(storageFileName);
+                        if (urlData && urlData.publicUrl) {
+                            imageUrl = urlData.publicUrl;
+                        }
+                    }
+                } catch (err) {
+                    console.log('Supabase storage upload notice:', err);
+                }
+            }
+
             const newCat = {
-                id: 'cat_' + Date.now(),
+                id: catId,
                 name: name,
                 owner: owner,
                 bio: bio,
-                image: compressedImageData,
+                image: imageUrl,
                 status: 'pending', // Awaiting Admin Approval!
                 likes: 0,
                 date: new Date().toLocaleDateString('el-GR')
             };
 
+            // Save to local storage
             const cats = getCatsData();
             cats.push(newCat);
             saveCatsData(cats);
 
-            // Reset Form & Close Upload Modal
-            catUploadForm.reset();
-            if (imagePreviewBox) imagePreviewBox.hidden = true;
-            compressedImageData = null;
-            if (uploadModal) uploadModal.hidden = true;
+            // Insert to Supabase DB 'cats' table
+            if (supabase) {
+                try {
+                    await supabase.from('cats').insert([{
+                        id: newCat.id,
+                        name: newCat.name,
+                        owner: newCat.owner,
+                        bio: newCat.bio,
+                        image: newCat.image,
+                        status: newCat.status,
+                        likes: newCat.likes,
+                        date: newCat.date
+                    }]);
+                } catch (dbErr) {
+                    console.log('Supabase DB insert notice:', dbErr);
+                }
+            }
 
-            // Show Success Modal Popup with Μάγκας text!
+            // Reset Form & Show Success Modal
+            catUploadForm.reset();
+            compressedImageData = null;
+            selectedFileBlob = null;
+            if (imagePreviewBox) imagePreviewBox.hidden = true;
+            if (uploadModal) uploadModal.hidden = true;
             if (successModal) successModal.hidden = false;
         });
     }
@@ -274,79 +346,80 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. ADMIN PANEL LOGIC (admin.html)
     // ----------------------------------------------------
     const adminLoginCard = document.getElementById('adminLoginCard');
+    const adminDashboardCard = document.getElementById('adminDashboardCard');
+    const adminHeaderActions = document.getElementById('adminHeaderActions');
     const adminLoginForm = document.getElementById('adminLoginForm');
-    const adminDashboard = document.getElementById('adminDashboard');
     const adminPasswordInput = document.getElementById('adminPasswordInput');
     const loginErrorMsg = document.getElementById('loginErrorMsg');
-    const adminHeaderActions = document.getElementById('adminHeaderActions');
     const adminLogoutBtn = document.getElementById('adminLogoutBtn');
 
-    const tabPendingBtn = document.getElementById('tabPendingBtn');
-    const tabApprovedBtn = document.getElementById('tabApprovedBtn');
-    const sectionPending = document.getElementById('sectionPending');
-    const sectionApproved = document.getElementById('sectionApproved');
+    const tabPending = document.getElementById('tabPending');
+    const tabApproved = document.getElementById('tabApproved');
+    const adminPendingSection = document.getElementById('adminPendingSection');
+    const adminApprovedSection = document.getElementById('adminApprovedSection');
+    const adminPendingGrid = document.getElementById('adminPendingGrid');
+    const adminApprovedGrid = document.getElementById('adminApprovedGrid');
+    const emptyAdminPending = document.getElementById('emptyAdminPending');
+    const emptyAdminApproved = document.getElementById('emptyAdminApproved');
 
-    const pendingGrid = document.getElementById('pendingGrid');
-    const approvedAdminGrid = document.getElementById('approvedAdminGrid');
-    const emptyPending = document.getElementById('emptyPending');
-    const emptyApproved = document.getElementById('emptyApproved');
-    const pendingCount = document.getElementById('pendingCount');
-    const approvedCount = document.getElementById('approvedCount');
+    // Admin Auth State
+    function isAdminLoggedIn() {
+        return localStorage.getItem(ADMIN_AUTH_KEY) === 'true';
+    }
 
     if (adminLoginForm) {
-        checkAdminLoginState();
+        checkAdminState();
 
         adminLoginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const pwd = adminPasswordInput.value.trim();
-
-            if (pwd === 'ariadni13') {
+            const pw = adminPasswordInput ? adminPasswordInput.value : '';
+            if (pw === 'ariadni13') {
                 localStorage.setItem(ADMIN_AUTH_KEY, 'true');
                 if (loginErrorMsg) loginErrorMsg.hidden = true;
-                checkAdminLoginState();
+                checkAdminState();
             } else {
                 if (loginErrorMsg) loginErrorMsg.hidden = false;
             }
         });
-    }
 
-    if (adminLogoutBtn) {
-        adminLogoutBtn.addEventListener('click', () => {
-            localStorage.removeItem(ADMIN_AUTH_KEY);
-            checkAdminLoginState();
-        });
-    }
+        if (adminLogoutBtn) {
+            adminLogoutBtn.addEventListener('click', () => {
+                localStorage.removeItem(ADMIN_AUTH_KEY);
+                checkAdminState();
+            });
+        }
 
-    function checkAdminLoginState() {
-        const isLoggedIn = localStorage.getItem(ADMIN_AUTH_KEY) === 'true';
+        // Tab Switching
+        if (tabPending && tabApproved) {
+            tabPending.addEventListener('click', () => {
+                tabPending.classList.add('active');
+                tabApproved.classList.remove('active');
+                if (adminPendingSection) adminPendingSection.hidden = false;
+                if (adminApprovedSection) adminApprovedSection.hidden = true;
+            });
 
-        if (isLoggedIn) {
-            if (adminLoginCard) adminLoginCard.hidden = true;
-            if (adminDashboard) adminDashboard.hidden = false;
-            if (adminHeaderActions) adminHeaderActions.hidden = false;
-            renderAdminDashboard();
-        } else {
-            if (adminLoginCard) adminLoginCard.hidden = false;
-            if (adminDashboard) adminDashboard.hidden = true;
-            if (adminHeaderActions) adminHeaderActions.hidden = true;
+            tabApproved.addEventListener('click', () => {
+                tabApproved.classList.add('active');
+                tabPending.classList.remove('active');
+                if (adminPendingSection) adminPendingSection.hidden = true;
+                if (adminApprovedSection) adminApprovedSection.hidden = false;
+            });
         }
     }
 
-    // Admin Tabs
-    if (tabPendingBtn && tabApprovedBtn) {
-        tabPendingBtn.addEventListener('click', () => {
-            tabPendingBtn.classList.add('active');
-            tabApprovedBtn.classList.remove('active');
-            if (sectionPending) sectionPending.hidden = false;
-            if (sectionApproved) sectionApproved.hidden = true;
-        });
+    function checkAdminState() {
+        if (!adminLoginCard || !adminDashboardCard) return;
 
-        tabApprovedBtn.addEventListener('click', () => {
-            tabApprovedBtn.classList.add('active');
-            tabPendingBtn.classList.remove('active');
-            if (sectionApproved) sectionApproved.hidden = false;
-            if (sectionPending) sectionPending.hidden = true;
-        });
+        if (isAdminLoggedIn()) {
+            adminLoginCard.hidden = true;
+            adminDashboardCard.hidden = false;
+            if (adminHeaderActions) adminHeaderActions.hidden = false;
+            renderAdminDashboard();
+        } else {
+            adminLoginCard.hidden = false;
+            adminDashboardCard.hidden = true;
+            if (adminHeaderActions) adminHeaderActions.hidden = true;
+        }
     }
 
     function renderAdminDashboard() {
@@ -354,95 +427,93 @@ document.addEventListener('DOMContentLoaded', () => {
         const pendingCats = cats.filter(c => c.status === 'pending');
         const approvedCats = cats.filter(c => c.status === 'approved');
 
-        if (pendingCount) pendingCount.textContent = pendingCats.length;
-        if (approvedCount) approvedCount.textContent = approvedCats.length;
-
-        // Render Pending
-        if (pendingGrid) {
-            pendingGrid.innerHTML = '';
+        // 1. Pending Grid
+        if (adminPendingGrid) {
+            adminPendingGrid.innerHTML = '';
             if (pendingCats.length === 0) {
-                if (emptyPending) emptyPending.hidden = false;
+                if (emptyAdminPending) emptyAdminPending.hidden = false;
             } else {
-                if (emptyPending) emptyPending.hidden = true;
+                if (emptyAdminPending) emptyAdminPending.hidden = true;
+
                 pendingCats.forEach(cat => {
-                    const card = createAdminCatCard(cat, true);
-                    pendingGrid.appendChild(card);
+                    const card = document.createElement('div');
+                    card.className = 'admin-cat-card';
+                    card.innerHTML = `
+                        <img src="${cat.image}" alt="${cat.name}" class="admin-cat-img">
+                        <div class="admin-cat-info">
+                            <h4>${cat.name}</h4>
+                            <p><strong>Ιδιοκτήτης:</strong> ${cat.owner}</p>
+                            ${cat.bio ? `<p><strong>Περιγραφή:</strong> "${cat.bio}"</p>` : ''}
+                            <p><small>Ημερομηνία: ${cat.date || ''}</small></p>
+                            <div class="admin-card-actions">
+                                <button class="btn-approve" data-id="${cat.id}">✅ Έγκριση</button>
+                                <button class="btn-reject" data-id="${cat.id}">❌ Απόρριψη</button>
+                            </div>
+                        </div>
+                    `;
+
+                    const approveBtn = card.querySelector('.btn-approve');
+                    const rejectBtn = card.querySelector('.btn-reject');
+
+                    approveBtn.addEventListener('click', () => updateCatStatus(cat.id, 'approved'));
+                    rejectBtn.addEventListener('click', () => updateCatStatus(cat.id, 'rejected'));
+
+                    adminPendingGrid.appendChild(card);
                 });
             }
         }
 
-        // Render Approved
-        if (approvedAdminGrid) {
-            approvedAdminGrid.innerHTML = '';
+        // 2. Approved Grid
+        if (adminApprovedGrid) {
+            adminApprovedGrid.innerHTML = '';
             if (approvedCats.length === 0) {
-                if (emptyApproved) emptyApproved.hidden = false;
+                if (emptyAdminApproved) emptyAdminApproved.hidden = false;
             } else {
-                if (emptyApproved) emptyApproved.hidden = true;
+                if (emptyAdminApproved) emptyAdminApproved.hidden = true;
+
                 approvedCats.forEach(cat => {
-                    const card = createAdminCatCard(cat, false);
-                    approvedAdminGrid.appendChild(card);
+                    const card = document.createElement('div');
+                    card.className = 'admin-cat-card';
+                    card.innerHTML = `
+                        <img src="${cat.image}" alt="${cat.name}" class="admin-cat-img">
+                        <div class="admin-cat-info">
+                            <h4>${cat.name}</h4>
+                            <p><strong>Ιδιοκτήτης:</strong> ${cat.owner}</p>
+                            <p><strong>Χάδια:</strong> 💖 ${cat.likes || 0}</p>
+                            <div class="admin-card-actions">
+                                <button class="btn-reject" data-id="${cat.id}">🗑️ Διαγραφή</button>
+                            </div>
+                        </div>
+                    `;
+
+                    const deleteBtn = card.querySelector('.btn-reject');
+                    deleteBtn.addEventListener('click', () => updateCatStatus(cat.id, 'rejected'));
+
+                    adminApprovedGrid.appendChild(card);
                 });
             }
         }
     }
 
-    function createAdminCatCard(cat, isPending) {
-        const card = document.createElement('div');
-        card.className = 'admin-cat-card';
-        card.innerHTML = `
-            <img src="${cat.image}" alt="${cat.name}" class="admin-cat-img">
-            <div class="admin-cat-info">
-                <h4>${cat.name}</h4>
-                <p><strong>Ιδιοκτήτης:</strong> ${cat.owner}</p>
-                ${cat.bio ? `<p><strong>Περιγραφή:</strong> ${cat.bio}</p>` : ''}
-                <p class="cat-date"><strong>Ημερομηνία:</strong> ${cat.date || ''}</p>
-                <div class="admin-card-actions">
-                    ${isPending ? `
-                        <button class="btn btn-approve" data-id="${cat.id}">
-                            ✅ Έγκριση
-                        </button>
-                    ` : ''}
-                    <button class="btn btn-reject" data-id="${cat.id}">
-                        ❌ Διαγραφή
-                    </button>
-                </div>
-            </div>
-        `;
+    function updateCatStatus(catId, newStatus) {
+        let cats = getCatsData();
 
-        // Action Handlers
-        const approveBtn = card.querySelector('.btn-approve');
-        if (approveBtn) {
-            approveBtn.addEventListener('click', () => {
-                approveCatSubmission(cat.id);
-            });
-        }
-
-        const rejectBtn = card.querySelector('.btn-reject');
-        if (rejectBtn) {
-            rejectBtn.addEventListener('click', () => {
-                deleteCatSubmission(cat.id);
-            });
-        }
-
-        return card;
-    }
-
-    function approveCatSubmission(catId) {
-        const cats = getCatsData();
-        const cat = cats.find(c => c.id === catId);
-        if (cat) {
-            cat.status = 'approved';
-            saveCatsData(cats);
-            renderAdminDashboard();
-        }
-    }
-
-    function deleteCatSubmission(catId) {
-        if (confirm('Είσαι σίγουρος/η ότι θέλεις να διαγράψεις αυτή τη φωτογραφία;')) {
-            let cats = getCatsData();
+        if (newStatus === 'rejected') {
             cats = cats.filter(c => c.id !== catId);
-            saveCatsData(cats);
-            renderAdminDashboard();
+            if (supabase) {
+                supabase.from('cats').delete().eq('id', catId).then();
+            }
+        } else {
+            const target = cats.find(c => c.id === catId);
+            if (target) {
+                target.status = newStatus;
+                if (supabase) {
+                    supabase.from('cats').update({ status: newStatus }).eq('id', catId).then();
+                }
+            }
         }
+
+        saveCatsData(cats);
+        renderAdminDashboard();
     }
 });
