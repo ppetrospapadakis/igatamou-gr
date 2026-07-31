@@ -139,6 +139,38 @@
                         <p>Φτιάξε οριζόντιες γραμμές με τουβλάκια!</p>
                         <span class="play-pill">Παίξε! ➡️</span>
                     </div>
+
+                    <!-- 11. Whack a Fish -->
+                    <div class="category-card whack-card" data-category="whack">
+                        <div class="cat-icon-badge">🔨🐟</div>
+                        <h3>11. Πιάσε το Ψαράκι!</h3>
+                        <p>Πάτα τα ψαράκια που ξεπροβάλλουν!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
+
+                    <!-- 12. Bubble Pop -->
+                    <div class="category-card bubble-card" data-category="bubbles">
+                        <div class="cat-icon-badge">🎈🐾</div>
+                        <h3>12. Γατο-Μπαλόνια</h3>
+                        <p>Σκάσε τα χρωματιστά μπαλόνια!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
+
+                    <!-- 13. Cat Chess -->
+                    <div class="category-card chess-card" data-category="chess">
+                        <div class="cat-icon-badge">👑♟️</div>
+                        <h3>13. Μίνι Γατο-Σκάκι</h3>
+                        <p>Γατούλες 🐱 vs Ψαράκια 🐟!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
+
+                    <!-- 14. Kid Solitaire -->
+                    <div class="category-card solitaire-card" data-category="solitaire">
+                        <div class="cat-icon-badge">🂠🐱</div>
+                        <h3>14. Γατο-Πασιέντζα</h3>
+                        <p>Βάλε τις κάρτες στα γατο-καλάθια!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
                 </div>
             </div>
 
@@ -224,6 +256,50 @@
                                 <button class="tetris-ctrl-btn" id="tetrisRotate">🔄</button>
                                 <button class="tetris-ctrl-btn" id="tetrisRight">➡️</button>
                                 <button class="tetris-ctrl-btn" id="tetrisDown">⬇️</button>
+                            </div>
+                        </div>
+
+                        <!-- 11. Whack-a-Fish Arena -->
+                        <div id="whackArena" class="arcade-game-container" hidden>
+                            <div class="arcade-status-bar">
+                                <span class="arcade-status-badge">🐟 Πιάστηκαν: <strong id="whackScore">0</strong></span>
+                                <button id="whackStartBtn" class="btn btn-arcade-reset">▶️ Έναρξη (20s)</button>
+                            </div>
+                            <div id="whackGrid" class="whack-grid">
+                                <!-- 9 holes injected dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- 12. Cat Bubble Pop Arena -->
+                        <div id="bubblesArena" class="arcade-game-container" hidden>
+                            <div class="arcade-status-bar">
+                                <span class="arcade-status-badge">🎈 Μπαλόνια: <strong id="bubblesScore">0</strong></span>
+                                <button id="bubblesStartBtn" class="btn btn-arcade-reset">▶️ Έναρξη / Επανεκκίνηση</button>
+                            </div>
+                            <div id="bubblesBox" class="bubbles-box">
+                                <!-- Floating bubbles injected dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- 13. Mini Cat Chess Arena -->
+                        <div id="chessArena" class="arcade-game-container" hidden>
+                            <div class="arcade-status-bar">
+                                <span id="chessStatusText" class="arcade-status-badge">Σειρά σου: 🐱 (Γατούλες)</span>
+                                <button id="chessResetBtn" class="btn btn-arcade-reset">🔄 Νέος Γύρος</button>
+                            </div>
+                            <div id="chessBoard" class="chess-board-grid">
+                                <!-- 4x4 chess grid injected dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- 14. Cat Solitaire Arena -->
+                        <div id="solitaireArena" class="arcade-game-container" hidden>
+                            <div class="arcade-status-bar">
+                                <span id="solitaireStatusText" class="arcade-status-badge">Ταξινόμησε τις κάρτες!</span>
+                                <button id="solitaireResetBtn" class="btn btn-arcade-reset">🔄 Νέα Μοιρασιά</button>
+                            </div>
+                            <div id="solitaireBoard" class="solitaire-board-wrapper">
+                                <!-- Baskets and Cards injected dynamically -->
                             </div>
                         </div>
                     </div>

@@ -112,6 +112,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const tetrisRight = document.getElementById('tetrisRight');
     const tetrisDown = document.getElementById('tetrisDown');
 
+    const whackArena = document.getElementById('whackArena');
+    const whackGrid = document.getElementById('whackGrid');
+    const whackScore = document.getElementById('whackScore');
+    const whackStartBtn = document.getElementById('whackStartBtn');
+
+    const bubblesArena = document.getElementById('bubblesArena');
+    const bubblesBox = document.getElementById('bubblesBox');
+    const bubblesScore = document.getElementById('bubblesScore');
+    const bubblesStartBtn = document.getElementById('bubblesStartBtn');
+
+    const chessArena = document.getElementById('chessArena');
+    const chessBoard = document.getElementById('chessBoard');
+    const chessStatusText = document.getElementById('chessStatusText');
+    const chessResetBtn = document.getElementById('chessResetBtn');
+
+    const solitaireArena = document.getElementById('solitaireArena');
+    const solitaireBoard = document.getElementById('solitaireBoard');
+    const solitaireStatusText = document.getElementById('solitaireStatusText');
+    const solitaireResetBtn = document.getElementById('solitaireResetBtn');
+
     // Ensure Modal is hidden on load
     if (trophyModal) {
         trophyModal.hidden = true;
@@ -211,9 +231,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tictactoeArena) tictactoeArena.hidden = true;
         if (snakeArena) snakeArena.hidden = true;
         if (tetrisArena) tetrisArena.hidden = true;
+        if (whackArena) whackArena.hidden = true;
+        if (bubblesArena) bubblesArena.hidden = true;
+        if (chessArena) chessArena.hidden = true;
+        if (solitaireArena) solitaireArena.hidden = true;
 
         stopSnakeGame();
         stopTetrisGame();
+        stopWhackGame();
+        stopBubblesGame();
 
         memoryFlippedCards = [];
         memoryMatchedPairs = 0;
@@ -244,7 +270,11 @@ document.addEventListener('DOMContentLoaded', () => {
             memory: "🧩 Γατο-Memory",
             tictactoe: "❌⭕ Γατο-Τρίλιζα",
             snake: "🐍🐾 Γατο-Φιδάκι",
-            tetris: "🧩🧱 Γατο-Τέτρις"
+            tetris: "🧩🧱 Γατο-Τέτρις",
+            whack: "🔨🐟 Πιάσε το Ψαράκι!",
+            bubbles: "🎈🐾 Γατο-Μπαλόνια",
+            chess: "👑♟️ Μίνι Γατο-Σκάκι",
+            solitaire: "🂠🐱 Γατο-Πασιέντζα"
         };
         if (arenaCategoryTitle) arenaCategoryTitle.textContent = catTitles[categoryKey] || "Παιχνίδι";
 
@@ -262,6 +292,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (questionCard) questionCard.hidden = true;
             if (tetrisArena) tetrisArena.hidden = false;
             setupTetrisGame();
+        } else if (categoryKey === 'whack') {
+            if (questionCard) questionCard.hidden = true;
+            if (whackArena) whackArena.hidden = false;
+            setupWhackGame();
+        } else if (categoryKey === 'bubbles') {
+            if (questionCard) questionCard.hidden = true;
+            if (bubblesArena) bubblesArena.hidden = false;
+            setupBubblesGame();
+        } else if (categoryKey === 'chess') {
+            if (questionCard) questionCard.hidden = true;
+            if (chessArena) chessArena.hidden = false;
+            setupChessGame();
+        } else if (categoryKey === 'solitaire') {
+            if (questionCard) questionCard.hidden = true;
+            if (solitaireArena) solitaireArena.hidden = false;
+            setupSolitaireGame();
         } else {
             if (optionsGrid) optionsGrid.hidden = false;
             if (memoryBoard) memoryBoard.hidden = true;
@@ -419,7 +465,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (memoryFlippedCards.length === 2) {
             const [c1, c2] = memoryFlippedCards;
             if (c1.emoji === c2.emoji) {
-                // MATCH!
                 c1.card.classList.add('matched');
                 c2.card.classList.add('matched');
                 memoryFlippedCards = [];
@@ -438,7 +483,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     }, 800);
                 }
             } else {
-                // NO MATCH
                 triggerWrongAnswerReaction();
                 setTimeout(() => {
                     c1.card.classList.remove('flipped');
@@ -479,7 +523,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleTicTacToeCellClick(index, cellEl) {
         if (tttBoard[index] || !tttPlayerTurn || tttGameOver) return;
 
-        // Player Move (🐱)
         tttBoard[index] = '🐱';
         cellEl.textContent = '🐱';
         playCatSoundEffect('click');
@@ -504,7 +547,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // AI Move (🐟)
         tttPlayerTurn = false;
         if (tttStatusText) tttStatusText.textContent = 'Σειρά της Μάγκας... 💭';
 
@@ -620,7 +662,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (snakeDir === 'UP') head.y--;
         if (snakeDir === 'DOWN') head.y++;
 
-        // Collision Check (Wall or Self)
         if (head.x < 0 || head.x >= 15 || head.y < 0 || head.y >= 15 || snake.some(s => s.x === head.x && s.y === head.y)) {
             stopSnakeGame();
             if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Ουπς! 💥 Έκανες ${snakePoints} λιχουδιές!"`;
@@ -630,7 +671,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         snake.unshift(head);
 
-        // Eat Food
         if (head.x === snakeFood.x && head.y === snakeFood.y) {
             snakePoints += 5;
             score += 5;
@@ -654,13 +694,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(0, 0, 300, 300);
 
-        // Draw Food
         ctx.font = '16px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(snakeFood.icon, snakeFood.x * size + size / 2, snakeFood.y * size + size / 2);
 
-        // Draw Snake
         snake.forEach((segment, index) => {
             if (index === 0) {
                 ctx.fillText('🐱', segment.x * size + size / 2, segment.y * size + size / 2);
@@ -673,7 +711,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Keyboard & D-Pad Controls
     window.addEventListener('keydown', (e) => {
         if (currentCategory === 'snake') {
             if ((e.key === 'ArrowUp' || e.key === 'w') && snakeDir !== 'DOWN') snakeDir = 'UP';
@@ -814,7 +851,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(0, 0, 240, 400);
 
-        // Draw Board
         for (let r = 0; r < 20; r++) {
             for (let c = 0; c < 12; c++) {
                 if (tetrisGrid[r][c]) {
@@ -824,7 +860,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Draw Active Piece
         if (currentPiece) {
             ctx.fillStyle = currentPiece.color;
             for (let r = 0; r < currentPiece.shape.length; r++) {
@@ -861,6 +896,342 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tetrisRotate) tetrisRotate.addEventListener('click', rotateTetrisPiece);
     if (tetrisDown) tetrisDown.addEventListener('click', updateTetrisGame);
     if (tetrisStartBtn) tetrisStartBtn.addEventListener('click', setupTetrisGame);
+
+    // ----------------------------------------------------
+    // 11. WHACK A FISH (🔨🐟 Πιάσε το Ψαράκι!)
+    // ----------------------------------------------------
+    let whackTimer = null;
+    let whackLoop = null;
+    let whackPoints = 0;
+
+    function setupWhackGame() {
+        stopWhackGame();
+        whackPoints = 0;
+        if (whackScore) whackScore.textContent = '0';
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Πάτα τα ψαράκια πριν κρυφτούν! 🐟"`;
+
+        if (!whackGrid) return;
+        whackGrid.innerHTML = '';
+
+        for (let i = 0; i < 9; i++) {
+            const hole = document.createElement('div');
+            hole.className = 'whack-hole';
+            const item = document.createElement('div');
+            item.className = 'whack-item';
+            item.textContent = '🐟';
+            item.addEventListener('click', () => handleWhackClick(hole, item));
+            hole.appendChild(item);
+            whackGrid.appendChild(hole);
+        }
+
+        whackLoop = setInterval(popRandomWhackItem, 700);
+
+        let timeLeft = 20;
+        whackTimer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                stopWhackGame();
+                if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Τέλος χρόνου! ⏱️ Έπιασες ${whackPoints} ψαράκια!"`;
+                score += whackPoints * 3;
+                localStorage.setItem('igatamou_game_score', score.toString());
+                updateScoreUI();
+            }
+        }, 1000);
+    }
+
+    function stopWhackGame() {
+        if (whackLoop) { clearInterval(whackLoop); whackLoop = null; }
+        if (whackTimer) { clearInterval(whackTimer); whackTimer = null; }
+    }
+
+    function popRandomWhackItem() {
+        if (!whackGrid) return;
+        const holes = Array.from(whackGrid.children);
+        holes.forEach(h => h.classList.remove('up'));
+
+        const randomHole = holes[Math.floor(Math.random() * holes.length)];
+        const item = randomHole.querySelector('.whack-item');
+        const icons = ['🐟', '🐭', '🍗', '🐟', '🐟'];
+        if (item) item.textContent = icons[Math.floor(Math.random() * icons.length)];
+
+        randomHole.classList.add('up');
+        setTimeout(() => {
+            randomHole.classList.remove('up');
+        }, 600);
+    }
+
+    function handleWhackClick(hole, item) {
+        if (!hole.classList.contains('up')) return;
+        hole.classList.remove('up');
+        whackPoints++;
+        if (whackScore) whackScore.textContent = whackPoints.toString();
+        playCatSoundEffect('click');
+        triggerCorrectAnswerReaction();
+    }
+
+    if (whackStartBtn) whackStartBtn.addEventListener('click', setupWhackGame);
+
+    // ----------------------------------------------------
+    // 12. BUBBLE POP GAME (🎈🐾 Γατο-Μπαλόνια)
+    // ----------------------------------------------------
+    let bubblesLoop = null;
+    let bubblesPoints = 0;
+
+    function setupBubblesGame() {
+        stopBubblesGame();
+        bubblesPoints = 0;
+        if (bubblesScore) bubblesScore.textContent = '0';
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Σκάσε τα μπαλόνια με τη γατούλα! 🎈"`;
+
+        if (!bubblesBox) return;
+        bubblesBox.innerHTML = '';
+
+        bubblesLoop = setInterval(spawnBubble, 800);
+    }
+
+    function stopBubblesGame() {
+        if (bubblesLoop) { clearInterval(bubblesLoop); bubblesLoop = null; }
+    }
+
+    function spawnBubble() {
+        if (!bubblesBox) return;
+        const bubble = document.createElement('div');
+        bubble.className = 'floating-bubble';
+        const icons = ['🎈', '🐱', '🧶', '🐟', '🎀'];
+        bubble.textContent = icons[Math.floor(Math.random() * icons.length)];
+        bubble.style.left = `${Math.floor(Math.random() * 230)}px`;
+
+        bubble.addEventListener('click', () => {
+            bubblesPoints++;
+            score += 4;
+            if (bubblesScore) bubblesScore.textContent = bubblesPoints.toString();
+            localStorage.setItem('igatamou_game_score', score.toString());
+            updateScoreUI();
+            playCatSoundEffect('correct');
+            bubble.remove();
+        });
+
+        bubblesBox.appendChild(bubble);
+        setTimeout(() => {
+            if (bubble.parentNode) bubble.remove();
+        }, 3500);
+    }
+
+    if (bubblesStartBtn) bubblesStartBtn.addEventListener('click', setupBubblesGame);
+
+    // ----------------------------------------------------
+    // 13. MINI CAT CHESS (👑♟️ 🐱 vs 🐟)
+    // ----------------------------------------------------
+    let chessGrid = [
+        ['🐟', '🐟', '🐟', '👑🐟'],
+        [null, null, null, null],
+        [null, null, null, null],
+        ['🐱', '🐱', '🐱', '👑🐱']
+    ];
+    let chessSelectedSq = null;
+    let chessPlayerTurn = true;
+
+    function setupChessGame() {
+        chessGrid = [
+            ['🐟', '🐟', '🐟', '👑🐟'],
+            [null, null, null, null],
+            [null, null, null, null],
+            ['🐱', '🐱', '🐱', '👑🐱']
+        ];
+        chessSelectedSq = null;
+        chessPlayerTurn = true;
+
+        if (chessStatusText) chessStatusText.textContent = 'Σειρά σου: 🐱 (Γατούλες)';
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Μετακίνησε τις γατούλες 🐱 μπροστά!"`;
+
+        renderChessBoard();
+    }
+
+    function renderChessBoard() {
+        if (!chessBoard) return;
+        chessBoard.innerHTML = '';
+
+        for (let r = 0; r < 4; r++) {
+            for (let c = 0; c < 4; c++) {
+                const sq = document.createElement('div');
+                const isLight = (r + c) % 2 === 0;
+                sq.className = `chess-square ${isLight ? 'light' : 'dark'}`;
+                const piece = chessGrid[r][c];
+                if (piece) sq.textContent = piece.includes('👑') ? '👑' : piece;
+
+                if (chessSelectedSq && chessSelectedSq.r === r && chessSelectedSq.c === c) {
+                    sq.classList.add('selected-sq');
+                }
+
+                sq.addEventListener('click', () => handleChessSquareClick(r, c));
+                chessBoard.appendChild(sq);
+            }
+        }
+    }
+
+    function handleChessSquareClick(r, c) {
+        if (!chessPlayerTurn) return;
+
+        const piece = chessGrid[r][c];
+
+        if (chessSelectedSq) {
+            // Move selected piece
+            const fromR = chessSelectedSq.r;
+            const fromC = chessSelectedSq.c;
+
+            if (isValidChessMove(fromR, fromC, r, c)) {
+                const captured = chessGrid[r][c];
+                chessGrid[r][c] = chessGrid[fromR][fromC];
+                chessGrid[fromR][fromC] = null;
+                chessSelectedSq = null;
+                renderChessBoard();
+
+                if (captured && captured.includes('👑')) {
+                    if (chessStatusText) chessStatusText.textContent = '🎉 Νίκησες το Ψαράκι! 🥳';
+                    score += 25;
+                    localStorage.setItem('igatamou_game_score', score.toString());
+                    updateScoreUI();
+                    playCatSoundEffect('correct');
+                    return;
+                }
+
+                chessPlayerTurn = false;
+                if (chessStatusText) chessStatusText.textContent = 'Σειρά της Μάγκας... 💭';
+
+                setTimeout(makeChessAIMove, 500);
+                return;
+            }
+        }
+
+        if (piece && piece.includes('🐱')) {
+            chessSelectedSq = { r, c };
+            renderChessBoard();
+        } else {
+            chessSelectedSq = null;
+            renderChessBoard();
+        }
+    }
+
+    function isValidChessMove(fromR, fromC, toR, toC) {
+        const piece = chessGrid[fromR][fromC];
+        if (!piece) return false;
+
+        // Pawns move forward 1 row
+        if (fromR - 1 === toR && fromC === toC && !chessGrid[toR][toC]) return true;
+        // Pawns capture diagonally
+        if (fromR - 1 === toR && Math.abs(fromC - toC) === 1 && chessGrid[toR][toC] && chessGrid[toR][toC].includes('🐟')) return true;
+
+        return false;
+    }
+
+    function makeChessAIMove() {
+        const moves = [];
+        for (let r = 0; r < 4; r++) {
+            for (let c = 0; c < 4; c++) {
+                if (chessGrid[r][c] && chessGrid[r][c].includes('🐟')) {
+                    if (r + 1 < 4 && !chessGrid[r + 1][c]) moves.push({ fromR: r, fromC: c, toR: r + 1, toC: c });
+                    if (r + 1 < 4 && c - 1 >= 0 && chessGrid[r + 1][c - 1] && chessGrid[r + 1][c - 1].includes('🐱')) moves.push({ fromR: r, fromC: c, toR: r + 1, toC: c - 1 });
+                    if (r + 1 < 4 && c + 1 < 4 && chessGrid[r + 1][c + 1] && chessGrid[r + 1][c + 1].includes('🐱')) moves.push({ fromR: r, fromC: c, toR: r + 1, toC: c + 1 });
+                }
+            }
+        }
+
+        if (moves.length) {
+            const m = moves[Math.floor(Math.random() * moves.length)];
+            chessGrid[m.toR][m.toC] = chessGrid[m.fromR][m.fromC];
+            chessGrid[m.fromR][m.fromC] = null;
+        }
+
+        chessPlayerTurn = true;
+        if (chessStatusText) chessStatusText.textContent = 'Σειρά σου: 🐱 (Γατούλες)';
+        renderChessBoard();
+    }
+
+    if (chessResetBtn) chessResetBtn.addEventListener('click', setupChessGame);
+
+    // ----------------------------------------------------
+    // 14. CAT SOLITAIRE (🂠🐱 Γατο-Πασιέντζα)
+    // ----------------------------------------------------
+    let solitaireCards = [];
+    let solitaireSelectedCard = null;
+
+    function setupSolitaireGame() {
+        solitaireCards = [
+            { id: 1, text: '🐟', color: 'red' },
+            { id: 2, text: '🐱', color: 'blue' },
+            { id: 3, text: '🧶', color: 'gold' },
+            { id: 4, text: '🥛', color: 'red' },
+            { id: 5, text: '🎀', color: 'blue' },
+            { id: 6, text: '🍗', color: 'gold' }
+        ];
+        solitaireCards.sort(() => Math.random() - 0.5);
+        solitaireSelectedCard = null;
+
+        if (solitaireStatusText) solitaireStatusText.textContent = 'Βάλε τις κάρτες στα σωστά γατο-καλάθια!';
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Διάλεξε μια κάρτα & πάτα το σωστό καλάθι! 🧺"`;
+
+        renderSolitaireBoard();
+    }
+
+    function renderSolitaireBoard() {
+        if (!solitaireBoard) return;
+        solitaireBoard.innerHTML = `
+            <div class="solitaire-baskets-row">
+                <div class="solitaire-basket basket-red" data-color="red">
+                    <span>🔴 Κόκκινο</span>
+                    <small>Καλάθι 1</small>
+                </div>
+                <div class="solitaire-basket basket-blue" data-color="blue">
+                    <span>🟢 Πράσινο</span>
+                    <small>Καλάθι 2</small>
+                </div>
+                <div class="solitaire-basket basket-gold" data-color="gold">
+                    <span>🟡 Χρυσό</span>
+                    <small>Καλάθι 3</small>
+                </div>
+            </div>
+            <div class="solitaire-cards-deck"></div>
+        `;
+
+        const deck = solitaireBoard.querySelector('.solitaire-cards-deck');
+        solitaireCards.forEach(c => {
+            const tile = document.createElement('div');
+            tile.className = `solitaire-card-tile ${solitaireSelectedCard && solitaireSelectedCard.id === c.id ? 'selected-card' : ''}`;
+            tile.textContent = c.text;
+
+            tile.addEventListener('click', () => {
+                solitaireSelectedCard = c;
+                renderSolitaireBoard();
+            });
+            deck.appendChild(tile);
+        });
+
+        solitaireBoard.querySelectorAll('.solitaire-basket').forEach(basket => {
+            basket.addEventListener('click', () => {
+                const targetColor = basket.getAttribute('data-color');
+                if (solitaireSelectedCard && solitaireSelectedCard.color === targetColor) {
+                    solitaireCards = solitaireCards.filter(c => c.id !== solitaireSelectedCard.id);
+                    solitaireSelectedCard = null;
+                    score += 8;
+                    localStorage.setItem('igatamou_game_score', score.toString());
+                    updateScoreUI();
+                    playCatSoundEffect('correct');
+                    triggerCorrectAnswerReaction();
+
+                    if (solitaireCards.length === 0) {
+                        if (solitaireStatusText) solitaireStatusText.textContent = '🎉 Μπράβο! Ταξινόμησες όλες τις κάρτες!';
+                        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Είσαι αστέρι! 🌟 +20 Πόντοι!"`;
+                    }
+                    renderSolitaireBoard();
+                } else if (solitaireSelectedCard) {
+                    playCatSoundEffect('wrong');
+                    triggerWrongAnswerReaction();
+                }
+            });
+        });
+    }
+
+    if (solitaireResetBtn) solitaireResetBtn.addEventListener('click', setupSolitaireGame);
 
     // Mascot Reactions
     function triggerCorrectAnswerReaction() {

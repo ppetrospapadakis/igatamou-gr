@@ -2459,5 +2459,207 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     color: white;
 }
 
+/* ---------------------------------------------------- */
+/* NEW MINI GAMES: WHACK-A-FISH, BUBBLES, CHESS, SOLITAIRE */
+/* ---------------------------------------------------- */
+
+.whack-card { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%) !important; color: #0f172a !important; }
+.whack-card h3, .whack-card p { color: #0f172a !important; }
+
+.bubble-card { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%) !important; color: #0f172a !important; }
+.bubble-card h3, .bubble-card p { color: #0f172a !important; }
+
+.chess-card { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%) !important; color: #0f172a !important; }
+.chess-card h3, .chess-card p { color: #0f172a !important; }
+
+.solitaire-card { background: linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%) !important; color: #0f172a !important; }
+.solitaire-card h3, .solitaire-card p { color: #0f172a !important; }
+
+/* 11. WHACK A FISH GRID */
+.whack-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 90px);
+    grid-template-rows: repeat(3, 90px);
+    gap: 14px;
+    margin: 10px auto;
+}
+
+.whack-hole {
+    width: 90px;
+    height: 90px;
+    background: #334155;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 8px 16px rgba(0,0,0,0.5), 0 6px 12px rgba(0,0,0,0.1);
+    border: 4px solid #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.whack-item {
+    font-size: 2.8rem;
+    position: absolute;
+    bottom: -60px;
+    transition: bottom 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+    user-select: none;
+}
+
+.whack-hole.up .whack-item {
+    bottom: 12px;
+}
+
+/* 12. BUBBLES BOX */
+.bubbles-box {
+    position: relative;
+    width: 300px;
+    height: 320px;
+    background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%);
+    border-radius: 24px;
+    overflow: hidden;
+    border: 4px solid #38bdf8;
+    box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2);
+}
+
+.floating-bubble {
+    position: absolute;
+    bottom: -60px;
+    width: 54px;
+    height: 54px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12), inset 0 0 8px rgba(255, 255, 255, 0.9);
+    border: 2px solid #ffffff;
+    user-select: none;
+    animation: floatUp 3.5s linear infinite;
+    transition: transform 0.1s ease;
+}
+
+.floating-bubble:active {
+    transform: scale(1.3);
+}
+
+@keyframes floatUp {
+    0% { bottom: -60px; opacity: 1; }
+    90% { opacity: 1; }
+    100% { bottom: 340px; opacity: 0; }
+}
+
+/* 13. MINI CHESS GRID (4x4) */
+.chess-board-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 70px);
+    grid-template-rows: repeat(4, 70px);
+    gap: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border: 4px solid #1e293b;
+    margin: 10px auto;
+}
+
+.chess-square {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.chess-square.light { background: #f8fafc; }
+.chess-square.dark { background: #cbd5e1; }
+
+.chess-square.selected-sq {
+    background: #fef08a !important;
+    box-shadow: inset 0 0 10px #eab308;
+}
+
+.chess-square.valid-move {
+    background: #bbf7d0 !important;
+}
+
+/* 14. CAT SOLITAIRE */
+.solitaire-board-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 340px;
+}
+
+.solitaire-baskets-row {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    gap: 10px;
+}
+
+.solitaire-basket {
+    flex: 1;
+    height: 100px;
+    background: #ffffff;
+    border-radius: 20px;
+    border: 3px dashed #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    transition: all 0.2s ease;
+}
+
+.solitaire-basket.basket-red { border-color: #ff4757; }
+.solitaire-basket.basket-blue { border-color: #2ed573; }
+.solitaire-basket.basket-gold { border-color: #ffa502; }
+
+.solitaire-cards-deck {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.solitaire-card-tile {
+    width: 65px;
+    height: 85px;
+    background: #ffffff;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    border: 3px solid #e2e8f0;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    user-select: none;
+}
+
+.solitaire-card-tile:hover {
+    transform: translateY(-4px) scale(1.06);
+}
+
+.solitaire-card-tile.selected-card {
+    border-color: var(--primary) !important;
+    transform: translateY(-8px) scale(1.1) !important;
+    box-shadow: 0 10px 22px rgba(255, 94, 126, 0.4) !important;
+}
+
+
 
 
