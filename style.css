@@ -819,16 +819,17 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 
 .category-card h3 {
     font-size: 1.35rem;
-    color: var(--text-dark);
+    color: #0f172a;
     margin-bottom: 8px;
 }
 
 .category-card p {
-    font-size: 0.92rem;
-    color: var(--text-muted);
+    font-size: 0.95rem;
+    color: #334155;
     margin-bottom: 20px;
     line-height: 1.45;
     flex-grow: 1;
+    font-weight: 500;
 }
 
 .play-pill {
@@ -838,30 +839,30 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     font-size: 0.9rem;
     font-weight: 700;
     color: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Individual Category Theme Colors */
-.math-card { border-color: #ffccd5; }
+/* Individual Category Theme Colors & Rich Gradients for ALL Cards */
+.math-card { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%) !important; border-color: #ffb6c1; }
 .math-card .play-pill { background: linear-gradient(135deg, #ff7597, #ff4757); }
 
-.spelling-card { border-color: #e2e8f0; }
+.spelling-card { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%) !important; border-color: #93c5fd; }
 .spelling-card .play-pill { background: linear-gradient(135deg, #4ea8de, #3a86ff); }
 
-.english-card { border-color: #ffe8b5; }
+.english-card { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%) !important; border-color: #fdba74; }
 .english-card .play-pill { background: linear-gradient(135deg, #ffb703, #fb8500); }
 
-.riddles-card { border-color: #e9d5ff; }
+.riddles-card { background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%) !important; border-color: #c084fc; }
 .riddles-card .play-pill { background: linear-gradient(135deg, #9d4edd, #7209b7); }
 
-.nature-card { border-color: #b2f5ea; }
+.nature-card { background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%) !important; border-color: #6ee7b7; }
 .nature-card .play-pill { background: linear-gradient(135deg, #06d6a0, #0096c7); }
 
-.geo-card { border-color: #ffd8e4; }
+.geo-card { background: linear-gradient(135deg, #fccb90 0%, #d57eeb 100%) !important; border-color: #f472b6; }
 .geo-card .play-pill { background: linear-gradient(135deg, #ff5e7e, #b5179e); }
 
-.memory-card { border-color: #c4b5fd; }
-.memory-card .play-pill { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.memory-card { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%) !important; border-color: #86efac; }
+.memory-card .play-pill { background: linear-gradient(135deg, #10b981, #047857); }
 
 /* Game Arena Card */
 .game-arena-card {
