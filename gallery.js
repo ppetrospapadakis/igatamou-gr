@@ -40,14 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return sampleCats;
         }
         try {
-            const parsed = JSON.parse(stored);
-            // Ensure Magkas profile always has the 5 photos in her album
-            const magkas = parsed.find(c => c.id === 'cat_sample_1');
-            if (magkas && (!magkas.gallery || magkas.gallery.length < 5)) {
-                magkas.gallery = ['magkas.jpg', 'magkas_2.jpg', 'magkas_3.jpg', 'magkas_4.jpg', 'magkas_5.jpg'];
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-            }
-            return parsed;
+            return JSON.parse(stored);
         } catch (e) {
             return sampleCats;
         }
@@ -277,10 +270,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Sync deletion to Supabase DB
             if (supabase) {
-                supabase.from('cats').update({
+                supabase.from('cats').upsert({
+                    id: cat.id,
+                    name: cat.name,
+                    owner: cat.owner,
+                    bio: cat.bio,
+                    image: cat.image,
                     gallery: JSON.stringify(cat.gallery),
-                    image: cat.image
-                }).eq('id', catId).then();
+                    status: cat.status,
+                    likes: cat.likes,
+                    date: cat.date
+                }).then();
             }
 
             // Adjust index if out of bounds
