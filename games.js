@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function clearArenaContainers() {
-        if (questionCard) questionCard.hidden = false;
+        if (questionCard) questionCard.hidden = true;
         if (optionsGrid) {
             optionsGrid.innerHTML = '';
             optionsGrid.hidden = true;
@@ -279,36 +279,31 @@ document.addEventListener('DOMContentLoaded', () => {
         if (arenaCategoryTitle) arenaCategoryTitle.textContent = catTitles[categoryKey] || "Παιχνίδι";
 
         if (categoryKey === 'memory') {
+            if (questionCard) questionCard.hidden = false;
             setupMemoryGame();
         } else if (categoryKey === 'tictactoe') {
-            if (questionCard) questionCard.hidden = true;
             if (tictactoeArena) tictactoeArena.hidden = false;
             setupTicTacToeGame();
         } else if (categoryKey === 'snake') {
-            if (questionCard) questionCard.hidden = true;
             if (snakeArena) snakeArena.hidden = false;
             setupSnakeGame();
         } else if (categoryKey === 'tetris') {
-            if (questionCard) questionCard.hidden = true;
             if (tetrisArena) tetrisArena.hidden = false;
             setupTetrisGame();
         } else if (categoryKey === 'whack') {
-            if (questionCard) questionCard.hidden = true;
             if (whackArena) whackArena.hidden = false;
             setupWhackGame();
         } else if (categoryKey === 'bubbles') {
-            if (questionCard) questionCard.hidden = true;
             if (bubblesArena) bubblesArena.hidden = false;
             setupBubblesGame();
         } else if (categoryKey === 'chess') {
-            if (questionCard) questionCard.hidden = true;
             if (chessArena) chessArena.hidden = false;
             setupChessGame();
         } else if (categoryKey === 'solitaire') {
-            if (questionCard) questionCard.hidden = true;
             if (solitaireArena) solitaireArena.hidden = false;
             setupSolitaireGame();
         } else {
+            if (questionCard) questionCard.hidden = false;
             if (optionsGrid) optionsGrid.hidden = false;
             if (memoryBoard) memoryBoard.hidden = true;
 

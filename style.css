@@ -2284,6 +2284,10 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 .tetris-card { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important; color: #1e293b !important; }
 .tetris-card h3, .tetris-card p { color: #0f172a !important; }
 
+.arcade-game-container[hidden] {
+    display: none !important;
+}
+
 .arcade-game-container {
     display: flex;
     flex-direction: column;
