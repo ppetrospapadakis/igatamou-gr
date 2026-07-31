@@ -105,6 +105,36 @@
         </footer>
     </div>
 
+    <!-- INTERACTIVE CAT PHOTO ALBUM MODAL (WITH SINGLE PHOTO DELETION FOR ADMIN) -->
+    <div id="albumModal" class="modal-overlay" hidden>
+        <div class="modal-card album-modal-card">
+            <button id="closeAlbumBtn" class="close-modal-btn" aria-label="Κλείσιμο">&times;</button>
+            
+            <div class="album-modal-header">
+                <h2 id="albumCatName">📸 Φωτογραφίες της Μάγκας 🐾</h2>
+                <span id="albumCatOwner" class="owner-badge">👤 Αριάδνη</span>
+            </div>
+
+            <!-- Main Featured Carousel Image -->
+            <div class="album-featured-wrapper">
+                <button id="prevAlbumImg" class="album-nav-arrow arrow-left" title="Προηγούμενη">❮</button>
+                <img id="albumFeaturedImg" src="magkas.jpg" alt="Φωτογραφία γατούλας" class="album-featured-img">
+                <button id="nextAlbumImg" class="album-nav-arrow arrow-right" title="Επόμενη">❯</button>
+                <span id="albumImageCounter" class="album-counter">1 / 5</span>
+            </div>
+
+            <!-- Admin Single Photo Delete Action -->
+            <div id="adminSinglePhotoActions" class="admin-photo-delete-bar" hidden>
+                <button id="deleteSinglePhotoBtn" class="btn btn-delete-single-photo">
+                    🗑️ Διαγραφή αυτής της φωτογραφίας μόνο
+                </button>
+            </div>
+
+            <!-- Thumbnails Strip -->
+            <div id="albumThumbnails" class="album-thumbnails-strip"></div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>

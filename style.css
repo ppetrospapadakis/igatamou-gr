@@ -2249,3 +2249,29 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     border-radius: var(--radius-full);
 }
 
+.admin-photo-delete-bar {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.btn-delete-single-photo {
+    background: linear-gradient(135deg, #ff4757 0%, #d63031 100%) !important;
+    color: white !important;
+    font-family: 'Fredoka', cursive, sans-serif !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    padding: 10px 20px !important;
+    border-radius: var(--radius-full) !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 14px rgba(255, 71, 87, 0.35) !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-delete-single-photo:hover {
+    transform: translateY(-2px) scale(1.03) !important;
+    box-shadow: 0 8px 20px rgba(255, 71, 87, 0.5) !important;
+}
+
+

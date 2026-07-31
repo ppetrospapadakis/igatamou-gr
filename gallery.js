@@ -123,6 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevAlbumImg = document.getElementById('prevAlbumImg');
     const nextAlbumImg = document.getElementById('nextAlbumImg');
 
+    const adminSinglePhotoActions = document.getElementById('adminSinglePhotoActions');
+    const deleteSinglePhotoBtn = document.getElementById('deleteSinglePhotoBtn');
+
+    let currentAlbumCatId = null;
     let currentAlbumPhotos = [];
     let currentAlbumIndex = 0;
 
@@ -148,7 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
         approvedCats.forEach(cat => {
             const isLiked = likedCatIds.includes(cat.id);
             const photoList = cat.gallery && cat.gallery.length ? cat.gallery : [cat.image];
-            const hasMultiplePhotos = photoList.length > 1;
 
             const card = document.createElement('div');
             card.className = 'cat-gallery-card';
@@ -191,13 +194,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // INTERACTIVE PHOTO ALBUM MODAL LOGIC
+    // INTERACTIVE PHOTO ALBUM MODAL LOGIC (WITH ADMIN SINGLE-PHOTO DELETE)
     function openCatAlbumModal(cat) {
-        currentAlbumPhotos = cat.gallery && cat.gallery.length ? cat.gallery : [cat.image];
+        currentAlbumCatId = cat.id;
+        currentAlbumPhotos = cat.gallery && cat.gallery.length ? [...cat.gallery] : [cat.image];
         currentAlbumIndex = 0;
 
         if (albumCatName) albumCatName.textContent = `📸 Άλμπουμ: ${cat.name} 🐾`;
         if (albumCatOwner) albumCatOwner.textContent = `👤 ${cat.owner}`;
+
+        // Show single photo delete action bar ONLY for Admin
+        if (adminSinglePhotoActions) {
+            adminSinglePhotoActions.hidden = !isAdminLoggedIn();
+        }
 
         updateAlbumView();
 
@@ -234,6 +243,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 albumThumbnails.appendChild(thumb);
             });
         }
+    }
+
+    // Delete single photo from album (Admin function)
+    if (deleteSinglePhotoBtn) {
+        deleteSinglePhotoBtn.addEventListener('click', () => {
+            if (!currentAlbumCatId || !currentAlbumPhotos.length) return;
+
+            const catId = currentAlbumCatId;
+            const cats = getCatsData();
+            const cat = cats.find(c => c.id === catId);
+            if (!cat) return;
+
+            const photoToDelete = currentAlbumPhotos[currentAlbumIndex];
+
+            // Remove selected photo from current album array
+            currentAlbumPhotos.splice(currentAlbumIndex, 1);
+
+            if (currentAlbumPhotos.length === 0) {
+                // If 0 photos left, delete cat profile completely
+                updateCatStatus(catId, 'rejected');
+                if (albumModal) albumModal.hidden = true;
+                return;
+            }
+
+            // Update cat's gallery & main thumbnail image
+            cat.gallery = currentAlbumPhotos;
+            if (cat.image === photoToDelete) {
+                cat.image = currentAlbumPhotos[0];
+            }
+
+            saveCatsData(cats);
+
+            // Sync deletion to Supabase DB
+            if (supabase) {
+                supabase.from('cats').update({
+                    gallery: JSON.stringify(cat.gallery),
+                    image: cat.image
+                }).eq('id', catId).then();
+            }
+
+            // Adjust index if out of bounds
+            if (currentAlbumIndex >= currentAlbumPhotos.length) {
+                currentAlbumIndex = currentAlbumPhotos.length - 1;
+            }
+
+            updateAlbumView();
+
+            if (galleryGrid) renderPublicGallery();
+            if (adminApprovedGrid) renderAdminDashboard();
+        });
     }
 
     if (prevAlbumImg) {
