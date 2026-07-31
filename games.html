@@ -115,6 +115,30 @@
                         <p>Βρες τα ζευγάρια με τις χαριτωμένες γατούλες!</p>
                         <span class="play-pill">Παίξε! ➡️</span>
                     </div>
+
+                    <!-- 8. Tic Tac Toe -->
+                    <div class="category-card tictactoe-card" data-category="tictactoe">
+                        <div class="cat-icon-badge">❌⭕</div>
+                        <h3>8. Γατο-Τρίλιζα</h3>
+                        <p>Μάγκας 🐱 vs Ψαράκι 🐟! Βρες τη 3άδα!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
+
+                    <!-- 9. Cat Snake -->
+                    <div class="category-card snake-card" data-category="snake">
+                        <div class="cat-icon-badge">🐍🐾</div>
+                        <h3>9. Γατο-Φιδάκι</h3>
+                        <p>Μάζεψε τις λιχουδιές χωρίς να χτυπήσεις!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
+
+                    <!-- 10. Cat Tetris -->
+                    <div class="category-card tetris-card" data-category="tetris">
+                        <div class="cat-icon-badge">🧩🧱</div>
+                        <h3>10. Γατο-Τέτρις</h3>
+                        <p>Φτιάξε οριζόντιες γραμμές με τουβλάκια!</p>
+                        <span class="play-pill">Παίξε! ➡️</span>
+                    </div>
                 </div>
             </div>
 
@@ -138,7 +162,7 @@
                     <!-- Question & Options Column -->
                     <div class="quiz-column">
                         <!-- Question Card -->
-                        <div class="question-card">
+                        <div id="questionCard" class="question-card">
                             <div id="questionNumber" class="q-number">Ερώτηση 1</div>
                             <h2 id="questionText">Πόσο κάνει 5 + 5;</h2>
                             <div id="visualHelper" class="visual-helper"></div>
@@ -152,6 +176,55 @@
                         <!-- Memory Board (For Memory Game only) -->
                         <div id="memoryBoard" class="memory-board" hidden>
                             <!-- Cards injected dynamically by JS -->
+                        </div>
+
+                        <!-- 8. Tic-Tac-Toe Arena -->
+                        <div id="tictactoeArena" class="arcade-game-container" hidden>
+                            <div class="arcade-status-bar">
+                                <span id="tttStatusText" class="arcade-status-badge">Σειρά σου: 🐱 (Μάγκας)</span>
+                                <button id="tttResetBtn" class="btn btn-arcade-reset">🔄 Νέος Γύρος</button>
+                            </div>
+                            <div id="tttGrid" class="tictactoe-grid">
+                                <!-- 9 cells injected dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- 9. Cat Snake Arena -->
+                        <div id="snakeArena" class="arcade-game-container" hidden>
+                            <div class="arcade-status-bar">
+                                <span class="arcade-status-badge">🐟 Λιχουδιές: <strong id="snakeScore">0</strong></span>
+                                <button id="snakeStartBtn" class="btn btn-arcade-reset">▶️ Έναρξη / Επανεκκίνηση</button>
+                            </div>
+                            <div class="canvas-wrapper">
+                                <canvas id="snakeCanvas" width="300" height="300"></canvas>
+                            </div>
+                            <!-- Touch D-Pad for Mobile -->
+                            <div class="dpad-container">
+                                <div class="dpad-row"><button class="dpad-btn" id="dpadUp">⬆️</button></div>
+                                <div class="dpad-row">
+                                    <button class="dpad-btn" id="dpadLeft">⬅️</button>
+                                    <button class="dpad-btn" id="dpadDown">⬇️</button>
+                                    <button class="dpad-btn" id="dpadRight">➡️</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 10. Cat Tetris Arena -->
+                        <div id="tetrisArena" class="arcade-game-container" hidden>
+                            <div class="arcade-status-bar">
+                                <span class="arcade-status-badge">🧱 Γραμμές: <strong id="tetrisLines">0</strong></span>
+                                <button id="tetrisStartBtn" class="btn btn-arcade-reset">▶️ Έναρξη / Επανεκκίνηση</button>
+                            </div>
+                            <div class="canvas-wrapper">
+                                <canvas id="tetrisCanvas" width="240" height="400"></canvas>
+                            </div>
+                            <!-- Touch Controls for Mobile -->
+                            <div class="tetris-controls-bar">
+                                <button class="tetris-ctrl-btn" id="tetrisLeft">⬅️</button>
+                                <button class="tetris-ctrl-btn" id="tetrisRotate">🔄</button>
+                                <button class="tetris-ctrl-btn" id="tetrisRight">➡️</button>
+                                <button class="tetris-ctrl-btn" id="tetrisDown">⬇️</button>
+                            </div>
                         </div>
                     </div>
 

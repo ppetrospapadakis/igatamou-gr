@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameArena = document.getElementById('gameArena');
     const backToMenuBtn = document.getElementById('backToMenuBtn');
     const arenaCategoryTitle = document.getElementById('arenaCategoryTitle');
+    const questionCard = document.getElementById('questionCard');
     const questionNumber = document.getElementById('questionNumber');
     const questionText = document.getElementById('questionText');
     const visualHelper = document.getElementById('visualHelper');
@@ -86,6 +87,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const trophyBadgeName = document.getElementById('trophyBadgeName');
     const trophyModal = document.getElementById('trophyModal');
     const closeTrophyBtn = document.getElementById('closeTrophyBtn');
+
+    // Arcade Game Elements
+    const tictactoeArena = document.getElementById('tictactoeArena');
+    const tttGrid = document.getElementById('tttGrid');
+    const tttStatusText = document.getElementById('tttStatusText');
+    const tttResetBtn = document.getElementById('tttResetBtn');
+
+    const snakeArena = document.getElementById('snakeArena');
+    const snakeCanvas = document.getElementById('snakeCanvas');
+    const snakeScore = document.getElementById('snakeScore');
+    const snakeStartBtn = document.getElementById('snakeStartBtn');
+    const dpadUp = document.getElementById('dpadUp');
+    const dpadLeft = document.getElementById('dpadLeft');
+    const dpadDown = document.getElementById('dpadDown');
+    const dpadRight = document.getElementById('dpadRight');
+
+    const tetrisArena = document.getElementById('tetrisArena');
+    const tetrisCanvas = document.getElementById('tetrisCanvas');
+    const tetrisLines = document.getElementById('tetrisLines');
+    const tetrisStartBtn = document.getElementById('tetrisStartBtn');
+    const tetrisLeft = document.getElementById('tetrisLeft');
+    const tetrisRotate = document.getElementById('tetrisRotate');
+    const tetrisRight = document.getElementById('tetrisRight');
+    const tetrisDown = document.getElementById('tetrisDown');
 
     // Ensure Modal is hidden on load
     if (trophyModal) {
@@ -174,6 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function clearArenaContainers() {
+        if (questionCard) questionCard.hidden = false;
         if (optionsGrid) {
             optionsGrid.innerHTML = '';
             optionsGrid.hidden = true;
@@ -182,6 +208,13 @@ document.addEventListener('DOMContentLoaded', () => {
             memoryBoard.innerHTML = '';
             memoryBoard.hidden = true;
         }
+        if (tictactoeArena) tictactoeArena.hidden = true;
+        if (snakeArena) snakeArena.hidden = true;
+        if (tetrisArena) tetrisArena.hidden = true;
+
+        stopSnakeGame();
+        stopTetrisGame();
+
         memoryFlippedCards = [];
         memoryMatchedPairs = 0;
     }
@@ -208,12 +241,27 @@ document.addEventListener('DOMContentLoaded', () => {
             riddles: "💡 Γρίφοι & Σκέψη",
             nature: "🌿 Γνώσεις & Φύση",
             geography: "🗺️ Γεωγραφία",
-            memory: "🧩 Γατο-Memory"
+            memory: "🧩 Γατο-Memory",
+            tictactoe: "❌⭕ Γατο-Τρίλιζα",
+            snake: "🐍🐾 Γατο-Φιδάκι",
+            tetris: "🧩🧱 Γατο-Τέτρις"
         };
         if (arenaCategoryTitle) arenaCategoryTitle.textContent = catTitles[categoryKey] || "Παιχνίδι";
 
         if (categoryKey === 'memory') {
             setupMemoryGame();
+        } else if (categoryKey === 'tictactoe') {
+            if (questionCard) questionCard.hidden = true;
+            if (tictactoeArena) tictactoeArena.hidden = false;
+            setupTicTacToeGame();
+        } else if (categoryKey === 'snake') {
+            if (questionCard) questionCard.hidden = true;
+            if (snakeArena) snakeArena.hidden = false;
+            setupSnakeGame();
+        } else if (categoryKey === 'tetris') {
+            if (questionCard) questionCard.hidden = true;
+            if (tetrisArena) tetrisArena.hidden = false;
+            setupTetrisGame();
         } else {
             if (optionsGrid) optionsGrid.hidden = false;
             if (memoryBoard) memoryBoard.hidden = true;
@@ -225,256 +273,169 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ----------------------------------------------------
+    // MULTIPLE CHOICE QUIZ GAMES
+    // ----------------------------------------------------
     function renderCurrentQuestion() {
-        if (currentQIndex >= currentQuestions.length) {
+        if (!currentQuestions || currentQIndex >= currentQuestions.length) {
             showCategoryCompleted();
             return;
         }
 
-        if (memoryBoard) memoryBoard.hidden = true;
-        if (optionsGrid) optionsGrid.hidden = false;
-
-        const qData = currentQuestions[currentQIndex];
+        const q = currentQuestions[currentQIndex];
         if (questionNumber) questionNumber.textContent = `Ερώτηση ${currentQIndex + 1} από ${currentQuestions.length}`;
-        if (questionText) questionText.textContent = qData.q;
-        if (visualHelper) visualHelper.textContent = qData.helper || '';
+        if (questionText) questionText.textContent = q.q;
+
+        if (visualHelper) {
+            visualHelper.textContent = q.helper || '';
+        }
 
         if (optionsGrid) {
             optionsGrid.innerHTML = '';
-            const opts = [...qData.opts].sort(() => Math.random() - 0.5);
-            opts.forEach(optText => {
+            q.opts.forEach(optText => {
                 const btn = document.createElement('button');
-                btn.className = 'option-btn';
+                btn.className = 'quiz-option-btn';
                 btn.textContent = optText;
-                btn.addEventListener('click', () => handleOptionClick(btn, optText, qData.a));
+                btn.addEventListener('click', () => checkQuizAnswer(optText, q.a, btn));
                 optionsGrid.appendChild(btn);
             });
         }
 
         if (catSpeechBubble) {
-            catSpeechBubble.className = 'cat-speech-bubble';
-            catSpeechBubble.textContent = `💬 "Σκέψου καλά και πάτα τη σωστή απάντηση! 🐾"`;
+            catSpeechBubble.textContent = `💬 "Διάλεξε τη σωστή απάντηση! 🐾"`;
         }
     }
 
-    function handleOptionClick(btn, selectedOption, correctAnswer) {
-        const allBtns = document.querySelectorAll('.option-btn');
-        allBtns.forEach(b => b.disabled = true);
+    function checkQuizAnswer(selected, correct, btnEl) {
+        document.querySelectorAll('.quiz-option-btn').forEach(b => b.disabled = true);
 
-        if (selectedOption === correctAnswer) {
-            btn.classList.add('correct-pop');
-            streak++;
+        if (selected === correct) {
+            btnEl.classList.add('correct');
             score += 10;
+            streak++;
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
-            triggerRightAnswerReaction();
+            playCatSoundEffect('correct');
+            triggerCorrectAnswerReaction();
 
             setTimeout(() => {
                 currentQIndex++;
                 renderCurrentQuestion();
-            }, 1500);
-
+            }, 1200);
         } else {
-            btn.classList.add('wrong-pop');
+            btnEl.classList.add('wrong');
             streak = 0;
             updateScoreUI();
+            playCatSoundEffect('wrong');
             triggerWrongAnswerReaction();
 
+            document.querySelectorAll('.quiz-option-btn').forEach(b => {
+                if (b.textContent === correct) {
+                    b.classList.add('correct');
+                }
+            });
+
             setTimeout(() => {
-                allBtns.forEach(b => b.disabled = false);
-                btn.classList.remove('wrong-pop');
-            }, 1400);
-        }
-    }
-
-    // ----------------------------------------------------
-    // RICH GRAPHICAL MASCOT REACTIONS FOR ALL GAMES
-    // ----------------------------------------------------
-    function triggerRightAnswerReaction() {
-        playCatSoundEffect('correct');
-
-        // Joyful Cat Avatar Animations
-        if (companionCatImg) {
-            companionCatImg.className = 'companion-cat-img happy-cat-jump';
-        }
-        if (companionCatFrame) {
-            companionCatFrame.className = 'companion-cat-frame cat-halo-correct';
-        }
-
-        // Speech Bubble styling & joyful meow phrases
-        const happyPhrases = [
-            '🎉 "ΜΠΡΑΒΟ! Είσαι αστέρι! 😻✨"',
-            '😻 "ΝΙΑΟΥ! Τέλεια απάντηση! 🐟"',
-            '✨ "ΣΩΣΤΑ! Κέρδισες +10 Γατο-Νομίσματα! 🪙"',
-            '💖 "ΕΞΑΙΡΕΤΙΚΑ! Η Αριάδνη και εγώ σε χειροκροτούμε! 👏"'
-        ];
-        if (catSpeechBubble) {
-            catSpeechBubble.className = 'cat-speech-bubble bubble-correct';
-            catSpeechBubble.textContent = happyPhrases[Math.floor(Math.random() * happyPhrases.length)];
-        }
-
-        // Spawn Floating Celebration Emojis around Cat Avatar Frame
-        spawnCatCompanionParticles(['🎉', '✨', '⭐', '😻', '💖', '🐟'], true);
-
-        // Screen-wide Banner
-        const banners = ['🌟 ΣΩΣΤΟ! +10 ΠΟΝΤΟΙ! 🪙', '😻 ΜΠΡΑΒΟ! ΤΕΛΕΙΑ! ✨', '🎉 ΕΙΣΑΙ ΦΟΒΕΡΟΣ/Η! 🐾'];
-        const bannerText = banners[Math.floor(Math.random() * banners.length)];
-
-        const banner = document.createElement('div');
-        banner.className = 'screen-pop-banner';
-        banner.textContent = bannerText;
-        document.body.appendChild(banner);
-        setTimeout(() => banner.remove(), 1400);
-    }
-
-    function triggerWrongAnswerReaction() {
-        playCatSoundEffect('wrong');
-
-        // Sad/Confused Cat Avatar Animations
-        if (companionCatImg) {
-            companionCatImg.className = 'companion-cat-img sad-cat-wiggle';
-        }
-        if (companionCatFrame) {
-            companionCatFrame.className = 'companion-cat-frame cat-halo-wrong';
-        }
-
-        // Speech Bubble styling & encouraging phrases
-        const encouragePhrases = [
-            '🐾 "Δεν πειράζει! Δοκίμασε ξανά, πιστεύω σε σένα! 💖"',
-            '🌸 "Σχεδόν το βρήκες! Ξαναπροσπάθησε! ✨"',
-            '🤗 "Μην ανησυχείς! Μέσα από τα λάθη μαθαίνουμε! 🌟"'
-        ];
-        if (catSpeechBubble) {
-            catSpeechBubble.className = 'cat-speech-bubble bubble-wrong';
-            catSpeechBubble.textContent = encouragePhrases[Math.floor(Math.random() * encouragePhrases.length)];
-        }
-
-        // Spawn Puzzled Sweatdrop/Sad Emojis around Cat Avatar Frame
-        spawnCatCompanionParticles(['💧', '🤔', '❓', '😿', '💭'], false);
-    }
-
-    function spawnCatCompanionParticles(emojis, isCorrect) {
-        if (!companionCatFrame) return;
-        const rect = companionCatFrame.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-
-        for (let i = 0; i < 5; i++) {
-            setTimeout(() => {
-                const p = document.createElement('div');
-                p.className = `companion-particle ${isCorrect ? 'particle-correct' : 'particle-wrong'}`;
-                p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-                
-                const offsetX = (Math.random() - 0.5) * 70;
-                const offsetY = (Math.random() - 0.5) * 70;
-                p.style.left = `${centerX + offsetX}px`;
-                p.style.top = `${centerY + offsetY}px`;
-                
-                document.body.appendChild(p);
-                setTimeout(() => p.remove(), 1200);
-            }, i * 100);
+                currentQIndex++;
+                renderCurrentQuestion();
+            }, 1800);
         }
     }
 
     function showCategoryCompleted() {
-        if (questionNumber) questionNumber.textContent = "ΟΛΟΚΛΗΡΩΣΗ!";
-        if (questionText) questionText.textContent = "🎉 Συγχαρητήρια! Ολοκλήρωσες όλες τις ερωτήσεις!";
-        if (visualHelper) visualHelper.textContent = "🏆 Μάζεψες πολλούς πόντους & έκανες τη Μάγκα πανευτυχή!";
-        if (optionsGrid) {
-            optionsGrid.innerHTML = '';
-            optionsGrid.hidden = false;
-        }
-        if (memoryBoard) memoryBoard.hidden = true;
+        if (questionNumber) questionNumber.textContent = '🎉 Μπράβο!';
+        if (questionText) questionText.textContent = 'Ολοκλήρωσες όλες τις ερωτήσεις αυτής της κατηγορίας!';
+        if (visualHelper) visualHelper.textContent = '✨ Κέρδισες επιπλέον +20 Γατο-Πόντους!';
+        if (optionsGrid) optionsGrid.innerHTML = '';
 
-        const restartBtn = document.createElement('button');
-        restartBtn.className = 'btn btn-games-cta';
-        restartBtn.textContent = '🔄 Παίξε Ξανά αυτή την Κατηγορία!';
-        restartBtn.addEventListener('click', () => startCategoryGame(currentCategory));
-        optionsGrid.appendChild(restartBtn);
+        score += 20;
+        localStorage.setItem('igatamou_game_score', score.toString());
+        updateScoreUI();
+
+        const replayBtn = document.createElement('button');
+        replayBtn.className = 'btn btn-games-cta';
+        replayBtn.textContent = '🔄 Παίξε Ξανά αυτή την κατηγορία!';
+        replayBtn.addEventListener('click', () => startCategoryGame(currentCategory));
+
+        const menuBtn = document.createElement('button');
+        menuBtn.className = 'btn btn-back-menu';
+        menuBtn.style.marginTop = '10px';
+        menuBtn.textContent = '📜 Επιστροφή στο Μενού';
+        menuBtn.addEventListener('click', showCategoryMenu);
+
+        if (optionsGrid) {
+            optionsGrid.appendChild(replayBtn);
+            optionsGrid.appendChild(menuBtn);
+        }
 
         if (catSpeechBubble) {
-            catSpeechBubble.className = 'cat-speech-bubble bubble-correct';
-            catSpeechBubble.textContent = '👑 "Είσαι αληθινός/ή Master! Πάμε να παίξουμε κι άλλα παιχνίδια! 🐾"';
+            catSpeechBubble.textContent = `💬 "Είμαι περήφανη για σένα! 🥳✨"`;
         }
     }
 
     // ----------------------------------------------------
-    // 5. MEMORY GAME ENGINE (🧩) - PRETTY 3D TILES
+    // MEMORY GAME LOGIC
     // ----------------------------------------------------
     function setupMemoryGame() {
-        if (optionsGrid) {
-            optionsGrid.innerHTML = '';
-            optionsGrid.hidden = true;
-        }
-        if (memoryBoard) {
-            memoryBoard.innerHTML = '';
-            memoryBoard.hidden = false;
-        }
+        if (questionNumber) questionNumber.textContent = 'Γατο-Memory';
+        if (questionText) questionText.textContent = 'Βρες τα 8 ζευγάρια με τις γατούλες!';
+        if (visualHelper) visualHelper.textContent = '💡 Κάνε κλικ στις κάρτες για να τις γυρίσεις!';
 
-        if (questionNumber) questionNumber.textContent = "Γατο-Memory";
-        if (questionText) questionText.textContent = "🧩 Βρες όλα τα ζευγάρια με τις γατούλες!";
-        if (visualHelper) visualHelper.textContent = "";
+        if (optionsGrid) optionsGrid.hidden = true;
+        if (memoryBoard) memoryBoard.hidden = false;
+        memoryBoard.innerHTML = '';
+
+        const cardDeck = [...memoryEmojis, ...memoryEmojis];
+        cardDeck.sort(() => Math.random() - 0.5);
 
         memoryFlippedCards = [];
         memoryMatchedPairs = 0;
 
-        const deck = [...memoryEmojis, ...memoryEmojis].sort(() => Math.random() - 0.5);
-
-        deck.forEach((emoji, index) => {
+        cardDeck.forEach((emoji, index) => {
             const card = document.createElement('div');
             card.className = 'memory-card-tile';
-            card.setAttribute('data-emoji', emoji);
-            card.setAttribute('data-index', index);
+            card.dataset.emoji = emoji;
+            card.dataset.index = index;
 
             card.innerHTML = `
                 <div class="memory-card-inner">
-                    <div class="memory-card-front">
-                        <span class="memory-emoji">${emoji}</span>
-                    </div>
-                    <div class="memory-card-back">
-                        <span class="memory-paw">🐾</span>
-                    </div>
+                    <div class="memory-card-front"><span class="memory-paw">🐾</span></div>
+                    <div class="memory-card-back"><span class="memory-emoji">${emoji}</span></div>
                 </div>
             `;
 
             card.addEventListener('click', () => handleMemoryCardClick(card, emoji));
             memoryBoard.appendChild(card);
         });
-
-        if (catSpeechBubble) {
-            catSpeechBubble.className = 'cat-speech-bubble';
-            catSpeechBubble.textContent = '🧩 "Άνοιξε τις κάρτες και βρες τα όμοια ζευγάρια! 🐾"';
-        }
     }
 
     function handleMemoryCardClick(card, emoji) {
         if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
         if (memoryFlippedCards.length >= 2) return;
 
-        playCatSoundEffect('click');
-
         card.classList.add('flipped');
         memoryFlippedCards.push({ card, emoji });
 
         if (memoryFlippedCards.length === 2) {
             const [c1, c2] = memoryFlippedCards;
-
             if (c1.emoji === c2.emoji) {
                 // MATCH!
                 c1.card.classList.add('matched');
                 c2.card.classList.add('matched');
+                memoryFlippedCards = [];
                 memoryMatchedPairs++;
+
                 score += 15;
+                streak++;
                 localStorage.setItem('igatamou_game_score', score.toString());
                 updateScoreUI();
-                triggerRightAnswerReaction();
-
-                memoryFlippedCards = [];
+                playCatSoundEffect('correct');
+                triggerCorrectAnswerReaction();
 
                 if (memoryMatchedPairs === memoryEmojis.length) {
                     setTimeout(() => {
                         showCategoryCompleted();
-                    }, 1200);
+                    }, 800);
                 }
             } else {
                 // NO MATCH
@@ -488,6 +449,436 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ----------------------------------------------------
+    // 8. TIC-TAC-TOE GAME LOGIC (Μάγκας 🐱 vs Ψαράκι 🐟)
+    // ----------------------------------------------------
+    let tttBoard = Array(9).fill(null);
+    let tttPlayerTurn = true;
+    let tttGameOver = false;
+
+    function setupTicTacToeGame() {
+        tttBoard = Array(9).fill(null);
+        tttPlayerTurn = true;
+        tttGameOver = false;
+
+        if (tttStatusText) tttStatusText.textContent = 'Σειρά σου: 🐱 (Μάγκας)';
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Bάλε τη Γατούλα 🐱 για να κερδίσεις το Ψαράκι 🐟!"`;
+
+        if (!tttGrid) return;
+        tttGrid.innerHTML = '';
+
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'ttt-cell';
+            cell.dataset.index = i;
+            cell.addEventListener('click', () => handleTicTacToeCellClick(i, cell));
+            tttGrid.appendChild(cell);
+        }
+    }
+
+    function handleTicTacToeCellClick(index, cellEl) {
+        if (tttBoard[index] || !tttPlayerTurn || tttGameOver) return;
+
+        // Player Move (🐱)
+        tttBoard[index] = '🐱';
+        cellEl.textContent = '🐱';
+        playCatSoundEffect('click');
+
+        if (checkTicTacToeWin('🐱')) {
+            tttGameOver = true;
+            if (tttStatusText) tttStatusText.textContent = '🎉 Νίκησες! 🥳';
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Μπράβο! Νίκησες τη Μάγκας! +10 Πόντοι! 🎉"`;
+            score += 10;
+            streak++;
+            localStorage.setItem('igatamou_game_score', score.toString());
+            updateScoreUI();
+            playCatSoundEffect('correct');
+            triggerCorrectAnswerReaction();
+            return;
+        }
+
+        if (tttBoard.every(cell => cell !== null)) {
+            tttGameOver = true;
+            if (tttStatusText) tttStatusText.textContent = '🤝 Ισοπαλία!';
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Ισοπαλία! Καλή προσπάθεια! 🤝"`;
+            return;
+        }
+
+        // AI Move (🐟)
+        tttPlayerTurn = false;
+        if (tttStatusText) tttStatusText.textContent = 'Σειρά της Μάγκας... 💭';
+
+        setTimeout(() => {
+            makeTicTacToeAIMove();
+        }, 400);
+    }
+
+    function makeTicTacToeAIMove() {
+        if (tttGameOver) return;
+
+        const emptyIndices = tttBoard.map((val, idx) => val === null ? idx : null).filter(val => val !== null);
+        if (!emptyIndices.length) return;
+
+        const aiChoice = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+        tttBoard[aiChoice] = '🐟';
+
+        const cellEl = tttGrid.children[aiChoice];
+        if (cellEl) cellEl.textContent = '🐟';
+
+        if (checkTicTacToeWin('🐟')) {
+            tttGameOver = true;
+            if (tttStatusText) tttStatusText.textContent = '🐟 Κέρδισε το Ψαράκι!';
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Έχασες αυτή τη φορά! Δοκίμασε ξανά! 🐾"`;
+            triggerWrongAnswerReaction();
+            return;
+        }
+
+        if (tttBoard.every(cell => cell !== null)) {
+            tttGameOver = true;
+            if (tttStatusText) tttStatusText.textContent = '🤝 Ισοπαλία!';
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Ισοπαλία! Καλή προσπάθεια! 🤝"`;
+            return;
+        }
+
+        tttPlayerTurn = true;
+        if (tttStatusText) tttStatusText.textContent = 'Σειρά σου: 🐱 (Μάγκας)';
+    }
+
+    function checkTicTacToeWin(symbol) {
+        const wins = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+        for (let combo of wins) {
+            const [a, b, c] = combo;
+            if (tttBoard[a] === symbol && tttBoard[b] === symbol && tttBoard[c] === symbol) {
+                if (tttGrid) {
+                    tttGrid.children[a].classList.add('winning-cell');
+                    tttGrid.children[b].classList.add('winning-cell');
+                    tttGrid.children[c].classList.add('winning-cell');
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    if (tttResetBtn) {
+        tttResetBtn.addEventListener('click', setupTicTacToeGame);
+    }
+
+    // ----------------------------------------------------
+    // 9. CAT SNAKE GAME LOGIC (🐍🐾 Γατο-Φιδάκι)
+    // ----------------------------------------------------
+    let snakeInterval = null;
+    let snake = [];
+    let snakeDir = 'RIGHT';
+    let snakeFood = { x: 5, y: 5, icon: '🐟' };
+    let snakePoints = 0;
+    const foodIcons = ['🐟', '🥛', '🍗', '🧶', '🎀'];
+
+    function setupSnakeGame() {
+        stopSnakeGame();
+        snakePoints = 0;
+        if (snakeScore) snakeScore.textContent = '0';
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Μάζεψε τις λιχουδιές με το Γατο-Φιδάκι! 🐟"`;
+
+        snake = [
+            { x: 7, y: 7 },
+            { x: 6, y: 7 },
+            { x: 5, y: 7 }
+        ];
+        snakeDir = 'RIGHT';
+        spawnSnakeFood();
+
+        drawSnakeCanvas();
+        snakeInterval = setInterval(updateSnakeGame, 140);
+    }
+
+    function stopSnakeGame() {
+        if (snakeInterval) {
+            clearInterval(snakeInterval);
+            snakeInterval = null;
+        }
+    }
+
+    function spawnSnakeFood() {
+        snakeFood = {
+            x: Math.floor(Math.random() * 14) + 1,
+            y: Math.floor(Math.random() * 14) + 1,
+            icon: foodIcons[Math.floor(Math.random() * foodIcons.length)]
+        };
+    }
+
+    function updateSnakeGame() {
+        if (!snakeCanvas) return;
+        const head = { ...snake[0] };
+
+        if (snakeDir === 'RIGHT') head.x++;
+        if (snakeDir === 'LEFT') head.x--;
+        if (snakeDir === 'UP') head.y--;
+        if (snakeDir === 'DOWN') head.y++;
+
+        // Collision Check (Wall or Self)
+        if (head.x < 0 || head.x >= 15 || head.y < 0 || head.y >= 15 || snake.some(s => s.x === head.x && s.y === head.y)) {
+            stopSnakeGame();
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Ουπς! 💥 Έκανες ${snakePoints} λιχουδιές!"`;
+            triggerWrongAnswerReaction();
+            return;
+        }
+
+        snake.unshift(head);
+
+        // Eat Food
+        if (head.x === snakeFood.x && head.y === snakeFood.y) {
+            snakePoints += 5;
+            score += 5;
+            if (snakeScore) snakeScore.textContent = snakePoints.toString();
+            localStorage.setItem('igatamou_game_score', score.toString());
+            updateScoreUI();
+            playCatSoundEffect('correct');
+            spawnSnakeFood();
+        } else {
+            snake.pop();
+        }
+
+        drawSnakeCanvas();
+    }
+
+    function drawSnakeCanvas() {
+        if (!snakeCanvas) return;
+        const ctx = snakeCanvas.getContext('2d');
+        const size = 20;
+
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, 0, 300, 300);
+
+        // Draw Food
+        ctx.font = '16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(snakeFood.icon, snakeFood.x * size + size / 2, snakeFood.y * size + size / 2);
+
+        // Draw Snake
+        snake.forEach((segment, index) => {
+            if (index === 0) {
+                ctx.fillText('🐱', segment.x * size + size / 2, segment.y * size + size / 2);
+            } else {
+                ctx.fillStyle = '#ff5e7e';
+                ctx.beginPath();
+                ctx.arc(segment.x * size + size / 2, segment.y * size + size / 2, size / 2 - 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        });
+    }
+
+    // Keyboard & D-Pad Controls
+    window.addEventListener('keydown', (e) => {
+        if (currentCategory === 'snake') {
+            if ((e.key === 'ArrowUp' || e.key === 'w') && snakeDir !== 'DOWN') snakeDir = 'UP';
+            if ((e.key === 'ArrowDown' || e.key === 's') && snakeDir !== 'UP') snakeDir = 'DOWN';
+            if ((e.key === 'ArrowLeft' || e.key === 'a') && snakeDir !== 'RIGHT') snakeDir = 'LEFT';
+            if ((e.key === 'ArrowRight' || e.key === 'd') && snakeDir !== 'LEFT') snakeDir = 'RIGHT';
+        }
+    });
+
+    if (dpadUp) dpadUp.addEventListener('click', () => { if (snakeDir !== 'DOWN') snakeDir = 'UP'; });
+    if (dpadDown) dpadDown.addEventListener('click', () => { if (snakeDir !== 'UP') snakeDir = 'DOWN'; });
+    if (dpadLeft) dpadLeft.addEventListener('click', () => { if (snakeDir !== 'RIGHT') snakeDir = 'LEFT'; });
+    if (dpadRight) dpadRight.addEventListener('click', () => { if (snakeDir !== 'LEFT') snakeDir = 'RIGHT'; });
+    if (snakeStartBtn) snakeStartBtn.addEventListener('click', setupSnakeGame);
+
+    // ----------------------------------------------------
+    // 10. CAT TETRIS GAME LOGIC (🧩🧱 Γατο-Τέτρις)
+    // ----------------------------------------------------
+    let tetrisInterval = null;
+    let tetrisGrid = Array(20).fill(null).map(() => Array(12).fill(0));
+    let tetrisLinesCleared = 0;
+    let currentPiece = null;
+
+    const tetrisPieces = [
+        { shape: [[1, 1, 1, 1]], color: '#ff5e7e', icon: '🧶' },
+        { shape: [[1, 1], [1, 1]], color: '#ffb703', icon: '🐟' },
+        { shape: [[0, 1, 0], [1, 1, 1]], color: '#3a86ff', icon: '🐾' },
+        { shape: [[1, 0, 0], [1, 1, 1]], color: '#8338ec', icon: '🥛' },
+        { shape: [[0, 0, 1], [1, 1, 1]], color: '#fb5607', icon: '🎀' }
+    ];
+
+    function setupTetrisGame() {
+        stopTetrisGame();
+        tetrisGrid = Array(20).fill(null).map(() => Array(12).fill(0));
+        tetrisLinesCleared = 0;
+        if (tetrisLines) tetrisLines.textContent = '0';
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Φτιάξε γραμμές με τα τουβλάκια! 🧩"`;
+
+        spawnTetrisPiece();
+        drawTetrisCanvas();
+
+        tetrisInterval = setInterval(updateTetrisGame, 450);
+    }
+
+    function stopTetrisGame() {
+        if (tetrisInterval) {
+            clearInterval(tetrisInterval);
+            tetrisInterval = null;
+        }
+    }
+
+    function spawnTetrisPiece() {
+        const piece = tetrisPieces[Math.floor(Math.random() * tetrisPieces.length)];
+        currentPiece = {
+            shape: piece.shape,
+            color: piece.color,
+            icon: piece.icon,
+            x: 4,
+            y: 0
+        };
+
+        if (checkTetrisCollision(0, 0)) {
+            stopTetrisGame();
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Game Over! 💥 Έκανες ${tetrisLinesCleared} γραμμές!"`;
+            triggerWrongAnswerReaction();
+        }
+    }
+
+    function updateTetrisGame() {
+        if (!currentPiece) return;
+
+        if (!checkTetrisCollision(0, 1)) {
+            currentPiece.y++;
+        } else {
+            lockTetrisPiece();
+            clearTetrisLines();
+            spawnTetrisPiece();
+        }
+        drawTetrisCanvas();
+    }
+
+    function checkTetrisCollision(offsetX, offsetY, shape = currentPiece.shape) {
+        for (let r = 0; r < shape.length; r++) {
+            for (let c = 0; c < shape[r].length; c++) {
+                if (shape[r][c]) {
+                    const newX = currentPiece.x + c + offsetX;
+                    const newY = currentPiece.y + r + offsetY;
+
+                    if (newX < 0 || newX >= 12 || newY >= 20) return true;
+                    if (newY >= 0 && tetrisGrid[newY][newX]) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function lockTetrisPiece() {
+        for (let r = 0; r < currentPiece.shape.length; r++) {
+            for (let c = 0; c < currentPiece.shape[r].length; c++) {
+                if (currentPiece.shape[r][c]) {
+                    const y = currentPiece.y + r;
+                    const x = currentPiece.x + c;
+                    if (y >= 0 && y < 20) {
+                        tetrisGrid[y][x] = currentPiece.color;
+                    }
+                }
+            }
+        }
+    }
+
+    function clearTetrisLines() {
+        let linesCount = 0;
+        for (let r = 19; r >= 0; r--) {
+            if (tetrisGrid[r].every(cell => cell !== 0)) {
+                tetrisGrid.splice(r, 1);
+                tetrisGrid.unshift(Array(12).fill(0));
+                linesCount++;
+                r++;
+            }
+        }
+
+        if (linesCount > 0) {
+            tetrisLinesCleared += linesCount;
+            score += linesCount * 15;
+            if (tetrisLines) tetrisLines.textContent = tetrisLinesCleared.toString();
+            localStorage.setItem('igatamou_game_score', score.toString());
+            updateScoreUI();
+            playCatSoundEffect('correct');
+            triggerCorrectAnswerReaction();
+        }
+    }
+
+    function drawTetrisCanvas() {
+        if (!tetrisCanvas) return;
+        const ctx = tetrisCanvas.getContext('2d');
+        const size = 20;
+
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, 0, 240, 400);
+
+        // Draw Board
+        for (let r = 0; r < 20; r++) {
+            for (let c = 0; c < 12; c++) {
+                if (tetrisGrid[r][c]) {
+                    ctx.fillStyle = tetrisGrid[r][c];
+                    ctx.fillRect(c * size, r * size, size - 1, size - 1);
+                }
+            }
+        }
+
+        // Draw Active Piece
+        if (currentPiece) {
+            ctx.fillStyle = currentPiece.color;
+            for (let r = 0; r < currentPiece.shape.length; r++) {
+                for (let c = 0; c < currentPiece.shape[r].length; c++) {
+                    if (currentPiece.shape[r][c]) {
+                        ctx.fillRect((currentPiece.x + c) * size, (currentPiece.y + r) * size, size - 1, size - 1);
+                    }
+                }
+            }
+        }
+    }
+
+    function rotateTetrisPiece() {
+        if (!currentPiece) return;
+        const shape = currentPiece.shape;
+        const newShape = shape[0].map((_, index) => shape.map(row => row[index]).reverse());
+        if (!checkTetrisCollision(0, 0, newShape)) {
+            currentPiece.shape = newShape;
+            drawTetrisCanvas();
+        }
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (currentCategory === 'tetris' && currentPiece) {
+            if (e.key === 'ArrowLeft' && !checkTetrisCollision(-1, 0)) { currentPiece.x--; drawTetrisCanvas(); }
+            if (e.key === 'ArrowRight' && !checkTetrisCollision(1, 0)) { currentPiece.x++; drawTetrisCanvas(); }
+            if (e.key === 'ArrowDown') { updateTetrisGame(); }
+            if (e.key === 'ArrowUp') { rotateTetrisPiece(); }
+        }
+    });
+
+    if (tetrisLeft) tetrisLeft.addEventListener('click', () => { if (currentPiece && !checkTetrisCollision(-1, 0)) { currentPiece.x--; drawTetrisCanvas(); } });
+    if (tetrisRight) tetrisRight.addEventListener('click', () => { if (currentPiece && !checkTetrisCollision(1, 0)) { currentPiece.x++; drawTetrisCanvas(); } });
+    if (tetrisRotate) tetrisRotate.addEventListener('click', rotateTetrisPiece);
+    if (tetrisDown) tetrisDown.addEventListener('click', updateTetrisGame);
+    if (tetrisStartBtn) tetrisStartBtn.addEventListener('click', setupTetrisGame);
+
+    // Mascot Reactions
+    function triggerCorrectAnswerReaction() {
+        if (companionCatFrame) {
+            companionCatFrame.classList.remove('cat-halo-correct', 'cat-halo-wrong');
+            void companionCatFrame.offsetWidth;
+            companionCatFrame.classList.add('cat-halo-correct');
+        }
+    }
+
+    function triggerWrongAnswerReaction() {
+        if (companionCatFrame) {
+            companionCatFrame.classList.remove('cat-halo-correct', 'cat-halo-wrong');
+            void companionCatFrame.offsetWidth;
+            companionCatFrame.classList.add('cat-halo-wrong');
+        }
+    }
+
     // Sound FX Helper
     function playCatSoundEffect(type) {
         try {
@@ -496,7 +887,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const ctx = new AudioContext();
 
             if (type === 'correct') {
-                // Joyful Meow + Chime
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 const now = ctx.currentTime;
@@ -511,7 +901,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 osc.start(now);
                 osc.stop(now + 0.45);
             } else if (type === 'wrong') {
-                // Sad Gentle Meow
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 const now = ctx.currentTime;
