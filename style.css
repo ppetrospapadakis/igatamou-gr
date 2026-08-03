@@ -195,11 +195,11 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 .logo-text {
     font-size: 1.8rem;
     font-weight: 700;
-    color: var(--text-dark);
+    color: var(--primary);
 }
 
 .logo-text .highlight {
-    color: var(--primary);
+    color: var(--text-dark);
 }
 
 .designer-badge {
