@@ -551,12 +551,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tabPending = document.getElementById('tabPending');
     const tabApproved = document.getElementById('tabApproved');
+    const tabSubscribers = document.getElementById('tabSubscribers');
     const adminPendingSection = document.getElementById('adminPendingSection');
     const adminApprovedSection = document.getElementById('adminApprovedSection');
+    const adminSubscribersSection = document.getElementById('adminSubscribersSection');
     const adminPendingGrid = document.getElementById('adminPendingGrid');
     const adminApprovedGrid = document.getElementById('adminApprovedGrid');
     const emptyAdminPending = document.getElementById('emptyAdminPending');
     const emptyAdminApproved = document.getElementById('emptyAdminApproved');
+    const subscribersCountEl = document.getElementById('subscribersCount');
+    const subscribersTableBody = document.getElementById('subscribersTableBody');
+    const emptySubscribers = document.getElementById('emptySubscribers');
+    const copyAllEmailsBtn = document.getElementById('copyAllEmailsBtn');
+    const clearAllEmailsBtn = document.getElementById('clearAllEmailsBtn');
+    const copyNotification = document.getElementById('copyNotification');
+
+    const SUBSCRIBERS_STORAGE_KEY = 'igatamou_newsletter_subscribers';
+
+    function getSubscribersData() {
+        try {
+            return JSON.parse(localStorage.getItem(SUBSCRIBERS_STORAGE_KEY) || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveSubscribersData(subs) {
+        localStorage.setItem(SUBSCRIBERS_STORAGE_KEY, JSON.stringify(subs));
+    }
 
     // Admin Auth State
     function isAdminLoggedIn() {
@@ -590,16 +612,32 @@ document.addEventListener('DOMContentLoaded', () => {
             tabPending.addEventListener('click', () => {
                 tabPending.classList.add('active');
                 tabApproved.classList.remove('active');
+                if (tabSubscribers) tabSubscribers.classList.remove('active');
                 if (adminPendingSection) adminPendingSection.hidden = false;
                 if (adminApprovedSection) adminApprovedSection.hidden = true;
+                if (adminSubscribersSection) adminSubscribersSection.hidden = true;
             });
 
             tabApproved.addEventListener('click', () => {
                 tabApproved.classList.add('active');
                 tabPending.classList.remove('active');
-                if (adminPendingSection) adminPendingSection.hidden = true;
+                if (tabSubscribers) tabSubscribers.classList.remove('active');
                 if (adminApprovedSection) adminApprovedSection.hidden = false;
+                if (adminPendingSection) adminPendingSection.hidden = true;
+                if (adminSubscribersSection) adminSubscribersSection.hidden = true;
             });
+
+            if (tabSubscribers) {
+                tabSubscribers.addEventListener('click', () => {
+                    tabSubscribers.classList.add('active');
+                    tabPending.classList.remove('active');
+                    tabApproved.classList.remove('active');
+                    if (adminSubscribersSection) adminSubscribersSection.hidden = false;
+                    if (adminPendingSection) adminPendingSection.hidden = true;
+                    if (adminApprovedSection) adminApprovedSection.hidden = true;
+                    renderSubscribersSection();
+                });
+            }
         }
     }
 
@@ -618,6 +656,101 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    async function renderSubscribersSection() {
+        let subs = getSubscribersData();
+
+        if (supabase) {
+            try {
+                const { data } = await supabase.from('subscribers').select('*').order('created_at', { ascending: false });
+                if (data && data.length) {
+                    data.forEach(item => {
+                        if (item.email && !subs.some(s => s.email.toLowerCase() === item.email.toLowerCase())) {
+                            const dateObj = new Date(item.created_at || Date.now());
+                            const formattedDate = dateObj.toLocaleDateString('el-GR') + ' ' + dateObj.toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit' });
+                            subs.push({
+                                id: 'sub_' + (item.id || Date.now()),
+                                email: item.email,
+                                date: formattedDate,
+                                timestamp: dateObj.getTime()
+                            });
+                        }
+                    });
+                    saveSubscribersData(subs);
+                }
+            } catch(e) {
+                console.log('Supabase subscribers fetch notice');
+            }
+        }
+
+        if (subscribersCountEl) subscribersCountEl.textContent = subs.length;
+
+        if (!subscribersTableBody) return;
+
+        subscribersTableBody.innerHTML = '';
+        if (subs.length === 0) {
+            if (emptySubscribers) emptySubscribers.hidden = false;
+        } else {
+            if (emptySubscribers) emptySubscribers.hidden = true;
+
+            subs.forEach((sub, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${idx + 1}</strong></td>
+                    <td class="subscriber-email"><code style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-weight: bold; color: #0f172a;">${sub.email}</code></td>
+                    <td><small>${sub.date || '-'}</small></td>
+                    <td>
+                        <button class="btn-delete-sub" data-id="${sub.id}" style="background: #ef4444; color: white; border: none; border-radius: 10px; padding: 6px 12px; cursor: pointer; font-size: 0.85rem; font-weight: bold;">
+                            🗑️ Διαγραφή
+                        </button>
+                    </td>
+                `;
+
+                const delBtn = tr.querySelector('.btn-delete-sub');
+                if (delBtn) {
+                    delBtn.addEventListener('click', () => {
+                        const updated = subs.filter(s => s.id !== sub.id);
+                        saveSubscribersData(updated);
+                        if (supabase) {
+                            try { supabase.from('subscribers').delete().eq('email', sub.email).then(); } catch(e){}
+                        }
+                        renderSubscribersSection();
+                    });
+                }
+
+                subscribersTableBody.appendChild(tr);
+            });
+        }
+    }
+
+    if (copyAllEmailsBtn) {
+        copyAllEmailsBtn.addEventListener('click', () => {
+            const subs = getSubscribersData();
+            if (subs.length === 0) {
+                alert('Δεν υπάρχουν εγγεγραμμένα emails για αντιγραφή!');
+                return;
+            }
+            const allEmailsStr = subs.map(s => s.email).join(', ');
+            navigator.clipboard.writeText(allEmailsStr).then(() => {
+                if (copyNotification) {
+                    copyNotification.hidden = false;
+                    copyNotification.innerHTML = `✅ Αντιγράφηκαν <strong>${subs.length} emails</strong> στο πρόχειρο (clipboard)!`;
+                    setTimeout(() => { copyNotification.hidden = true; }, 3500);
+                }
+            }).catch(() => {
+                prompt('Αντίγραψε τα emails από εδώ:', allEmailsStr);
+            });
+        });
+    }
+
+    if (clearAllEmailsBtn) {
+        clearAllEmailsBtn.addEventListener('click', () => {
+            if (confirm('Είσαι σίγουρος/η ότι θέλεις να διαγράψεις ΟΛΑ τα εγγεγραμμένα emails;')) {
+                localStorage.removeItem(SUBSCRIBERS_STORAGE_KEY);
+                renderSubscribersSection();
+            }
+        });
+    }
+
     function renderAdminDashboard() {
         const cats = getCatsData();
         const pendingCats = cats.filter(c => c.status === 'pending');
@@ -627,6 +760,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const approvedCountEl = document.getElementById('approvedCount');
         if (pendingCountEl) pendingCountEl.textContent = pendingCats.length;
         if (approvedCountEl) approvedCountEl.textContent = approvedCats.length;
+
+        const subs = getSubscribersData();
+        if (subscribersCountEl) subscribersCountEl.textContent = subs.length;
 
         // 1. Pending Grid
         if (adminPendingGrid) {

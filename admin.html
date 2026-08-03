@@ -58,8 +58,8 @@
         <main id="adminDashboardCard" class="main-content" hidden>
             <div class="category-menu-card admin-dashboard-card">
                 <div class="menu-title-box">
-                    <h1>👑 Διαχείριση Φωτογραφιών</h1>
-                    <p>Έγκρινε ή απόρριψε τις φωτογραφίες που έστειλαν οι χρήστες!</p>
+                    <h1>👑 Admin Panel Διαχείρισης</h1>
+                    <p>Έγκρινε φωτογραφίες & διαχειρίσου τα εγγεγραμμένα emails!</p>
                 </div>
 
                 <!-- Tabs & Counter Header -->
@@ -69,6 +69,9 @@
                     </button>
                     <button class="admin-tab-btn" id="tabApproved">
                         ✅ Δημοσιευμένες (<span id="approvedCount">0</span>)
+                    </button>
+                    <button class="admin-tab-btn" id="tabSubscribers">
+                        📧 Ειδοποιήσεις / Emails (<span id="subscribersCount">0</span>)
                     </button>
                 </div>
 
@@ -94,6 +97,45 @@
                     <div id="emptyAdminApproved" class="empty-gallery-card" hidden>
                         <span class="empty-icon">📷</span>
                         <h3>Δεν υπάρχουν ακόμα εγκεκριμένες φωτογραφίες.</h3>
+                    </div>
+                </div>
+
+                <!-- SUBSCRIBERS EMAILS SECTION -->
+                <div id="adminSubscribersSection" class="admin-section" hidden>
+                    <div class="subscribers-header-bar">
+                        <h3 class="section-title">📧 Emails Χρηστών που θέλουν να ειδοποιηθούν:</h3>
+                        <div class="subscribers-actions">
+                            <button id="copyAllEmailsBtn" class="btn btn-submit-upload" style="padding: 10px 18px; font-size: 0.95rem;">
+                                📋 Αντιγραφή Όλων των Emails
+                            </button>
+                            <button id="clearAllEmailsBtn" class="btn btn-edit-cat" style="background: #ef4444; color: white; padding: 10px 18px; font-size: 0.95rem;">
+                                🗑️ Εκκαθάριση Λίστας
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="copyNotification" class="copy-notification" hidden></div>
+
+                    <div class="subscribers-table-wrapper">
+                        <table class="subscribers-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Email Χρήστη</th>
+                                    <th>Ημερομηνία Εγγραφής</th>
+                                    <th>Ενέργειες</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subscribersTableBody">
+                                <!-- Injected dynamically by gallery.js -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="emptySubscribers" class="empty-gallery-card" hidden>
+                        <span class="empty-icon">📧</span>
+                        <h3>Δεν υπάρχουν ακόμα εγγεγραμμένα emails.</h3>
+                        <p>Όσοι εγγράφονται στην αρχική σελίδα θα εμφανίζονται εδώ!</p>
                     </div>
                 </div>
             </div>

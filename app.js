@@ -250,19 +250,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 7. EMAIL FORM SUBMISSION
+    // 7. EMAIL FORM SUBMISSION (PERSISTED)
     // ----------------------------------------------------
     const notifyForm = document.getElementById('notifyForm');
     const notifyMessage = document.getElementById('notifyMessage');
     const emailInput = document.getElementById('emailInput');
 
+    const SUPABASE_URL = 'https://hqabeqlvnqdvipnspjog.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhxYWJlcWx2bnFkdmlwbnNwam9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0MDQzNDMsImV4cCI6MjEwMDk4MDM0M30.nmB5WOUN-WFQRhRxS14yCLK7X5I8OqJbWk-lRtR0yDg';
+
     if (notifyForm) {
-        notifyForm.addEventListener('submit', (e) => {
+        notifyForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = emailInput ? emailInput.value.trim() : '';
-            if (email && notifyMessage) {
-                notifyMessage.hidden = false;
-                notifyMessage.innerHTML = `🎉 Τέλεια! Το email <strong>${email}</strong> καταχωρήθηκε! Η Μάγκας και η Αριάδνη θα σε ειδοποιήσουν αμέσως μόλις ανοίξουμε! 🐾🎀`;
+            if (email) {
+                // 1. Save to Local Storage
+                const SUBSCRIBERS_KEY = 'igatamou_newsletter_subscribers';
+                let subs = [];
+                try {
+                    subs = JSON.parse(localStorage.getItem(SUBSCRIBERS_KEY) || '[]');
+                } catch(err) {
+                    subs = [];
+                }
+
+                const existing = subs.find(s => s.email.toLowerCase() === email.toLowerCase());
+                if (!existing) {
+                    const now = new Date();
+                    const formattedDate = now.toLocaleDateString('el-GR') + ' ' + now.toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit' });
+                    const newSub = {
+                        id: 'sub_' + Date.now(),
+                        email: email,
+                        date: formattedDate,
+                        timestamp: Date.now()
+                    };
+                    subs.unshift(newSub);
+                    localStorage.setItem(SUBSCRIBERS_KEY, JSON.stringify(subs));
+                }
+
+                // 2. Save to Supabase 'subscribers' table if available
+                if (window.supabase && window.supabase.createClient) {
+                    try {
+                        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                        await sb.from('subscribers').insert([{ email: email, created_at: new Date().toISOString() }]);
+                    } catch (err) {
+                        console.log('Supabase subscriber notice:', err);
+                    }
+                }
+
+                if (notifyMessage) {
+                    notifyMessage.hidden = false;
+                    notifyMessage.innerHTML = `🎉 Τέλεια! Το email <strong>${email}</strong> καταχωρήθηκε! Η Μάγκας και η Αριάδνη θα σε ειδοποιήσουν αμέσως μόλις είμαστε έτοιμοι! 🐾🎀`;
+                }
                 notifyForm.reset();
                 playCatSound('meow');
                 triggerCatJump();
