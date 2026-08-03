@@ -2793,10 +2793,11 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     }
 
     /* 1. Tic-Tac-Toe 50% Enlarged */
-    .ttt-grid {
+    .tictactoe-grid, #tttGrid {
         grid-template-columns: repeat(3, 135px) !important;
         grid-template-rows: repeat(3, 135px) !important;
-        gap: 15px !important;
+        gap: 16px !important;
+        margin: 15px auto !important;
     }
 
     .ttt-cell {
@@ -2811,6 +2812,7 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
         grid-template-columns: repeat(3, 135px) !important;
         grid-template-rows: repeat(3, 135px) !important;
         gap: 20px !important;
+        margin: 15px auto !important;
     }
 
     .whack-hole {
@@ -2820,6 +2822,11 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 
     .whack-item {
         font-size: 4.2rem !important;
+        bottom: -80px !important;
+    }
+
+    .whack-hole.up .whack-item {
+        bottom: 18px !important;
     }
 
     /* 3. Bubbles Box 50% Enlarged */
