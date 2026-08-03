@@ -1013,6 +1013,21 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     animation: fadeIn 0.3s ease;
 }
 
+.memory-attempts-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    color: var(--primary);
+    padding: 8px 22px;
+    border-radius: var(--radius-full);
+    font-size: 1.15rem;
+    font-weight: 800;
+    border: 2px solid var(--primary);
+    box-shadow: 0 4px 14px rgba(255, 94, 126, 0.15);
+    margin-top: 6px;
+}
+
 /* Options Grid */
 .options-grid {
     display: grid;

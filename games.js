@@ -172,6 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let streak = 0;
     let memoryFlippedCards = [];
     let memoryMatchedPairs = 0;
+    let memoryAttempts = 0;
     let quizRoundCorrect = 0;
     let quizRoundWrong = 0;
     let remainingHints = 5;
@@ -648,7 +649,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupMemoryGame() {
         if (questionNumber) questionNumber.textContent = `Γατο-Memory (${currentDifficulty.toUpperCase()})`;
         if (questionText) questionText.textContent = 'Βρες τα ζευγάρια με τις γατούλες!';
-        if (visualHelper) visualHelper.textContent = '💡 Κάνε κλικ στις κάρτες για να τις γυρίσεις!';
+
+        memoryAttempts = 0;
+        memoryFlippedCards = [];
+        memoryMatchedPairs = 0;
+
+        if (visualHelper) {
+            visualHelper.innerHTML = `
+                <div class="memory-attempts-box">
+                    🎯 Προσπάθειες: <strong id="memoryAttemptsCount">0</strong> / 32
+                </div>
+            `;
+        }
 
         if (optionsGrid) optionsGrid.hidden = true;
         if (memoryBoard) memoryBoard.hidden = false;
@@ -658,18 +670,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const cardDeck = [...emojiPool, ...emojiPool];
         cardDeck.sort(() => Math.random() - 0.5);
 
-        memoryFlippedCards = [];
-        memoryMatchedPairs = 0;
-
-        cardDeck.forEach((emoji, index) => {
+        cardDeck.forEach((emoji) => {
             const card = document.createElement('div');
             card.className = 'memory-card-tile';
             card.dataset.emoji = emoji;
 
             card.innerHTML = `
                 <div class="memory-card-inner">
-                    <div class="memory-card-front"><span class="memory-paw">🐾</span></div>
-                    <div class="memory-card-back"><span class="memory-emoji">${emoji}</span></div>
+                    <div class="memory-card-back"><span class="memory-paw">🐾</span></div>
+                    <div class="memory-card-front"><span class="memory-emoji">${emoji}</span></div>
                 </div>
             `;
 
@@ -681,6 +690,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleMemoryCardClick(card, emoji, totalPairs) {
         if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
         if (memoryFlippedCards.length >= 2) return;
+
+        memoryAttempts++;
+        const countEl = document.getElementById('memoryAttemptsCount');
+        if (countEl) countEl.textContent = memoryAttempts.toString();
 
         card.classList.add('flipped');
         memoryFlippedCards.push({ card, emoji });
@@ -701,7 +714,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 triggerCorrectAnswerReaction();
 
                 if (memoryMatchedPairs === totalPairs) {
-                    setTimeout(showCategoryCompleted, 800);
+                    setTimeout(() => showMemoryResultModal(true, totalPairs), 600);
+                    return;
                 }
             } else {
                 triggerWrongAnswerReaction();
@@ -709,8 +723,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     c1.card.classList.remove('flipped');
                     c2.card.classList.remove('flipped');
                     memoryFlippedCards = [];
-                }, 1000);
+                }, 900);
             }
+        }
+
+        // Check if limit of 32 attempts reached!
+        if (memoryAttempts >= 32 && memoryMatchedPairs < totalPairs) {
+            setTimeout(() => showMemoryResultModal(false, totalPairs), 800);
+        }
+    }
+
+    function showMemoryResultModal(isWin, totalPairs) {
+        if (isWin) {
+            const bonus = Math.max(15, (32 - memoryAttempts) * 5 + 40);
+            score += bonus;
+            localStorage.setItem('igatamou_game_score', score.toString());
+            updateScoreUI();
+
+            if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
+            if (quizResultTitle) quizResultTitle.textContent = 'Μπράβο! Νίκησες! 😸🎉';
+            if (quizResultScoreText) quizResultScoreText.textContent = `${memoryAttempts} / 32 Προσπάθειες`;
+            if (quizResultMessage) quizResultMessage.textContent = `«Απίθανο! Βρήκες και τα ${totalPairs} ζευγάρια σε μόνο ${memoryAttempts} προσπάθειες! Κέρδισες +${bonus} Γατο-Πόντους! 🎀✨»`;
+            
+            if (quizResultModal) {
+                const card = quizResultModal.querySelector('.modal-card');
+                if (card) card.className = 'modal-card quiz-result-card result-perfect';
+                quizResultModal.hidden = false;
+            }
+            playCatSoundEffect('win');
+        } else {
+            if (quizResultEmoji) quizResultEmoji.textContent = '😿';
+            if (quizResultTitle) quizResultTitle.textContent = 'Η γατούλα είναι στενοχωρημένη... 😿';
+            if (quizResultScoreText) quizResultScoreText.textContent = `32 / 32 Προσπάθειες`;
+            if (quizResultMessage) quizResultMessage.textContent = '«Εξαντλήθηκαν οι 32 προσπάθειες! Μη στεναχωριέσαι, κάνε άλλη μία προσπάθεια και θα τα καταφέρεις! 🐾»';
+            
+            if (quizResultModal) {
+                const card = quizResultModal.querySelector('.modal-card');
+                if (card) card.className = 'modal-card quiz-result-card result-sad';
+                quizResultModal.hidden = false;
+            }
+            playCatSoundEffect('wrong');
         }
     }
 
