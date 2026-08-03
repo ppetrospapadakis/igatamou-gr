@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let memoryMatchedPairs = 0;
     let quizRoundCorrect = 0;
     let quizRoundWrong = 0;
+    let remainingHints = 5;
 
     // DOM Elements
     const categoryMenu = document.getElementById('categoryMenu');
@@ -410,6 +411,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             quizRoundCorrect = 0;
             quizRoundWrong = 0;
+            if (currentDifficulty === 'easy') remainingHints = 5;
+            else if (currentDifficulty === 'medium') remainingHints = 2;
+            else if (currentDifficulty === 'hard') remainingHints = 1;
+
             if (quizCorrectCount) quizCorrectCount.textContent = '0';
             if (quizWrongCount) quizWrongCount.textContent = '0';
 
@@ -449,16 +454,49 @@ document.addEventListener('DOMContentLoaded', () => {
                 const hintBtn = document.createElement('button');
                 hintBtn.className = 'btn-hint-toggle';
                 hintBtn.type = 'button';
-                hintBtn.innerHTML = '💡 Βοήθεια';
 
                 const hintBox = document.createElement('div');
                 hintBox.className = 'hint-text-box';
                 hintBox.hidden = true;
+                hintBox.style.display = 'none';
                 hintBox.textContent = q.helper;
 
+                const updateBtnText = () => {
+                    if (remainingHints <= 0) {
+                        hintBtn.innerHTML = `💡 Βοήθεια (0 απομένουν)`;
+                        hintBtn.disabled = true;
+                        hintBtn.style.opacity = '0.5';
+                        hintBtn.style.cursor = 'not-allowed';
+                    } else {
+                        hintBtn.innerHTML = `💡 Βοήθεια (Απομένουν: ${remainingHints})`;
+                        hintBtn.disabled = false;
+                        hintBtn.style.opacity = '1';
+                        hintBtn.style.cursor = 'pointer';
+                    }
+                };
+
+                updateBtnText();
+                let isRevealedForThisQuestion = false;
+
                 hintBtn.addEventListener('click', () => {
-                    hintBox.hidden = !hintBox.hidden;
-                    hintBtn.innerHTML = hintBox.hidden ? '💡 Βοήθεια' : '💡 Απόκρυψη βοήθειας';
+                    if (!isRevealedForThisQuestion) {
+                        if (remainingHints <= 0) return;
+                        remainingHints--;
+                        isRevealedForThisQuestion = true;
+                        hintBox.hidden = false;
+                        hintBox.style.display = 'inline-block';
+                        hintBtn.innerHTML = `💡 Απόκρυψη (Απομένουν: ${remainingHints})`;
+                        playCatSoundEffect('click');
+                    } else {
+                        hintBox.hidden = !hintBox.hidden;
+                        if (hintBox.hidden) {
+                            hintBox.style.display = 'none';
+                            updateBtnText();
+                        } else {
+                            hintBox.style.display = 'inline-block';
+                            hintBtn.innerHTML = `💡 Απόκρυψη (Απομένουν: ${remainingHints})`;
+                        }
+                    }
                 });
 
                 visualHelper.appendChild(hintBtn);

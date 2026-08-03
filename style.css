@@ -996,6 +996,10 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     border-color: #ffd166;
 }
 
+.hint-text-box[hidden] {
+    display: none !important;
+}
+
 .hint-text-box {
     margin-top: 10px;
     font-size: 1.4rem;
