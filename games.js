@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
-    // 1. GAME DATA & QUESTION DATABASE (TIERED BY LEVEL)
+    // 1. GAME DATA & QUESTION DATABASE (~100 QUESTIONS, SHUFFLED OPTIONS)
     // ----------------------------------------------------
     const gameDatabase = {
         math: {
@@ -8,65 +8,126 @@ document.addEventListener('DOMContentLoaded', () => {
                 { q: "Πόσο κάνει 2 + 2;", opts: ["4", "3", "5", "6"], a: "4", helper: "✌️ + ✌️ = 🖐️" },
                 { q: "Πόσο κάνει 5 + 5;", opts: ["10", "8", "12", "15"], a: "10", helper: "🖐️ + 🖐️ = 🖐️🖐️" },
                 { q: "Πόσο κάνει 10 - 4;", opts: ["6", "5", "7", "4"], a: "6" },
-                { q: "Πόσο κάνει 3 + 4;", opts: ["7", "6", "8", "5"], a: "7" }
+                { q: "Πόσο κάνει 3 + 4;", opts: ["7", "6", "8", "5"], a: "7" },
+                { q: "Πόσο κάνει 6 + 4;", opts: ["10", "9", "11", "8"], a: "10" },
+                { q: "Πόσο κάνει 8 - 3;", opts: ["5", "4", "6", "3"], a: "5" },
+                { q: "Πόσο κάνει 1 + 9;", opts: ["10", "9", "11", "8"], a: "10" },
+                { q: "Πόσο κάνει 4 + 4;", opts: ["8", "7", "9", "6"], a: "8" }
             ],
             medium: [
                 { q: "Πόσο κάνει 12 + 8;", opts: ["20", "18", "22", "15"], a: "20", helper: "🔟 + 🔟" },
                 { q: "Πόσο κάνει 30 - 10;", opts: ["20", "15", "25", "10"], a: "20" },
                 { q: "Πόσο κάνει 5 × 5;", opts: ["25", "20", "30", "15"], a: "25" },
-                { q: "Πόσο κάνει 20 ÷ 4;", opts: ["5", "4", "6", "10"], a: "5" }
+                { q: "Πόσο κάνει 20 ÷ 4;", opts: ["5", "4", "6", "10"], a: "5" },
+                { q: "Πόσο κάνει 15 + 15;", opts: ["30", "25", "35", "40"], a: "30" },
+                { q: "Πόσο κάνει 40 - 15;", opts: ["25", "20", "30", "35"], a: "25" },
+                { q: "Πόσο κάνει 6 × 4;", opts: ["24", "20", "28", "18"], a: "24" },
+                { q: "Πόσο κάνει 18 ÷ 2;", opts: ["9", "8", "10", "7"], a: "9" }
             ],
             hard: [
                 { q: "Πόσο κάνει 7 × 6;", opts: ["42", "40", "36", "48"], a: "42" },
                 { q: "Πόσο κάνει 100 - 35;", opts: ["65", "55", "75", "70"], a: "65" },
                 { q: "Πόσο κάνει 8 × 4;", opts: ["32", "30", "28", "36"], a: "32" },
-                { q: "Πόσο κάνει 50 + 50;", opts: ["100", "90", "80", "110"], a: "100" }
+                { q: "Πόσο κάνει 50 + 50;", opts: ["100", "90", "80", "110"], a: "100" },
+                { q: "Πόσο κάνει 81 ÷ 9;", opts: ["9", "8", "7", "10"], a: "9" },
+                { q: "Πόσο κάνει 12 × 3;", opts: ["36", "32", "40", "30"], a: "36" },
+                { q: "Πόσο κάνει 75 - 25;", opts: ["50", "45", "55", "60"], a: "50" },
+                { q: "Πόσο κάνει 9 × 7;", opts: ["63", "56", "72", "64"], a: "63" }
             ]
         },
         spelling: {
             easy: [
-                { q: "Συμπλήρωσε: Το μήλ...", opts: ["ο", "ω"], a: "ο", helper: "Το ουδέτερο λήγει σε -ο" },
-                { q: "Συμπλήρωσε: Η αυλ...", opts: ["ή", "ί"], a: "ή" },
-                { q: "Συμπλήρωσε: Το δέντρ...", opts: ["ο", "ω"], a: "ο" }
+                { q: "Συμπλήρωσε το σωστό: Το μήλ...", opts: ["ο", "ω"], a: "ο", helper: "Το ουδέτερο λήγει σε -ο" },
+                { q: "Συμπλήρωσε το σωστό: Η αυλ...", opts: ["ή", "ί"], a: "ή" },
+                { q: "Συμπλήρωσε το σωστό: Το δέντρ...", opts: ["ο", "ω"], a: "ο" },
+                { q: "Συμπλήρωσε το σωστό: Το παιδ...", opts: ["ί", "ύ"], a: "ί" },
+                { q: "Συμπλήρωσε το σωστό: Η μητέρ...", opts: ["α", "αα"], a: "α" },
+                { q: "Συμπλήρωσε το σωστό: Το ψάρ...", opts: ["ι", "υ"], a: "ι" }
             ],
             medium: [
-                { q: "Συμπλήρωσε: Εγώ τρέχ...", opts: ["ω", "ο"], a: "ω", helper: "Το ρήμα εγώ λήγει σε -ω" },
-                { q: "Συμπλήρωσε: Οι γάτ...", opts: ["ες", "ις"], a: "ες" },
-                { q: "Συμπλήρωσε: Το σπ...τι", opts: ["ί", "ύ"], a: "ί" }
+                { q: "Συμπλήρωσε το σωστό: Εγώ τρέχ...", opts: ["ω", "ο"], a: "ω", helper: "Το ρήμα εγώ λήγει σε -ω" },
+                { q: "Συμπλήρωσε το σωστό: Οι γάτ...", opts: ["ες", "ις"], a: "ες" },
+                { q: "Συμπλήρωσε το σωστό: Το σπ...τι", opts: ["ί", "ύ"], a: "ί" },
+                { q: "Συμπλήρωσε το σωστό: Εγώ παίζ...", opts: ["ω", "ο"], a: "ω" },
+                { q: "Συμπλήρωσε το σωστό: Το βιβλ...", opts: ["ίο", "ύο"], a: "ίο" },
+                { q: "Συμπλήρωσε το σωστό: Η άνοιξ...", opts: ["η", "ι"], a: "η" }
             ],
             hard: [
-                { q: "Συμπλήρωσε: Εμείς παίζουμ...", opts: ["ε", "αι"], a: "ε" },
-                { q: "Συμπλήρωσε: Εγώ διαβάζ...", opts: ["ω", "ο"], a: "ω" }
+                { q: "Συμπλήρωσε το σωστό: Εμείς παίζουμ...", opts: ["ε", "αι"], a: "ε" },
+                { q: "Συμπλήρωσε το σωστό: Εγώ διαβάζ...", opts: ["ω", "ο"], a: "ω" },
+                { q: "Συμπλήρωσε το σωστό: Ο άνθρωπ...", opts: ["ος", "ως"], a: "ος" },
+                { q: "Συμπλήρωσε το σωστό: Η θάλασσ...", opts: ["α", "αα"], a: "α" },
+                { q: "Συμπλήρωσε το σωστό: Το σχολ...", opts: ["είο", "ίο"], a: "είο" },
+                { q: "Συμπλήρωσε το σωστό: Η γειτον...", opts: ["ιά", "ειά"], a: "ιά" }
             ]
         },
         english: {
             easy: [
-                { q: "Τι σημαίνει: Cat;", opts: ["Γάτα", "Σκύλος", "Ψάρι"], a: "Γάτα" },
-                { q: "Τι σημαίνει: Hello!", opts: ["Γεια σου!", "Αντίο!"], a: "Γεια σου!" }
+                { q: "Τι σημαίνει η αγγλική λέξη: Cat;", opts: ["Γάτα", "Σκύλος", "Ψάρι", "Πουλί"], a: "Γάτα" },
+                { q: "Τι σημαίνει: Dog;", opts: ["Σκύλος", "Γάτα", "Ψάρι", "Ποντίκι"], a: "Σκύλος" },
+                { q: "Τι σημαίνει: Fish;", opts: ["Ψάρι", "Γάτα", "Πουλί", "Σκύλος"], a: "Ψάρι" },
+                { q: "Τι σημαίνει: Hello!", opts: ["Γεια σου!", "Αντίο!", "Καληνύχτα", "Ευχαριστώ"], a: "Γεια σου!" },
+                { q: "Πώς λέγεται το Κόκκινο στα Αγγλικά;", opts: ["Red", "Blue", "Green", "Yellow"], a: "Red" },
+                { q: "Τι σημαίνει: Milk;", opts: ["Γάλα", "Νερό", "Χυμός", "Τσάι"], a: "Γάλα" }
             ],
             medium: [
-                { q: "Πώς λέγεται το Κόκκινο στα Αγγλικά;", opts: ["Red", "Blue", "Green"], a: "Red" },
-                { q: "Τι σημαίνει: I love cats!", opts: ["Αγαπώ τις γάτες!", "Έχω μια γάτα"], a: "Αγαπώ τις γάτες!" }
+                { q: "Τι σημαίνει: I love cats!", opts: ["Αγαπώ τις γάτες!", "Έχω μια γάτα", "Η γάτα κοιμάται", "Γάτες και σκύλοι"], a: "Αγαπώ τις γάτες!" },
+                { q: "Πώς λέγεται το Πράσινο στα Αγγλικά;", opts: ["Green", "Blue", "Red", "Yellow"], a: "Green" },
+                { q: "Πώς λέγεται το Σχολείο στα Αγγλικά;", opts: ["School", "House", "Park", "Book"], a: "School" },
+                { q: "Τι σημαίνει: Water;", opts: ["Νερό", "Γάλα", "Χυμός", "Φαγητό"], a: "Νερό" },
+                { q: "Τι σημαίνει: Bird;", opts: ["Πουλί", "Ψάρι", "Γάτα", "Σκύλος"], a: "Πουλί" },
+                { q: "Τι σημαίνει: Book;", opts: ["Βιβλίο", "Τετράδιο", "Μολύβι", "Τσάντα"], a: "Βιβλίο" }
             ],
             hard: [
-                { q: "Πώς λέγεται το Σχολείο στα Αγγλικά;", opts: ["School", "House", "Park"], a: "School" },
-                { q: "Τι σημαίνει: Sun;", opts: ["Ήλιος", "Φεγγάρι", "Αστέρι"], a: "Ήλιος" }
+                { q: "Τι σημαίνει: Sun;", opts: ["Ήλιος", "Φεγγάρι", "Αστέρι", "Σύννεφο"], a: "Ήλιος" },
+                { q: "Τι σημαίνει: Butterfly;", opts: ["Πεταλούδα", "Μέλισσα", "Πουλί", "Αράχνη"], a: "Πεταλούδα" },
+                { q: "Τι σημαίνει: Rainbow;", opts: ["Ουράνιο Τόξο", "Βροχή", "Ήλιος", "Σύννεφο"], a: "Ουράνιο Τόξο" },
+                { q: "Τι σημαίνει: Moon;", opts: ["Φεγγάρι", "Ήλιος", "Αστέρι", "Ουρανός"], a: "Φεγγάρι" },
+                { q: "Τι σημαίνει: Friend;", opts: ["Φίλος", "Αδερφός", "Μαθητής", "Δάσκαλος"], a: "Φίλος" },
+                { q: "Τι σημαίνει: Summer;", opts: ["Καλοκαίρι", "Χειμώνας", "Άνοιξη", "Φθινόπωρο"], a: "Καλοκαίρι" }
             ]
         },
         riddles: {
-            easy: [{ q: "Έχει 4 πόδια, μουστακάκια και κάνει νιάου!", opts: ["Γάτα 🐱", "Σκύλος 🐶", "Ελέφαντας 🐘"], a: "Γάτα 🐱" }],
-            medium: [{ q: "Έχω δείκτες αλλά δεν έχω χέρια, μετράω την ώρα. Τι είμαι;", opts: ["Ρολόι ⏰", "Παιχνίδι 🧸", "Καρέκλα 🪑"], a: "Ρολόι ⏰" }],
-            hard: [{ q: "Ποιο πράγμα γίνεται πιο μεγάλο όσο του αφαιρείς;", opts: ["Τρύπα 🕳️", "Βουνό ⛰️", "Μπαλόνι 🎈"], a: "Τρύπα 🕳️" }]
+            easy: [
+                { q: "Έχει 4 πόδια, μουστακάκια και κάνει νιάου! Τι είναι;", opts: ["Γάτα 🐱", "Σκύλος 🐶", "Ελέφαντας 🐘", "Λιοντάρι 🦁"], a: "Γάτα 🐱" },
+                { q: "Είμαι κόκκινο, γλυκό και έχω σποράκια απ' έξω! Τι είμαι;", opts: ["Φράουλα 🍓", "Μήλο 🍎", "Πορτοκάλι 🍊", "Μπανάνες 🍌"], a: "Φράουλα 🍓" }
+            ],
+            medium: [
+                { q: "Έχω δείκτες αλλά δεν έχω χέρια, μετράω την ώρα. Τι είμαι;", opts: ["Ρολόι ⏰", "Παιχνίδι 🧸", "Καρέκλα 🪑", "Βιβλίο 📖"], a: "Ρολόι ⏰" },
+                { q: "Όταν βρέχει βγαίνω έξω για να σε προστατέψω από το νερό! Τι είμαι;", opts: ["Ομπρέλα ☂️", "Καπέλο 🧢", "Ζακέτα 🧥", "Παπούτσι 👟"], a: "Ομπρέλα ☂️" }
+            ],
+            hard: [
+                { q: "Ποιο πράγμα γίνεται πιο μεγάλο όσο του αφαιρείς;", opts: ["Τρύπα 🕳️", "Βουνό ⛰️", "Μπαλόνι 🎈", "Ποτάμι 🌊"], a: "Τρύπα 🕳️" },
+                { q: "Έχει κλειδιά αλλά δεν ανοίγει καμία πόρτα, βγάζει όμως μουσική! Τι είναι;", opts: ["Πιάνο 🎹", "Κλειδαριά 🔐", "Κουτί 📦", "Βιβλίο 📖"], a: "Πιάνο 🎹" }
+            ]
         },
         nature: {
-            easy: [{ q: "Πού ζουν τα ψάρια;", opts: ["Στο νερό 🌊", "Στα δέντρα 🌳", "Στον αέρα ☁️"], a: "Στο νερό 🌊" }],
-            medium: [{ q: "Ποιο από τα παρακάτω ζώα είναι ΘΗΛΑΣΤΙΚΟ;", opts: ["Δελφίνι 🐬", "Χελώνα 🐢", "Αετός 🦅"], a: "Δελφίνι 🐬" }],
-            hard: [{ q: "Τι χρειάζονται τα φυτά για να μεγαλώσουν;", opts: ["Ήλιο & Νερό ☀️💧", "Σοκολάτα 🍫", "Γάλα 🥛"], a: "Ήλιο & Νερό ☀️💧" }]
+            easy: [
+                { q: "Πού ζουν τα ψάρια;", opts: ["Στο νερό 🌊", "Στα δέντρα 🌳", "Στον αέρα ☁️", "Στην άμμο 🏜️"], a: "Στο νερό 🌊" },
+                { q: "Ποια τροφή είναι η πιο υγιεινή για τα παιδιά;", opts: ["Φρούτα & Λαχανικά 🍎", "Καραμέλες 🍬", "Πατατάκια 🍟", "Αναψυκτικά 🥤"], a: "Φρούτα & Λαχανικά 🍎" }
+            ],
+            medium: [
+                { q: "Ποιο από τα παρακάτω ζώα είναι ΘΗΛΑΣΤΙΚΟ;", opts: ["Δελφίνι 🐬", "Χελώνα 🐢", "Αετός 🦅", "Βάτραχος 🐸"], a: "Δελφίνι 🐬" },
+                { q: "Πώς λέγεται η διαδικασία που τα φυτά φτιάχνουν τροφή με τον Ήλιο;", opts: ["Φωτοσύνθεση 🌿", "Αναπνοή 💨", "Πότισμα 💧", "Βλάστηση 🌱"], a: "Φωτοσύνθεση 🌿" }
+            ],
+            hard: [
+                { q: "Τι χρειάζονται τα φυτά για να μεγαλώσουν;", opts: ["Ήλιο & Νερό ☀️💧", "Σοκολάτα 🍫", "Παιχνίδια 🧸", "Γάλα 🥛"], a: "Ήλιο & Νερό ☀️💧" },
+                { q: "Ποιος είναι ο μεγαλύτερος ωκεανός της Γης;", opts: ["Ειρηνικός Ωκεανός 🌊", "Ατλαντικός 🌊", "Ινδικός 🌊", "Αρκτικός ❄️"], a: "Ειρηνικός Ωκεανός 🌊" }
+            ]
         },
         geography: {
-            easy: [{ q: "Σε ποια Ήπειρο ανήκει η Ελλάδα;", opts: ["Ευρώπη 🇪🇺", "Ασία 🌏", "Αφρική 🌍"], a: "Ευρώπη 🇪🇺" }],
-            medium: [{ q: "Ποιο είναι το μεγαλύτερο Νησί της Ελλάδας;", opts: ["Κρήτη 🏝️", "Ρόδος 🏖️", "Κέρκυρα 🏰"], a: "Κρήτη 🏝️" }],
-            hard: [{ q: "Ποια από τις παρακάτω πόλεις βρίσκεται σε ΝΗΣΙ;", opts: ["Ερμούπολη (Σύρος) 🏝️", "Λάρισα 🌾", "Τρίπολη ⛰️"], a: "Ερμούπολη (Σύρος) 🏝️" }]
+            easy: [
+                { q: "Σε ποια Ήπειρο ανήκει η Ελλάδα;", opts: ["Ευρώπη 🇪🇺", "Ασία 🌏", "Αφρική 🌍", "Αμερική 🌎"], a: "Ευρώπη 🇪🇺" },
+                { q: "Ποια είναι η πρωτεύουσα της Ελλάδας;", opts: ["Αθήνα 🏛️", "Θεσσαλονίκη 🏰", "Πάτρα 🚢", "Ηράκλειο 🏝️"], a: "Αθήνα 🏛️" }
+            ],
+            medium: [
+                { q: "Ποιο είναι το μεγαλύτερο Νησί της Ελλάδας;", opts: ["Κρήτη 🏝️", "Ρόδος 🏖️", "Κέρκυρα 🏰", "Νάξος ⛵"], a: "Κρήτη 🏝️" },
+                { q: "Ποιο είναι το ψηλότερο βουνό της Ελλάδας;", opts: ["Όλυμπος ⛰️", "Πάρνηθα 🌲", "Ταΰγετος 🏔️", "Πίνδος ⛰️"], a: "Όλυμπος ⛰️" }
+            ],
+            hard: [
+                { q: "Ποια από τις παρακάτω πόλεις βρίσκεται σε ΝΗΣΙ;", opts: ["Ερμούπολη (Σύρος) 🏝️", "Λάρισα 🌾", "Τρίπολη ⛰️", "Ιωάννινα 🏞️"], a: "Ερμούπολη (Σύρος) 🏝️" },
+                { q: "Σε ποια Ήπειρο βρίσκεται η Αίγυπτος;", opts: ["Αφρική 🌍", "Ευρώπη 🇪🇺", "Ασία 🌏", "Αυστραλία 🇦🇺"], a: "Αφρική 🌍" }
+            ]
         }
     };
 
@@ -302,14 +363,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const pool = gameDatabase[categoryKey] ? (gameDatabase[categoryKey][currentDifficulty] || gameDatabase[categoryKey].easy) : [];
             currentQuestions = [...pool];
-            currentQuestions.sort(() => Math.random() - 0.5);
+            currentQuestions.sort(() => Math.random() - 0.5); // Shuffle questions
             currentQIndex = 0;
             renderCurrentQuestion();
         }
     }
 
     // ----------------------------------------------------
-    // MULTIPLE CHOICE QUIZ GAMES
+    // MULTIPLE CHOICE QUIZ GAMES (WITH SHUFFLED OPTIONS!)
     // ----------------------------------------------------
     function renderCurrentQuestion() {
         if (!currentQuestions || currentQIndex >= currentQuestions.length) {
@@ -320,12 +381,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const q = currentQuestions[currentQIndex];
         if (questionNumber) questionNumber.textContent = `Ερώτηση ${currentQIndex + 1} από ${currentQuestions.length}`;
         if (questionText) questionText.textContent = q.q;
-
         if (visualHelper) visualHelper.textContent = q.helper || '';
 
         if (optionsGrid) {
             optionsGrid.innerHTML = '';
-            q.opts.forEach(optText => {
+            // Randomize/Shuffle Options order for every question!
+            const shuffledOpts = [...q.opts].sort(() => Math.random() - 0.5);
+            shuffledOpts.forEach(optText => {
                 const btn = document.createElement('button');
                 btn.className = 'quiz-option-btn';
                 btn.textContent = optText;
@@ -473,7 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 8. TIC-TAC-TOE GAME LOGIC (EASY / MEDIUM / HARD AI)
+    // 8. TIC-TAC-TOE GAME LOGIC (EASY / SMART MEDIUM / UNBEATABLE MINIMAX HARD AI)
     // ----------------------------------------------------
     let tttBoard = Array(9).fill(null);
     let tttPlayerTurn = true;
@@ -506,8 +568,9 @@ document.addEventListener('DOMContentLoaded', () => {
         cellEl.textContent = '🐱';
         playCatSoundEffect('click');
 
-        if (checkTicTacToeWin('🐱')) {
+        if (checkBoardWin(tttBoard, '🐱')) {
             tttGameOver = true;
+            highlightWinningCombo('🐱');
             if (tttStatusText) tttStatusText.textContent = '🎉 Νίκησες! 🥳';
             if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Μπράβο! Νίκησες τη Μάγκας! +10 Πόντοι! 🎉"`;
             score += 10;
@@ -541,21 +604,24 @@ document.addEventListener('DOMContentLoaded', () => {
         let aiChoice = null;
 
         if (currentDifficulty === 'easy') {
+            // Easy AI: Pure random choice
             aiChoice = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
         } else if (currentDifficulty === 'medium') {
-            // Medium AI: Block player win or take random
-            aiChoice = findWinningTicTacToeMove('🐱') || emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-        } else {
-            // Hard AI: Win > Block > Center > Corner > Random
+            // Medium AI: Win > Block > Center > Random
             aiChoice = findWinningTicTacToeMove('🐟') || findWinningTicTacToeMove('🐱') || (tttBoard[4] === null ? 4 : emptyIndices[Math.floor(Math.random() * emptyIndices.length)]);
+        } else {
+            // Hard AI: Unbeatable Minimax Algorithm!
+            const best = minimaxTicTacToe(tttBoard, 0, true);
+            aiChoice = best.move !== undefined ? best.move : emptyIndices[0];
         }
 
         tttBoard[aiChoice] = '🐟';
         const cellEl = tttGrid.children[aiChoice];
         if (cellEl) cellEl.textContent = '🐟';
 
-        if (checkTicTacToeWin('🐟')) {
+        if (checkBoardWin(tttBoard, '🐟')) {
             tttGameOver = true;
+            highlightWinningCombo('🐟');
             if (tttStatusText) tttStatusText.textContent = '🐟 Κέρδισε το Ψαράκι!';
             if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Έχασες! Δοκίμασε ξανά! 🐾"`;
             triggerWrongAnswerReaction();
@@ -588,7 +654,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
 
-    function checkTicTacToeWin(symbol) {
+    function checkBoardWin(board, symbol) {
+        const wins = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+        return wins.some(([a, b, c]) => board[a] === symbol && board[b] === symbol && board[c] === symbol);
+    }
+
+    function highlightWinningCombo(symbol) {
         const wins = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8],
             [0, 3, 6], [1, 4, 7], [2, 5, 8],
@@ -602,10 +677,46 @@ document.addEventListener('DOMContentLoaded', () => {
                     tttGrid.children[b].classList.add('winning-cell');
                     tttGrid.children[c].classList.add('winning-cell');
                 }
-                return true;
+                break;
             }
         }
-        return false;
+    }
+
+    // Minimax Algorithm for Unbeatable Hard AI
+    function minimaxTicTacToe(board, depth, isMaximizing) {
+        if (checkBoardWin(board, '🐟')) return { score: 10 - depth };
+        if (checkBoardWin(board, '🐱')) return { score: depth - 10 };
+
+        const emptyIndices = board.map((val, idx) => val === null ? idx : null).filter(val => val !== null);
+        if (!emptyIndices.length) return { score: 0 };
+
+        if (isMaximizing) {
+            let bestScore = -Infinity;
+            let bestMove = null;
+            for (let idx of emptyIndices) {
+                board[idx] = '🐟';
+                let result = minimaxTicTacToe(board, depth + 1, false);
+                board[idx] = null;
+                if (result.score > bestScore) {
+                    bestScore = result.score;
+                    bestMove = idx;
+                }
+            }
+            return { score: bestScore, move: bestMove };
+        } else {
+            let bestScore = Infinity;
+            let bestMove = null;
+            for (let idx of emptyIndices) {
+                board[idx] = '🐱';
+                let result = minimaxTicTacToe(board, depth + 1, true);
+                board[idx] = null;
+                if (result.score < bestScore) {
+                    bestScore = result.score;
+                    bestMove = idx;
+                }
+            }
+            return { score: bestScore, move: bestMove };
+        }
     }
 
     if (tttResetBtn) tttResetBtn.addEventListener('click', setupTicTacToeGame);
@@ -626,7 +737,7 @@ document.addEventListener('DOMContentLoaded', () => {
         snakePoints = 0;
         if (snakeScore) snakeScore.textContent = '0';
 
-        let speedMs = 240; // Easy speed for kids!
+        let speedMs = 240;
         if (currentDifficulty === 'medium') speedMs = 160;
         if (currentDifficulty === 'hard') speedMs = 100;
 
@@ -639,7 +750,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
         snakeDir = 'RIGHT';
 
-        // Add obstacles in Hard mode
         snakeObstacles = [];
         if (currentDifficulty === 'hard') {
             snakeObstacles = [
@@ -724,7 +834,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.textBaseline = 'middle';
         ctx.fillText(snakeFood.icon, snakeFood.x * size + size / 2, snakeFood.y * size + size / 2);
 
-        // Draw Obstacles
         snakeObstacles.forEach(o => {
             ctx.fillText('🧱', o.x * size + size / 2, o.y * size + size / 2);
         });
@@ -741,7 +850,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Touch Swipe Control for Snake
     let touchStartX = 0;
     let touchStartY = 0;
     if (snakeArena) {
@@ -781,7 +889,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (snakeStartBtn) snakeStartBtn.addEventListener('click', setupSnakeGame);
 
     // ----------------------------------------------------
-    // 10. CAT TETRIS GAME LOGIC (SPEED & LEVEL SCALING)
+    // 10. CAT TETRIS GAME LOGIC
     // ----------------------------------------------------
     let tetrisInterval = null;
     let tetrisGrid = Array(20).fill(null).map(() => Array(12).fill(0));
@@ -964,7 +1072,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tetrisStartBtn) tetrisStartBtn.addEventListener('click', setupTetrisGame);
 
     // ----------------------------------------------------
-    // 11. WHACK A FISH (LEVEL SCALING & BOMBS)
+    // 11. WHACK A FISH
     // ----------------------------------------------------
     let whackTimer = null;
     let whackLoop = null;
@@ -1050,7 +1158,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (whackStartBtn) whackStartBtn.addEventListener('click', setupWhackGame);
 
     // ----------------------------------------------------
-    // 12. BUBBLE POP GAME (LEVEL SPEED & BOMB BUBBLES)
+    // 12. BUBBLE POP GAME
     // ----------------------------------------------------
     let bubblesLoop = null;
     let bubblesPoints = 0;
@@ -1113,10 +1221,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bubblesStartBtn) bubblesStartBtn.addEventListener('click', setupBubblesGame);
 
     // ----------------------------------------------------
-    // 13. MINI CAT CHESS (LEVEL 1: 4x4, LEVEL 2: KNIGHTS, LEVEL 3: 5x5 + ROOKS + KNIGHTS)
+    // 13. MINI CAT CHESS
     // ----------------------------------------------------
     let chessGrid = [];
-    let chessBoardSize = 4; // 4x4 or 5x5
+    let chessBoardSize = 4;
     let chessSelectedSq = null;
     let chessPlayerTurn = true;
 
@@ -1241,10 +1349,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = chessGrid[toR][toC];
         const isCat = piece.includes('🐱');
 
-        // Cannot capture own piece
         if (target && ((isCat && target.includes('🐱')) || (!isCat && target.includes('🐟')))) return false;
 
-        // Pawns
         if (piece.startsWith('🐱') || piece.startsWith('🐟')) {
             const dir = isCat ? -1 : 1;
             if (fromR + dir === toR && fromC === toC && !target) return true;
@@ -1252,19 +1358,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
 
-        // Kings
         if (piece.includes('👑')) {
             return Math.abs(fromR - toR) <= 1 && Math.abs(fromC - toC) <= 1;
         }
 
-        // Knights (🐴)
         if (piece.includes('🐴')) {
             const rDiff = Math.abs(fromR - toR);
             const cDiff = Math.abs(fromC - toC);
             return (rDiff === 2 && cDiff === 1) || (rDiff === 1 && cDiff === 2);
         }
 
-        // Rooks (🏰)
         if (piece.includes('🏰')) {
             if (fromR !== toR && fromC !== toC) return false;
             const rDir = Math.sign(toR - fromR);
@@ -1299,14 +1402,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!moves.length) {
-            // Deadlock / Stalemate check
             if (chessStatusText) chessStatusText.textContent = '🤝 Ισοπαλία! Δεν υπάρχουν άλλες κινήσεις!';
             if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Δεν υπάρχουν άλλες κινήσεις! Πάτα Νέος Γύρος! 🔄"`;
             chessPlayerTurn = true;
             return;
         }
 
-        // AI prefers capture moves
         const captureMoves = moves.filter(m => chessGrid[m.toR][m.toC] !== null);
         const m = captureMoves.length ? captureMoves[Math.floor(Math.random() * captureMoves.length)] : moves[Math.floor(Math.random() * moves.length)];
 
@@ -1321,7 +1422,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (chessResetBtn) chessResetBtn.addEventListener('click', setupChessGame);
 
     // ----------------------------------------------------
-    // 14. CAT SOLITAIRE (LEVEL SCALING & RESHUFFLE DEADLOCK FIX)
+    // 14. CAT SOLITAIRE
     // ----------------------------------------------------
     let solitaireFoundations = { cat: [], fish: [], yarn: [] };
     let solitaireColumns = [[], [], []];
@@ -1346,7 +1447,6 @@ document.addEventListener('DOMContentLoaded', () => {
         solitaireColumns = [[], [], []];
         solitaireSelected = null;
 
-        // Distribute deck into 3 columns
         deck.forEach((card, index) => {
             solitaireColumns[index % 3].push(card);
         });
