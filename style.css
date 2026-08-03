@@ -3354,6 +3354,39 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     background: #f8fafc;
 }
 
+/* Discreet Fixed Bottom-Left Admin Link */
+.discreet-admin-link {
+    position: fixed;
+    bottom: 12px;
+    left: 14px;
+    z-index: 9999;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1.5px solid #cbd5e1;
+    padding: 5px 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.22s ease-in-out;
+    opacity: 0.65;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.discreet-admin-link:hover {
+    opacity: 1;
+    color: #ff5e7e;
+    border-color: #ff5e7e;
+    background: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 94, 126, 0.2);
+}
+
 
 
 
