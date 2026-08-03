@@ -2815,6 +2815,24 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     transform: translateY(-2px);
 }
 
+.btn-edit-cat {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-edit-cat:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+}
+
 /* ---------------------------------------------------- */
 /* DESKTOP GAME WINDOW ENLARGEMENT (50% LARGER DIMENSIONS) */
 /* ---------------------------------------------------- */

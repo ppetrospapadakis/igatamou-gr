@@ -71,6 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (typeof c.gallery === 'string') {
                         try { c.gallery = JSON.parse(c.gallery); } catch(e) {}
                     }
+                    const localCat = map.get(c.id);
+                    if (localCat && Array.isArray(localCat.gallery) && localCat.gallery.length > 0) {
+                        const allPhotos = new Set([c.image, ...(c.gallery || []), ...localCat.gallery]);
+                        c.gallery = Array.from(allPhotos);
+                    } else if (!c.gallery || !Array.isArray(c.gallery)) {
+                        c.gallery = [c.image];
+                    }
                     map.set(c.id, c);
                 });
                 const merged = Array.from(map.values());
@@ -642,6 +649,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p><small>Φωτογραφίες Άλμπουμ: <strong>${photoCount}</strong></small></p>
                             <button class="btn-view-album" data-id="${cat.id}">🖼️ Προεπισκόπηση Άλμπουμ</button>
                             <button class="btn-group-cat" data-id="${cat.id}">📂 Ομαδοποίηση σε Άλμπουμ</button>
+                            <button class="btn-edit-cat" data-id="${cat.id}">✏️ Επεξεργασία Στοιχείων</button>
                             <div class="admin-card-actions">
                                 <button class="btn-approve" data-id="${cat.id}">✅ Έγκριση</button>
                                 <button class="btn-reject" data-id="${cat.id}">❌ Απόρριψη</button>
@@ -653,9 +661,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const rejectBtn = card.querySelector('.btn-reject');
                     const albumBtn = card.querySelector('.btn-view-album');
                     const groupBtn = card.querySelector('.btn-group-cat');
+                    const editBtn = card.querySelector('.btn-edit-cat');
 
                     if (albumBtn) albumBtn.addEventListener('click', () => openCatAlbumModal(cat));
                     if (groupBtn) groupBtn.addEventListener('click', () => openGroupModal(cat));
+                    if (editBtn) editBtn.addEventListener('click', () => openEditModal(cat));
                     approveBtn.addEventListener('click', () => updateCatStatus(cat.id, 'approved'));
                     rejectBtn.addEventListener('click', () => updateCatStatus(cat.id, 'rejected'));
 
@@ -681,10 +691,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="admin-cat-info">
                             <h4>${cat.name}</h4>
                             <p><strong>Ιδιοκτήτης:</strong> ${cat.owner}</p>
+                            ${cat.bio ? `<p><strong>Περιγραφή:</strong> "${cat.bio}"</p>` : ''}
                             <p><strong>Χάδια:</strong> 💖 ${cat.likes || 0}</p>
                             <p><small>Φωτογραφίες Άλμπουμ: <strong>${photoCount}</strong></small></p>
                             <button class="btn-view-album" data-id="${cat.id}">🖼️ Προβολή Άλμπουμ</button>
                             <button class="btn-group-cat" data-id="${cat.id}">📂 Ομαδοποίηση σε Άλμπουμ</button>
+                            <button class="btn-edit-cat" data-id="${cat.id}">✏️ Επεξεργασία Στοιχείων</button>
                             <div class="admin-card-actions">
                                 <button class="btn-reject" data-id="${cat.id}">🗑️ Διαγραφή</button>
                             </div>
@@ -694,9 +706,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const deleteBtn = card.querySelector('.btn-reject');
                     const albumBtn = card.querySelector('.btn-view-album');
                     const groupBtn = card.querySelector('.btn-group-cat');
+                    const editBtn = card.querySelector('.btn-edit-cat');
 
                     if (albumBtn) albumBtn.addEventListener('click', () => openCatAlbumModal(cat));
                     if (groupBtn) groupBtn.addEventListener('click', () => openGroupModal(cat));
+                    if (editBtn) editBtn.addEventListener('click', () => openEditModal(cat));
                     deleteBtn.addEventListener('click', () => updateCatStatus(cat.id, 'rejected'));
 
                     adminApprovedGrid.appendChild(card);
@@ -821,6 +835,62 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (groupModal) groupModal.hidden = true;
+            renderAdminDashboard();
+            if (galleryGrid) renderPublicGallery();
+        });
+    }
+
+    // Admin Edit Cat Details Modal Logic
+    const editModal = document.getElementById('editModal');
+    const closeEditBtn = document.getElementById('closeEditBtn');
+    const editForm = document.getElementById('editForm');
+    const editNameInput = document.getElementById('editNameInput');
+    const editOwnerInput = document.getElementById('editOwnerInput');
+    const editBioInput = document.getElementById('editBioInput');
+    let currentEditCatId = null;
+
+    if (closeEditBtn) {
+        closeEditBtn.addEventListener('click', () => {
+            if (editModal) editModal.hidden = true;
+        });
+    }
+
+    function openEditModal(cat) {
+        currentEditCatId = cat.id;
+        if (editNameInput) editNameInput.value = cat.name || '';
+        if (editOwnerInput) editOwnerInput.value = cat.owner || '';
+        if (editBioInput) editBioInput.value = cat.bio || '';
+        if (editModal) editModal.hidden = false;
+    }
+
+    if (editForm) {
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentEditCatId) return;
+
+            let cats = getCatsData();
+            const cat = cats.find(c => c.id === currentEditCatId);
+            if (!cat) return;
+
+            cat.name = editNameInput.value.trim();
+            cat.owner = editOwnerInput.value.trim();
+            cat.bio = editBioInput.value.trim();
+
+            saveCatsData(cats);
+
+            if (supabase) {
+                try {
+                    await supabase.from('cats').update({
+                        name: cat.name,
+                        owner: cat.owner,
+                        bio: cat.bio
+                    }).eq('id', cat.id);
+                } catch (err) {
+                    console.log('Supabase cat update notice:', err);
+                }
+            }
+
+            if (editModal) editModal.hidden = true;
             renderAdminDashboard();
             if (galleryGrid) renderPublicGallery();
         });
