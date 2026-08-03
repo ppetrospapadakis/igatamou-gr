@@ -538,7 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 currentQIndex++;
                 renderCurrentQuestion();
-            }, 1200);
+            }, 2000);
         } else {
             btnEl.classList.add('wrong');
             streak = 0;
@@ -549,13 +549,13 @@ document.addEventListener('DOMContentLoaded', () => {
             triggerWrongAnswerReaction();
 
             document.querySelectorAll('.quiz-option-btn').forEach(b => {
-                if (b.textContent === correct) b.classList.add('correct');
+                if (b.textContent.trim() === correct.trim()) b.classList.add('correct');
             });
 
             setTimeout(() => {
                 currentQIndex++;
                 renderCurrentQuestion();
-            }, 1800);
+            }, 2000);
         }
     }
 

@@ -1087,17 +1087,19 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     background: #f0f7ff;
 }
 
-.option-btn.correct-pop {
-    background: linear-gradient(135deg, #06d6a0 0%, #00b4d8 100%) !important;
+.option-btn.correct-pop, .quiz-option-btn.correct {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
     color: white !important;
-    border-color: #06d6a0 !important;
+    border-color: #059669 !important;
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45) !important;
     animation: correctPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.option-btn.wrong-pop {
-    background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%) !important;
+.option-btn.wrong-pop, .quiz-option-btn.wrong {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
     color: white !important;
-    border-color: #ff4757 !important;
+    border-color: #dc2626 !important;
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.45) !important;
     animation: wrongShake 0.4s ease-in-out;
 }
 
