@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function escapeHtml(str) {
+        return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
     // Initial sample approved cat (Real Magkas Photo Album with 5 photos!)
     const sampleCats = [
         {
@@ -1064,24 +1068,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     // DRAWINGS ADMIN MANAGEMENT
     // ----------------------------------------------------
-    async function renderDrawingsAdminSection() {
+    // ----------------------------------------------------
+    // DRAWINGS ADMIN MANAGEMENT
+    // ----------------------------------------------------
+    function renderDrawingsAdminSection() {
         let localDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
+        renderDrawingsGrids(localDrawings);
 
         if (supabase) {
-            try {
-                const { data } = await supabase.from('drawings').select('*');
-                if (data && Array.isArray(data)) {
+            supabase.from('drawings').select('*').then(({ data, error }) => {
+                if (!error && data && Array.isArray(data)) {
                     const drawingMap = new Map();
                     localDrawings.forEach(d => drawingMap.set(d.id, d));
                     data.forEach(d => drawingMap.set(d.id, d));
                     localDrawings = Array.from(drawingMap.values());
                     localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
+                    renderDrawingsGrids(localDrawings);
                 }
-            } catch (err) {
+            }).catch(err => {
                 console.log('Supabase drawings admin sync notice:', err);
-            }
+            });
         }
+    }
 
+    function renderDrawingsGrids(localDrawings) {
         const pendingDrawings = localDrawings.filter(d => d.status === 'pending');
         const approvedDrawings = localDrawings.filter(d => d.status === 'approved');
 
@@ -1105,7 +1115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     card.className = 'drawing-card';
                     card.innerHTML = `
                         <div class="drawing-img-wrapper">
-                            <img src="${d.image_data}" alt="${d.name}" class="drawing-img">
+                            <img src="${d.image_data}" alt="${escapeHtml(d.name)}" class="drawing-img">
                         </div>
                         <div class="drawing-card-body">
                             <div class="drawing-author">🎨 Από: <strong>${escapeHtml(d.name)}</strong></div>
@@ -1148,7 +1158,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     card.className = 'drawing-card';
                     card.innerHTML = `
                         <div class="drawing-img-wrapper">
-                            <img src="${d.image_data}" alt="${d.name}" class="drawing-img">
+                            <img src="${d.image_data}" alt="${escapeHtml(d.name)}" class="drawing-img">
                         </div>
                         <div class="drawing-card-body">
                             <div class="drawing-author">🎨 Από: <strong>${escapeHtml(d.name)}</strong></div>
