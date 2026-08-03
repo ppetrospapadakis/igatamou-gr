@@ -645,7 +645,62 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 
 .btn-games-cta:hover {
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 14px 30px rgba(255, 117, 151, 0.45);
+    box-shadow: 0 14px 30px rgba(157, 78, 221, 0.45);
+}
+
+/* DRAWING CALLOUT CARD LOWER DOWN ON HOMEPAGE */
+.draw-callout-card {
+    background: linear-gradient(135deg, #fff7ed 0%, #fff0f5 100%);
+    border: 3px solid #ffd8a8;
+    border-radius: 28px;
+    padding: 30px 25px;
+    margin-bottom: 35px;
+    box-shadow: 0 10px 30px rgba(251, 133, 0, 0.15);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.callout-badge-draw {
+    display: inline-block;
+    background: #fb8500;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: var(--radius-full);
+    margin-bottom: 12px;
+}
+
+.draw-callout-card h2 {
+    font-size: 1.8rem;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+.draw-callout-card p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+.btn-draw-cta {
+    display: inline-block;
+    background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%);
+    color: white;
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 14px 32px;
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    box-shadow: 0 10px 25px rgba(251, 133, 0, 0.35);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-draw-cta:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 14px 30px rgba(251, 133, 0, 0.45);
 }
 
 /* Email Notify Form */
