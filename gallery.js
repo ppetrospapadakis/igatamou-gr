@@ -642,6 +642,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${cat.bio ? `<p><strong>Περιγραφή:</strong> "${cat.bio}"</p>` : ''}
                             <p><small>Φωτογραφίες Άλμπουμ: <strong>${photoCount}</strong></small></p>
                             <button class="btn-view-album" data-id="${cat.id}">🖼️ Προεπισκόπηση Άλμπουμ</button>
+                            <button class="btn-group-cat" data-id="${cat.id}">📂 Ομαδοποίηση σε Άλμπουμ</button>
                             <div class="admin-card-actions">
                                 <button class="btn-approve" data-id="${cat.id}">✅ Έγκριση</button>
                                 <button class="btn-reject" data-id="${cat.id}">❌ Απόρριψη</button>
@@ -652,8 +653,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const approveBtn = card.querySelector('.btn-approve');
                     const rejectBtn = card.querySelector('.btn-reject');
                     const albumBtn = card.querySelector('.btn-view-album');
+                    const groupBtn = card.querySelector('.btn-group-cat');
 
                     if (albumBtn) albumBtn.addEventListener('click', () => openCatAlbumModal(cat));
+                    if (groupBtn) groupBtn.addEventListener('click', () => openGroupModal(cat));
                     approveBtn.addEventListener('click', () => updateCatStatus(cat.id, 'approved'));
                     rejectBtn.addEventListener('click', () => updateCatStatus(cat.id, 'rejected'));
 
@@ -682,6 +685,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p><strong>Χάδια:</strong> 💖 ${cat.likes || 0}</p>
                             <p><small>Φωτογραφίες Άλμπουμ: <strong>${photoCount}</strong></small></p>
                             <button class="btn-view-album" data-id="${cat.id}">🖼️ Προβολή Άλμπουμ</button>
+                            <button class="btn-group-cat" data-id="${cat.id}">📂 Ομαδοποίηση σε Άλμπουμ</button>
                             <div class="admin-card-actions">
                                 <button class="btn-reject" data-id="${cat.id}">🗑️ Διαγραφή</button>
                             </div>
@@ -690,8 +694,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const deleteBtn = card.querySelector('.btn-reject');
                     const albumBtn = card.querySelector('.btn-view-album');
+                    const groupBtn = card.querySelector('.btn-group-cat');
 
                     if (albumBtn) albumBtn.addEventListener('click', () => openCatAlbumModal(cat));
+                    if (groupBtn) groupBtn.addEventListener('click', () => openGroupModal(cat));
                     deleteBtn.addEventListener('click', () => updateCatStatus(cat.id, 'rejected'));
 
                     adminApprovedGrid.appendChild(card);
@@ -720,5 +726,105 @@ document.addEventListener('DOMContentLoaded', () => {
 
         saveCatsData(cats);
         renderAdminDashboard();
+    }
+
+    // Admin Grouping Logic
+    const groupModal = document.getElementById('groupModal');
+    const closeGroupBtn = document.getElementById('closeGroupBtn');
+    const groupForm = document.getElementById('groupForm');
+    const groupSourceCatName = document.getElementById('groupSourceCatName');
+    const groupTargetSelect = document.getElementById('groupTargetSelect');
+    const groupNewNameInput = document.getElementById('groupNewNameInput');
+
+    let currentGroupSourceCatId = null;
+
+    if (closeGroupBtn) {
+        closeGroupBtn.addEventListener('click', () => {
+            if (groupModal) groupModal.hidden = true;
+        });
+    }
+
+    function openGroupModal(sourceCat) {
+        currentGroupSourceCatId = sourceCat.id;
+        const cats = getCatsData();
+        const otherCats = cats.filter(c => c.id !== sourceCat.id);
+
+        if (groupSourceCatName) {
+            groupSourceCatName.textContent = `Ομαδοποίηση φωτογραφιών της/του "${sourceCat.name}" (από ${sourceCat.owner}):`;
+        }
+
+        if (groupTargetSelect) {
+            groupTargetSelect.innerHTML = '<option value="">-- Επιλογή Υπάρχοντος Άλμπουμ / Γάτας --</option>';
+            otherCats.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = `${c.name} (${c.owner}) - ${c.gallery ? c.gallery.length : 1} φωτό`;
+                groupTargetSelect.appendChild(opt);
+            });
+        }
+
+        if (groupNewNameInput) groupNewNameInput.value = '';
+        if (groupModal) groupModal.hidden = false;
+    }
+
+    if (groupForm) {
+        groupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentGroupSourceCatId) return;
+
+            let cats = getCatsData();
+            const sourceCat = cats.find(c => c.id === currentGroupSourceCatId);
+            if (!sourceCat) return;
+
+            const targetId = groupTargetSelect ? groupTargetSelect.value : '';
+            const newName = groupNewNameInput ? groupNewNameInput.value.trim() : '';
+
+            const sourcePhotos = sourceCat.gallery && sourceCat.gallery.length ? sourceCat.gallery : [sourceCat.image];
+
+            if (targetId) {
+                const targetCat = cats.find(c => c.id === targetId);
+                if (targetCat) {
+                    if (!targetCat.gallery) targetCat.gallery = [targetCat.image];
+                    sourcePhotos.forEach(photo => {
+                        if (!targetCat.gallery.includes(photo)) {
+                            targetCat.gallery.push(photo);
+                        }
+                    });
+
+                    cats = cats.filter(c => c.id !== sourceCat.id);
+                    saveCatsData(cats);
+
+                    if (supabase) {
+                        try {
+                            await supabase.from('cats').upsert([{
+                                id: targetCat.id,
+                                name: targetCat.name,
+                                owner: targetCat.owner,
+                                bio: targetCat.bio,
+                                image: targetCat.image,
+                                gallery: JSON.stringify(targetCat.gallery),
+                                status: targetCat.status,
+                                likes: targetCat.likes,
+                                date: targetCat.date
+                            }]);
+                            await supabase.from('cats').delete().eq('id', sourceCat.id);
+                        } catch (err) {}
+                    }
+                }
+            } else if (newName) {
+                sourceCat.name = newName;
+                saveCatsData(cats);
+
+                if (supabase) {
+                    try {
+                        await supabase.from('cats').update({ name: newName }).eq('id', sourceCat.id);
+                    } catch (err) {}
+                }
+            }
+
+            if (groupModal) groupModal.hidden = true;
+            renderAdminDashboard();
+            if (galleryGrid) renderPublicGallery();
+        });
     }
 });

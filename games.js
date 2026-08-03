@@ -1,64 +1,86 @@
 document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
-    // 1. GAME DATA & QUESTION DATABASE
+    // 1. GAME DATA & QUESTION DATABASE (TIERED BY LEVEL)
     // ----------------------------------------------------
     const gameDatabase = {
-        math: [
-            { q: "Πόσο κάνει 5 + 5;", opts: ["10", "8", "12", "15"], a: "10", helper: "🖐️ + 🖐️ = 🖐️🖐️" },
-            { q: "Πόσο κάνει 12 + 8;", opts: ["20", "18", "22", "15"], a: "20", helper: "🔟 + 🔟" },
-            { q: "Πόσο κάνει 30 - 10;", opts: ["20", "15", "25", "10"], a: "20" },
-            { q: "Πόσο κάνει 5 × 5;", opts: ["25", "20", "30", "15"], a: "25" },
-            { q: "Πόσο κάνει 7 × 6;", opts: ["42", "40", "36", "48"], a: "42" },
-            { q: "Πόσο κάνει 20 ÷ 4;", opts: ["5", "4", "6", "10"], a: "5" },
-            { q: "Πόσο κάνει 100 - 35;", opts: ["65", "55", "75", "70"], a: "65" },
-            { q: "Πόσο κάνει 8 × 4;", opts: ["32", "30", "28", "36"], a: "32" },
-            { q: "Πόσο κάνει 50 + 50;", opts: ["100", "90", "80", "110"], a: "100" }
-        ],
-        spelling: [
-            { q: "Συμπλήρωσε το σωστό: Το μήλ...", opts: ["ο", "ω"], a: "ο", helper: "Το ουδέτερο λήγει σε -ο" },
-            { q: "Συμπλήρωσε το σωστό: Εγώ τρέχ...", opts: ["ω", "ο"], a: "ω", helper: "Το ρήμα εγώ λήγει σε -ω" },
-            { q: "Συμπλήρωσε το σωστό: Οι γάτ...", opts: ["ες", "ις"], a: "ες" },
-            { q: "Συμπλήρωσε το σωστό: Η αυλ...", opts: ["ή", "ί"], a: "ή" },
-            { q: "Συμπλήρωσε το σωστό: Το σπ...τι", opts: ["ί", "ύ"], a: "ί" },
-            { q: "Συμπλήρωσε το σωστό: Εμείς παίζουμ...", opts: ["ε", "αι"], a: "ε" },
-            { q: "Συμπλήρωσε το σωστό: Το δέντρ...", opts: ["ο", "ω"], a: "ο" },
-            { q: "Συμπλήρωσε το σωστό: Εγώ διαβάζ...", opts: ["ω", "ο"], a: "ω" }
-        ],
-        english: [
-            { q: "Τι σημαίνει η αγγλική λέξη: Cat;", opts: ["Γάτα", "Σκύλος", "Πουλί", "Ψάρι"], a: "Γάτα" },
-            { q: "Τι σημαίνει: Hello!", opts: ["Γεια σου!", "Αντίο!", "Καληνύχτα", "Ευχαριστώ"], a: "Γεια σου!" },
-            { q: "Πώς λέγεται το Κόκκινο στα Αγγλικά;", opts: ["Red", "Blue", "Green", "Yellow"], a: "Red" },
-            { q: "Τι σημαίνει: I love cats!", opts: ["Αγαπώ τις γάτες!", "Έχω μια γάτα", "Η γάτα κοιμάται", "Γάτες και σκύλοι"], a: "Αγαπώ τις γάτες!" },
-            { q: "Πώς λέγεται το Σχολείο στα Αγγλικά;", opts: ["School", "House", "Park", "Book"], a: "School" },
-            { q: "Τι σημαίνει: Sun;", opts: ["Ήλιος", "Φεγγάρι", "Αστέρι", "Σύννεφο"], a: "Ήλιος" }
-        ],
-        riddles: [
-            { q: "Έχει 4 πόδια, μουστακάκια και κάνει νιάου! Τι είναι;", opts: ["Γάτα 🐱", "Σκύλος 🐶", "Ελέφαντας 🐘", "Λιοντάρι 🦁"], a: "Γάτα 🐱" },
-            { q: "Έχω δείκτες αλλά δεν έχω χέρια, μετράω την ώρα. Τι είμαι;", opts: ["Ρολόι ⏰", "Παιχνίδι 🧸", "Καρέκλα 🪑", "Βιβλίο 📖"], a: "Ρολόι ⏰" },
-            { q: "Ποιο πράγμα γίνεται πιο μεγάλο όσο του αφαιρείς;", opts: ["Τρύπα 🕳️", "Βουνό ⛰️", "Μπαλόνι 🎈", "Ποτάμι 🌊"], a: "Τρύπα 🕳️" },
-            { q: "Είμαι κόκκινο, γλυκό και έχω σποράκια απ' έξω! Τι είμαι;", opts: ["Φράουλα 🍓", "Μήλο 🍎", "Πορτοκάλι 🍊", "Μπανάνες 🍌"], a: "Φράουλα 🍓" }
-        ],
-        nature: [
-            { q: "Ποιο από τα παρακάτω ζώα είναι ΘΗΛΑΣΤΙΚΟ;", opts: ["Δελφίνι 🐬", "Χελώνα 🐢", "Αετός 🦅", "Βάτραχος 🐸"], a: "Δελφίνι 🐬", helper: "Γεννάει μικρά και τα θηλάζει!" },
-            { q: "Ποια τροφή είναι η πιο υγιεινή για τα παιδιά;", opts: ["Φρούτα & Λαχανικά 🍎", "Καραμέλες 🍬", "Πατατάκια 🍟", "Αναψυκτικά 🥤"], a: "Φρούτα & Λαχανικά 🍎" },
-            { q: "Πού ζουν τα ψάρια;", opts: ["Στο νερό 🌊", "Στα δέντρα 🌳", "Στον αέρα ☁️", "Στην άμμο 🏜️"], a: "Στο νερό 🌊" },
-            { q: "Τι χρειάζονται τα φυτά για να μεγαλώσουν;", opts: ["Ήλιο & Νερό ☀️💧", "Σοκολάτα 🍫", "Παιχνίδια 🧸", "Γάλα 🥛"], a: "Ήλιο & Νερό ☀️💧" }
-        ],
-        geography: [
-            { q: "Ποια από τις παρακάτω πόλεις βρίσκεται σε ΝΗΣΙ;", opts: ["Ερμούπολη (Σύρος) 🏝️", "Λάρισα 🌾", "Τρίπολη ⛰️", "Ιωάννινα 🏞️"], a: "Ερμούπολη (Σύρος) 🏝️" },
-            { q: "Σε ποια Ήπειρο ανήκει η Ελλάδα;", opts: ["Ευρώπη 🇪🇺", "Ασία 🌏", "Αφρική 🌍", "Αμερική 🌎"], a: "Ευρώπη 🇪🇺" },
-            { q: "Ποιο είναι το μεγαλύτερο Νησί της Ελλάδας;", opts: ["Κρήτη 🏝️", "Ρόδος 🏖️", "Κέρκυρα 🏰", "Νάξος ⛵"], a: "Κρήτη 🏝️" },
-            { q: "Σε ποια Ήπειρο βρίσκεται η Αίγυπτος;", opts: ["Αφρική 🌍", "Ευρώπη 🇪🇺", "Ασία 🌏", "Αυστραλία 🇦🇺"], a: "Αφρική 🌍" }
-        ]
+        math: {
+            easy: [
+                { q: "Πόσο κάνει 2 + 2;", opts: ["4", "3", "5", "6"], a: "4", helper: "✌️ + ✌️ = 🖐️" },
+                { q: "Πόσο κάνει 5 + 5;", opts: ["10", "8", "12", "15"], a: "10", helper: "🖐️ + 🖐️ = 🖐️🖐️" },
+                { q: "Πόσο κάνει 10 - 4;", opts: ["6", "5", "7", "4"], a: "6" },
+                { q: "Πόσο κάνει 3 + 4;", opts: ["7", "6", "8", "5"], a: "7" }
+            ],
+            medium: [
+                { q: "Πόσο κάνει 12 + 8;", opts: ["20", "18", "22", "15"], a: "20", helper: "🔟 + 🔟" },
+                { q: "Πόσο κάνει 30 - 10;", opts: ["20", "15", "25", "10"], a: "20" },
+                { q: "Πόσο κάνει 5 × 5;", opts: ["25", "20", "30", "15"], a: "25" },
+                { q: "Πόσο κάνει 20 ÷ 4;", opts: ["5", "4", "6", "10"], a: "5" }
+            ],
+            hard: [
+                { q: "Πόσο κάνει 7 × 6;", opts: ["42", "40", "36", "48"], a: "42" },
+                { q: "Πόσο κάνει 100 - 35;", opts: ["65", "55", "75", "70"], a: "65" },
+                { q: "Πόσο κάνει 8 × 4;", opts: ["32", "30", "28", "36"], a: "32" },
+                { q: "Πόσο κάνει 50 + 50;", opts: ["100", "90", "80", "110"], a: "100" }
+            ]
+        },
+        spelling: {
+            easy: [
+                { q: "Συμπλήρωσε: Το μήλ...", opts: ["ο", "ω"], a: "ο", helper: "Το ουδέτερο λήγει σε -ο" },
+                { q: "Συμπλήρωσε: Η αυλ...", opts: ["ή", "ί"], a: "ή" },
+                { q: "Συμπλήρωσε: Το δέντρ...", opts: ["ο", "ω"], a: "ο" }
+            ],
+            medium: [
+                { q: "Συμπλήρωσε: Εγώ τρέχ...", opts: ["ω", "ο"], a: "ω", helper: "Το ρήμα εγώ λήγει σε -ω" },
+                { q: "Συμπλήρωσε: Οι γάτ...", opts: ["ες", "ις"], a: "ες" },
+                { q: "Συμπλήρωσε: Το σπ...τι", opts: ["ί", "ύ"], a: "ί" }
+            ],
+            hard: [
+                { q: "Συμπλήρωσε: Εμείς παίζουμ...", opts: ["ε", "αι"], a: "ε" },
+                { q: "Συμπλήρωσε: Εγώ διαβάζ...", opts: ["ω", "ο"], a: "ω" }
+            ]
+        },
+        english: {
+            easy: [
+                { q: "Τι σημαίνει: Cat;", opts: ["Γάτα", "Σκύλος", "Ψάρι"], a: "Γάτα" },
+                { q: "Τι σημαίνει: Hello!", opts: ["Γεια σου!", "Αντίο!"], a: "Γεια σου!" }
+            ],
+            medium: [
+                { q: "Πώς λέγεται το Κόκκινο στα Αγγλικά;", opts: ["Red", "Blue", "Green"], a: "Red" },
+                { q: "Τι σημαίνει: I love cats!", opts: ["Αγαπώ τις γάτες!", "Έχω μια γάτα"], a: "Αγαπώ τις γάτες!" }
+            ],
+            hard: [
+                { q: "Πώς λέγεται το Σχολείο στα Αγγλικά;", opts: ["School", "House", "Park"], a: "School" },
+                { q: "Τι σημαίνει: Sun;", opts: ["Ήλιος", "Φεγγάρι", "Αστέρι"], a: "Ήλιος" }
+            ]
+        },
+        riddles: {
+            easy: [{ q: "Έχει 4 πόδια, μουστακάκια και κάνει νιάου!", opts: ["Γάτα 🐱", "Σκύλος 🐶", "Ελέφαντας 🐘"], a: "Γάτα 🐱" }],
+            medium: [{ q: "Έχω δείκτες αλλά δεν έχω χέρια, μετράω την ώρα. Τι είμαι;", opts: ["Ρολόι ⏰", "Παιχνίδι 🧸", "Καρέκλα 🪑"], a: "Ρολόι ⏰" }],
+            hard: [{ q: "Ποιο πράγμα γίνεται πιο μεγάλο όσο του αφαιρείς;", opts: ["Τρύπα 🕳️", "Βουνό ⛰️", "Μπαλόνι 🎈"], a: "Τρύπα 🕳️" }]
+        },
+        nature: {
+            easy: [{ q: "Πού ζουν τα ψάρια;", opts: ["Στο νερό 🌊", "Στα δέντρα 🌳", "Στον αέρα ☁️"], a: "Στο νερό 🌊" }],
+            medium: [{ q: "Ποιο από τα παρακάτω ζώα είναι ΘΗΛΑΣΤΙΚΟ;", opts: ["Δελφίνι 🐬", "Χελώνα 🐢", "Αετός 🦅"], a: "Δελφίνι 🐬" }],
+            hard: [{ q: "Τι χρειάζονται τα φυτά για να μεγαλώσουν;", opts: ["Ήλιο & Νερό ☀️💧", "Σοκολάτα 🍫", "Γάλα 🥛"], a: "Ήλιο & Νερό ☀️💧" }]
+        },
+        geography: {
+            easy: [{ q: "Σε ποια Ήπειρο ανήκει η Ελλάδα;", opts: ["Ευρώπη 🇪🇺", "Ασία 🌏", "Αφρική 🌍"], a: "Ευρώπη 🇪🇺" }],
+            medium: [{ q: "Ποιο είναι το μεγαλύτερο Νησί της Ελλάδας;", opts: ["Κρήτη 🏝️", "Ρόδος 🏖️", "Κέρκυρα 🏰"], a: "Κρήτη 🏝️" }],
+            hard: [{ q: "Ποια από τις παρακάτω πόλεις βρίσκεται σε ΝΗΣΙ;", opts: ["Ερμούπολη (Σύρος) 🏝️", "Λάρισα 🌾", "Τρίπολη ⛰️"], a: "Ερμούπολη (Σύρος) 🏝️" }]
+        }
     };
 
-    // Memory Game Emojis
-    const memoryEmojis = ['🐱', '😸', '😻', '😽', '🐾', '🧶', '🐟', '🎀'];
+    const memoryEmojis = {
+        easy: ['🐱', '😸', '😻', '🐾'],
+        medium: ['🐱', '😸', '😻', '😽', '🐾', '🧶'],
+        hard: ['🐱', '😸', '😻', '😽', '🐾', '🧶', '🐟', '🎀']
+    };
 
     // ----------------------------------------------------
     // 2. STATE MANAGEMENT
     // ----------------------------------------------------
     let currentCategory = null;
+    let currentDifficulty = 'easy'; // 'easy', 'medium', 'hard'
     let currentQuestions = [];
     let currentQIndex = 0;
     let score = parseInt(localStorage.getItem('igatamou_game_score') || '0', 10);
@@ -87,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const trophyBadgeName = document.getElementById('trophyBadgeName');
     const trophyModal = document.getElementById('trophyModal');
     const closeTrophyBtn = document.getElementById('closeTrophyBtn');
+    const difficultyBar = document.getElementById('difficultyBar');
 
     // Arcade Game Elements
     const tictactoeArena = document.getElementById('tictactoeArena');
@@ -132,16 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const solitaireStatusText = document.getElementById('solitaireStatusText');
     const solitaireResetBtn = document.getElementById('solitaireResetBtn');
 
-    // Ensure Modal is hidden on load
-    if (trophyModal) {
-        trophyModal.hidden = true;
-    }
-
-    // Update Initial Score UI
+    if (trophyModal) trophyModal.hidden = true;
     updateScoreUI();
 
     // ----------------------------------------------------
-    // 3. EVENT LISTENERS
+    // 3. DIFFICULTY & EVENT LISTENERS
     // ----------------------------------------------------
     document.querySelectorAll('.category-card').forEach(card => {
         card.addEventListener('click', () => {
@@ -150,19 +168,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    if (backToMenuBtn) {
-        backToMenuBtn.addEventListener('click', showCategoryMenu);
-    }
+    if (backToMenuBtn) backToMenuBtn.addEventListener('click', showCategoryMenu);
+    if (trophyBtn) trophyBtn.addEventListener('click', () => { if (trophyModal) trophyModal.hidden = false; });
+    if (closeTrophyBtn) closeTrophyBtn.addEventListener('click', () => { if (trophyModal) trophyModal.hidden = true; });
 
-    if (trophyBtn) {
-        trophyBtn.addEventListener('click', () => {
-            if (trophyModal) trophyModal.hidden = false;
-        });
-    }
-
-    if (closeTrophyBtn) {
-        closeTrophyBtn.addEventListener('click', () => {
-            if (trophyModal) trophyModal.hidden = true;
+    // Difficulty Bar Buttons
+    if (difficultyBar) {
+        difficultyBar.querySelectorAll('.diff-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                difficultyBar.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentDifficulty = btn.getAttribute('data-diff') || 'easy';
+                if (currentCategory) {
+                    startCategoryGame(currentCategory);
+                }
+            });
         });
     }
 
@@ -173,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (scoreDisplay) scoreDisplay.textContent = score;
         if (streakCount) streakCount.textContent = streak;
 
-        // Check Trophy Unlocks
         const t1 = document.getElementById('trophy1');
         const t2 = document.getElementById('trophy2');
         const t3 = document.getElementById('trophy3');
@@ -181,53 +200,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const statusT2 = document.getElementById('statusT2');
         const statusT3 = document.getElementById('statusT3');
 
-        if (score < 50 && trophyBadgeName) {
-            trophyBadgeName.textContent = 'Τα Κύπελλά σου';
-        }
-
-        // Trophy 1: 50 pts
         if (score >= 50 && t1) {
             t1.classList.add('unlocked');
             if (statusT1) statusT1.textContent = 'Ξεκλειδώθηκε! ✅';
             if (trophyBadgeName) trophyBadgeName.textContent = '🥉 Μικρός Γατο-Εξερευνητής';
-        } else if (t1) {
-            t1.classList.remove('unlocked');
-            if (statusT1) statusT1.textContent = '🔒 50 Πόντοι';
         }
-
-        // Trophy 2: 100 pts
         if (score >= 100 && t2) {
             t2.classList.add('unlocked');
             if (statusT2) statusT2.textContent = 'Ξεκλειδώθηκε! ✅';
             if (trophyBadgeName) trophyBadgeName.textContent = '🥈 Γατο-Σοφός';
-        } else if (t2) {
-            t2.classList.remove('unlocked');
-            if (statusT2) statusT2.textContent = '🔒 100 Πόντοι';
         }
-
-        // Trophy 3: 200 pts
         if (score >= 200 && t3) {
             t3.classList.add('unlocked');
             if (statusT3) statusT3.textContent = 'Ξεκλειδώθηκε! 👑';
             if (trophyBadgeName) trophyBadgeName.textContent = '🥇 Master Γατο-Επιστήμονας!';
             if (mascotCrown) mascotCrown.hidden = false;
-        } else if (t3) {
-            t3.classList.remove('unlocked');
-            if (statusT3) statusT3.textContent = '🔒 200 Πόντοι';
-            if (mascotCrown) mascotCrown.hidden = true;
         }
     }
 
     function clearArenaContainers() {
         if (questionCard) questionCard.hidden = true;
-        if (optionsGrid) {
-            optionsGrid.innerHTML = '';
-            optionsGrid.hidden = true;
-        }
-        if (memoryBoard) {
-            memoryBoard.innerHTML = '';
-            memoryBoard.hidden = true;
-        }
+        if (optionsGrid) { optionsGrid.innerHTML = ''; optionsGrid.hidden = true; }
+        if (memoryBoard) { memoryBoard.innerHTML = ''; memoryBoard.hidden = true; }
         if (tictactoeArena) tictactoeArena.hidden = true;
         if (snakeArena) snakeArena.hidden = true;
         if (tetrisArena) tetrisArena.hidden = true;
@@ -249,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (gameArena) gameArena.hidden = true;
         if (categoryMenu) categoryMenu.hidden = false;
         currentCategory = null;
-
         clearArenaContainers();
     }
 
@@ -307,7 +300,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (optionsGrid) optionsGrid.hidden = false;
             if (memoryBoard) memoryBoard.hidden = true;
 
-            currentQuestions = [...(gameDatabase[categoryKey] || [])];
+            const pool = gameDatabase[categoryKey] ? (gameDatabase[categoryKey][currentDifficulty] || gameDatabase[categoryKey].easy) : [];
+            currentQuestions = [...pool];
             currentQuestions.sort(() => Math.random() - 0.5);
             currentQIndex = 0;
             renderCurrentQuestion();
@@ -327,9 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (questionNumber) questionNumber.textContent = `Ερώτηση ${currentQIndex + 1} από ${currentQuestions.length}`;
         if (questionText) questionText.textContent = q.q;
 
-        if (visualHelper) {
-            visualHelper.textContent = q.helper || '';
-        }
+        if (visualHelper) visualHelper.textContent = q.helper || '';
 
         if (optionsGrid) {
             optionsGrid.innerHTML = '';
@@ -342,9 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        if (catSpeechBubble) {
-            catSpeechBubble.textContent = `💬 "Διάλεξε τη σωστή απάντηση! 🐾"`;
-        }
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Διάλεξε τη σωστή απάντηση! 🐾"`;
     }
 
     function checkQuizAnswer(selected, correct, btnEl) {
@@ -371,9 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
             triggerWrongAnswerReaction();
 
             document.querySelectorAll('.quiz-option-btn').forEach(b => {
-                if (b.textContent === correct) {
-                    b.classList.add('correct');
-                }
+                if (b.textContent === correct) b.classList.add('correct');
             });
 
             setTimeout(() => {
@@ -395,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const replayBtn = document.createElement('button');
         replayBtn.className = 'btn btn-games-cta';
-        replayBtn.textContent = '🔄 Παίξε Ξανά αυτή την κατηγορία!';
+        replayBtn.textContent = '🔄 Παίξε Ξανά!';
         replayBtn.addEventListener('click', () => startCategoryGame(currentCategory));
 
         const menuBtn = document.createElement('button');
@@ -409,24 +397,23 @@ document.addEventListener('DOMContentLoaded', () => {
             optionsGrid.appendChild(menuBtn);
         }
 
-        if (catSpeechBubble) {
-            catSpeechBubble.textContent = `💬 "Είμαι περήφανη για σένα! 🥳✨"`;
-        }
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Είμαι περήφανη για σένα! 🥳✨"`;
     }
 
     // ----------------------------------------------------
-    // MEMORY GAME LOGIC
+    // MEMORY GAME LOGIC (EASY / MEDIUM / HARD)
     // ----------------------------------------------------
     function setupMemoryGame() {
-        if (questionNumber) questionNumber.textContent = 'Γατο-Memory';
-        if (questionText) questionText.textContent = 'Βρες τα 8 ζευγάρια με τις γατούλες!';
+        if (questionNumber) questionNumber.textContent = `Γατο-Memory (${currentDifficulty.toUpperCase()})`;
+        if (questionText) questionText.textContent = 'Βρες τα ζευγάρια με τις γατούλες!';
         if (visualHelper) visualHelper.textContent = '💡 Κάνε κλικ στις κάρτες για να τις γυρίσεις!';
 
         if (optionsGrid) optionsGrid.hidden = true;
         if (memoryBoard) memoryBoard.hidden = false;
         memoryBoard.innerHTML = '';
 
-        const cardDeck = [...memoryEmojis, ...memoryEmojis];
+        const emojiPool = memoryEmojis[currentDifficulty] || memoryEmojis.easy;
+        const cardDeck = [...emojiPool, ...emojiPool];
         cardDeck.sort(() => Math.random() - 0.5);
 
         memoryFlippedCards = [];
@@ -436,7 +423,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'memory-card-tile';
             card.dataset.emoji = emoji;
-            card.dataset.index = index;
 
             card.innerHTML = `
                 <div class="memory-card-inner">
@@ -445,12 +431,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
-            card.addEventListener('click', () => handleMemoryCardClick(card, emoji));
+            card.addEventListener('click', () => handleMemoryCardClick(card, emoji, emojiPool.length));
             memoryBoard.appendChild(card);
         });
     }
 
-    function handleMemoryCardClick(card, emoji) {
+    function handleMemoryCardClick(card, emoji, totalPairs) {
         if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
         if (memoryFlippedCards.length >= 2) return;
 
@@ -472,10 +458,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 playCatSoundEffect('correct');
                 triggerCorrectAnswerReaction();
 
-                if (memoryMatchedPairs === memoryEmojis.length) {
-                    setTimeout(() => {
-                        showCategoryCompleted();
-                    }, 800);
+                if (memoryMatchedPairs === totalPairs) {
+                    setTimeout(showCategoryCompleted, 800);
                 }
             } else {
                 triggerWrongAnswerReaction();
@@ -483,13 +467,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     c1.card.classList.remove('flipped');
                     c2.card.classList.remove('flipped');
                     memoryFlippedCards = [];
-                }, 1100);
+                }, 1000);
             }
         }
     }
 
     // ----------------------------------------------------
-    // 8. TIC-TAC-TOE GAME LOGIC (Μάγκας 🐱 vs Ψαράκι 🐟)
+    // 8. TIC-TAC-TOE GAME LOGIC (EASY / MEDIUM / HARD AI)
     // ----------------------------------------------------
     let tttBoard = Array(9).fill(null);
     let tttPlayerTurn = true;
@@ -500,8 +484,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tttPlayerTurn = true;
         tttGameOver = false;
 
-        if (tttStatusText) tttStatusText.textContent = 'Σειρά σου: 🐱 (Μάγκας)';
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Bάλε τη Γατούλα 🐱 για να κερδίσεις το Ψαράκι 🐟!"`;
+        if (tttStatusText) tttStatusText.textContent = `Σειρά σου: 🐱 (${currentDifficulty.toUpperCase()})`;
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Bάλε τη Γατούλα 🐱 για να νικήσεις το Ψαράκι 🐟!"`;
 
         if (!tttGrid) return;
         tttGrid.innerHTML = '';
@@ -538,16 +522,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tttBoard.every(cell => cell !== null)) {
             tttGameOver = true;
             if (tttStatusText) tttStatusText.textContent = '🤝 Ισοπαλία!';
-            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Ισοπαλία! Καλή προσπάθεια! 🤝"`;
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Ισοπαλία! Δοκίμασε ξανά! 🤝"`;
             return;
         }
 
         tttPlayerTurn = false;
         if (tttStatusText) tttStatusText.textContent = 'Σειρά της Μάγκας... 💭';
 
-        setTimeout(() => {
-            makeTicTacToeAIMove();
-        }, 400);
+        setTimeout(makeTicTacToeAIMove, 400);
     }
 
     function makeTicTacToeAIMove() {
@@ -556,16 +538,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const emptyIndices = tttBoard.map((val, idx) => val === null ? idx : null).filter(val => val !== null);
         if (!emptyIndices.length) return;
 
-        const aiChoice = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-        tttBoard[aiChoice] = '🐟';
+        let aiChoice = null;
 
+        if (currentDifficulty === 'easy') {
+            aiChoice = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+        } else if (currentDifficulty === 'medium') {
+            // Medium AI: Block player win or take random
+            aiChoice = findWinningTicTacToeMove('🐱') || emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+        } else {
+            // Hard AI: Win > Block > Center > Corner > Random
+            aiChoice = findWinningTicTacToeMove('🐟') || findWinningTicTacToeMove('🐱') || (tttBoard[4] === null ? 4 : emptyIndices[Math.floor(Math.random() * emptyIndices.length)]);
+        }
+
+        tttBoard[aiChoice] = '🐟';
         const cellEl = tttGrid.children[aiChoice];
         if (cellEl) cellEl.textContent = '🐟';
 
         if (checkTicTacToeWin('🐟')) {
             tttGameOver = true;
             if (tttStatusText) tttStatusText.textContent = '🐟 Κέρδισε το Ψαράκι!';
-            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Έχασες αυτή τη φορά! Δοκίμασε ξανά! 🐾"`;
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Έχασες! Δοκίμασε ξανά! 🐾"`;
             triggerWrongAnswerReaction();
             return;
         }
@@ -573,12 +565,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tttBoard.every(cell => cell !== null)) {
             tttGameOver = true;
             if (tttStatusText) tttStatusText.textContent = '🤝 Ισοπαλία!';
-            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Ισοπαλία! Καλή προσπάθεια! 🤝"`;
             return;
         }
 
         tttPlayerTurn = true;
-        if (tttStatusText) tttStatusText.textContent = 'Σειρά σου: 🐱 (Μάγκας)';
+        if (tttStatusText) tttStatusText.textContent = `Σειρά σου: 🐱 (${currentDifficulty.toUpperCase()})`;
+    }
+
+    function findWinningTicTacToeMove(symbol) {
+        const wins = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+        for (let combo of wins) {
+            const [a, b, c] = combo;
+            const vals = [tttBoard[a], tttBoard[b], tttBoard[c]];
+            if (vals.filter(v => v === symbol).length === 2 && vals.includes(null)) {
+                return combo[vals.indexOf(null)];
+            }
+        }
+        return null;
     }
 
     function checkTicTacToeWin(symbol) {
@@ -601,17 +608,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     }
 
-    if (tttResetBtn) {
-        tttResetBtn.addEventListener('click', setupTicTacToeGame);
-    }
+    if (tttResetBtn) tttResetBtn.addEventListener('click', setupTicTacToeGame);
 
     // ----------------------------------------------------
-    // 9. CAT SNAKE GAME LOGIC (🐍🐾 Γατο-Φιδάκι)
+    // 9. CAT SNAKE GAME LOGIC (SLOW LEVEL 1 + SWIPE GESTURES)
     // ----------------------------------------------------
     let snakeInterval = null;
     let snake = [];
     let snakeDir = 'RIGHT';
     let snakeFood = { x: 5, y: 5, icon: '🐟' };
+    let snakeObstacles = [];
     let snakePoints = 0;
     const foodIcons = ['🐟', '🥛', '🍗', '🧶', '🎀'];
 
@@ -619,7 +625,12 @@ document.addEventListener('DOMContentLoaded', () => {
         stopSnakeGame();
         snakePoints = 0;
         if (snakeScore) snakeScore.textContent = '0';
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Μάζεψε τις λιχουδιές με το Γατο-Φιδάκι! 🐟"`;
+
+        let speedMs = 240; // Easy speed for kids!
+        if (currentDifficulty === 'medium') speedMs = 160;
+        if (currentDifficulty === 'hard') speedMs = 100;
+
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Μάζεψε λιχουδιές! (Σούρε το δάχτυλο ή χρησιμοποίησε κουμπιά) 🐟"`;
 
         snake = [
             { x: 7, y: 7 },
@@ -627,10 +638,19 @@ document.addEventListener('DOMContentLoaded', () => {
             { x: 5, y: 7 }
         ];
         snakeDir = 'RIGHT';
-        spawnSnakeFood();
 
+        // Add obstacles in Hard mode
+        snakeObstacles = [];
+        if (currentDifficulty === 'hard') {
+            snakeObstacles = [
+                { x: 3, y: 3 }, { x: 3, y: 4 },
+                { x: 11, y: 10 }, { x: 11, y: 11 }
+            ];
+        }
+
+        spawnSnakeFood();
         drawSnakeCanvas();
-        snakeInterval = setInterval(updateSnakeGame, 140);
+        snakeInterval = setInterval(updateSnakeGame, speedMs);
     }
 
     function stopSnakeGame() {
@@ -657,7 +677,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (snakeDir === 'UP') head.y--;
         if (snakeDir === 'DOWN') head.y++;
 
-        if (head.x < 0 || head.x >= 15 || head.y < 0 || head.y >= 15 || snake.some(s => s.x === head.x && s.y === head.y)) {
+        const hitObstacle = snakeObstacles.some(o => o.x === head.x && o.y === head.y);
+
+        if (head.x < 0 || head.x >= 15 || head.y < 0 || head.y >= 15 || hitObstacle || snake.some(s => s.x === head.x && s.y === head.y)) {
             stopSnakeGame();
             if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Ουπς! 💥 Έκανες ${snakePoints} λιχουδιές!"`;
             triggerWrongAnswerReaction();
@@ -694,6 +716,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.textBaseline = 'middle';
         ctx.fillText(snakeFood.icon, snakeFood.x * size + size / 2, snakeFood.y * size + size / 2);
 
+        // Draw Obstacles
+        snakeObstacles.forEach(o => {
+            ctx.fillText('🧱', o.x * size + size / 2, o.y * size + size / 2);
+        });
+
         snake.forEach((segment, index) => {
             if (index === 0) {
                 ctx.fillText('🐱', segment.x * size + size / 2, segment.y * size + size / 2);
@@ -704,6 +731,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.fill();
             }
         });
+    }
+
+    // Touch Swipe Control for Snake
+    let touchStartX = 0;
+    let touchStartY = 0;
+    if (snakeArena) {
+        snakeArena.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        snakeArena.addEventListener('touchend', (e) => {
+            if (currentCategory !== 'snake') return;
+            const diffX = e.changedTouches[0].screenX - touchStartX;
+            const diffY = e.changedTouches[0].screenY - touchStartY;
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX > 25 && snakeDir !== 'LEFT') snakeDir = 'RIGHT';
+                else if (diffX < -25 && snakeDir !== 'RIGHT') snakeDir = 'LEFT';
+            } else {
+                if (diffY > 25 && snakeDir !== 'UP') snakeDir = 'DOWN';
+                else if (diffY < -25 && snakeDir !== 'DOWN') snakeDir = 'UP';
+            }
+        }, { passive: true });
     }
 
     window.addEventListener('keydown', (e) => {
@@ -722,7 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (snakeStartBtn) snakeStartBtn.addEventListener('click', setupSnakeGame);
 
     // ----------------------------------------------------
-    // 10. CAT TETRIS GAME LOGIC (🧩🧱 Γατο-Τέτρις)
+    // 10. CAT TETRIS GAME LOGIC (SPEED & LEVEL SCALING)
     // ----------------------------------------------------
     let tetrisInterval = null;
     let tetrisGrid = Array(20).fill(null).map(() => Array(12).fill(0));
@@ -742,12 +793,16 @@ document.addEventListener('DOMContentLoaded', () => {
         tetrisGrid = Array(20).fill(null).map(() => Array(12).fill(0));
         tetrisLinesCleared = 0;
         if (tetrisLines) tetrisLines.textContent = '0';
+
+        let dropSpeed = 550;
+        if (currentDifficulty === 'medium') dropSpeed = 380;
+        if (currentDifficulty === 'hard') dropSpeed = 220;
+
         if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Φτιάξε γραμμές με τα τουβλάκια! 🧩"`;
 
         spawnTetrisPiece();
         drawTetrisCanvas();
-
-        tetrisInterval = setInterval(updateTetrisGame, 450);
+        tetrisInterval = setInterval(updateTetrisGame, dropSpeed);
     }
 
     function stopTetrisGame() {
@@ -762,7 +817,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPiece = {
             shape: piece.shape,
             color: piece.color,
-            icon: piece.icon,
             x: 4,
             y: 0
         };
@@ -893,7 +947,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tetrisStartBtn) tetrisStartBtn.addEventListener('click', setupTetrisGame);
 
     // ----------------------------------------------------
-    // 11. WHACK A FISH (🔨🐟 Πιάσε το Ψαράκι!)
+    // 11. WHACK A FISH (LEVEL SCALING & BOMBS)
     // ----------------------------------------------------
     let whackTimer = null;
     let whackLoop = null;
@@ -903,7 +957,12 @@ document.addEventListener('DOMContentLoaded', () => {
         stopWhackGame();
         whackPoints = 0;
         if (whackScore) whackScore.textContent = '0';
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Πάτα τα ψαράκια πριν κρυφτούν! 🐟"`;
+
+        let popRate = 900;
+        if (currentDifficulty === 'medium') popRate = 650;
+        if (currentDifficulty === 'hard') popRate = 450;
+
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Πάτα τα ψαράκια! (Απόφυγε τις βόμβες 💣 στο δύσκολο!)"`;
 
         if (!whackGrid) return;
         whackGrid.innerHTML = '';
@@ -919,7 +978,7 @@ document.addEventListener('DOMContentLoaded', () => {
             whackGrid.appendChild(hole);
         }
 
-        whackLoop = setInterval(popRandomWhackItem, 700);
+        whackLoop = setInterval(popRandomWhackItem, popRate);
 
         let timeLeft = 20;
         whackTimer = setInterval(() => {
@@ -946,28 +1005,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const randomHole = holes[Math.floor(Math.random() * holes.length)];
         const item = randomHole.querySelector('.whack-item');
-        const icons = ['🐟', '🐭', '🍗', '🐟', '🐟'];
+        const icons = ['🐟', '🐭', '🍗', '🐟'];
+        if (currentDifficulty === 'hard') icons.push('💣');
+
         if (item) item.textContent = icons[Math.floor(Math.random() * icons.length)];
 
         randomHole.classList.add('up');
-        setTimeout(() => {
-            randomHole.classList.remove('up');
-        }, 600);
+        setTimeout(() => { randomHole.classList.remove('up'); }, 550);
     }
 
     function handleWhackClick(hole, item) {
         if (!hole.classList.contains('up')) return;
         hole.classList.remove('up');
-        whackPoints++;
+
+        if (item.textContent === '💣') {
+            whackPoints = Math.max(0, whackPoints - 3);
+            playCatSoundEffect('wrong');
+            triggerWrongAnswerReaction();
+        } else {
+            whackPoints++;
+            playCatSoundEffect('click');
+            triggerCorrectAnswerReaction();
+        }
         if (whackScore) whackScore.textContent = whackPoints.toString();
-        playCatSoundEffect('click');
-        triggerCorrectAnswerReaction();
     }
 
     if (whackStartBtn) whackStartBtn.addEventListener('click', setupWhackGame);
 
     // ----------------------------------------------------
-    // 12. BUBBLE POP GAME (🎈🐾 Γατο-Μπαλόνια)
+    // 12. BUBBLE POP GAME (LEVEL SPEED & BOMB BUBBLES)
     // ----------------------------------------------------
     let bubblesLoop = null;
     let bubblesPoints = 0;
@@ -976,12 +1042,17 @@ document.addEventListener('DOMContentLoaded', () => {
         stopBubblesGame();
         bubblesPoints = 0;
         if (bubblesScore) bubblesScore.textContent = '0';
+
+        let spawnRate = 900;
+        if (currentDifficulty === 'medium') spawnRate = 650;
+        if (currentDifficulty === 'hard') spawnRate = 450;
+
         if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Σκάσε τα μπαλόνια με τη γατούλα! 🎈"`;
 
         if (!bubblesBox) return;
         bubblesBox.innerHTML = '';
 
-        bubblesLoop = setInterval(spawnBubble, 800);
+        bubblesLoop = setInterval(spawnBubble, spawnRate);
     }
 
     function stopBubblesGame() {
@@ -992,52 +1063,80 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!bubblesBox) return;
         const bubble = document.createElement('div');
         bubble.className = 'floating-bubble';
+
         const icons = ['🎈', '🐱', '🧶', '🐟', '🎀'];
-        bubble.textContent = icons[Math.floor(Math.random() * icons.length)];
+        if (currentDifficulty === 'hard') icons.push('💣');
+
+        const chosenIcon = icons[Math.floor(Math.random() * icons.length)];
+        bubble.textContent = chosenIcon;
         bubble.style.left = `${Math.floor(Math.random() * 230)}px`;
 
         bubble.addEventListener('click', () => {
-            bubblesPoints++;
-            score += 4;
+            if (chosenIcon === '💣') {
+                bubblesPoints = Math.max(0, bubblesPoints - 2);
+                playCatSoundEffect('wrong');
+                triggerWrongAnswerReaction();
+            } else {
+                bubblesPoints++;
+                score += 4;
+                playCatSoundEffect('correct');
+            }
             if (bubblesScore) bubblesScore.textContent = bubblesPoints.toString();
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
-            playCatSoundEffect('correct');
             bubble.remove();
         });
 
         bubblesBox.appendChild(bubble);
-        setTimeout(() => {
-            if (bubble.parentNode) bubble.remove();
-        }, 3500);
+        setTimeout(() => { if (bubble.parentNode) bubble.remove(); }, 3500);
     }
 
     if (bubblesStartBtn) bubblesStartBtn.addEventListener('click', setupBubblesGame);
 
     // ----------------------------------------------------
-    // 13. MINI CAT CHESS (👑♟️ 🐱 vs 🐟)
+    // 13. MINI CAT CHESS (LEVEL 1: 4x4, LEVEL 2: KNIGHTS, LEVEL 3: 5x5 + ROOKS + KNIGHTS)
     // ----------------------------------------------------
-    let chessGrid = [
-        ['🐟', '🐟', '🐟', '👑🐟'],
-        [null, null, null, null],
-        [null, null, null, null],
-        ['🐱', '🐱', '🐱', '👑🐱']
-    ];
+    let chessGrid = [];
+    let chessBoardSize = 4; // 4x4 or 5x5
     let chessSelectedSq = null;
     let chessPlayerTurn = true;
 
     function setupChessGame() {
-        chessGrid = [
-            ['🐟', '🐟', '🐟', '👑🐟'],
-            [null, null, null, null],
-            [null, null, null, null],
-            ['🐱', '🐱', '🐱', '👑🐱']
-        ];
+        if (currentDifficulty === 'hard') {
+            chessBoardSize = 5;
+            if (chessBoard) chessBoard.classList.add('grid-5x5');
+            chessGrid = [
+                ['🏰🐟', '🐴🐟', '🐟', '🐟', '👑🐟'],
+                [null, null, null, null, null],
+                [null, null, null, null, null],
+                [null, null, null, null, null],
+                ['🏰🐱', '🐴🐱', '🐱', '🐱', '👑🐱']
+            ];
+        } else if (currentDifficulty === 'medium') {
+            chessBoardSize = 4;
+            if (chessBoard) chessBoard.classList.remove('grid-5x5');
+            chessGrid = [
+                ['🐟', '🐴🐟', '🐟', '👑🐟'],
+                [null, null, null, null],
+                [null, null, null, null],
+                ['🐱', '🐴🐱', '🐱', '👑🐱']
+            ];
+        } else {
+            chessBoardSize = 4;
+            if (chessBoard) chessBoard.classList.remove('grid-5x5');
+            chessGrid = [
+                ['🐟', '🐟', '🐟', '👑🐟'],
+                [null, null, null, null],
+                [null, null, null, null],
+                ['🐱', '🐱', '🐱', '👑🐱']
+            ];
+        }
+
         chessSelectedSq = null;
         chessPlayerTurn = true;
 
-        if (chessStatusText) chessStatusText.textContent = 'Σειρά σου: 🐱 (Γατούλες)';
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Μετακίνησε τις γατούλες 🐱 μπροστά!"`;
+        if (chessStatusText) chessStatusText.textContent = `Σειρά σου: 🐱 (${currentDifficulty.toUpperCase()})`;
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Μετακίνησε τις γατούλες 🐱! (Πάτα κομμάτι ➔ πάτα πράσινο τετράγωνο)"`;
 
         renderChessBoard();
     }
@@ -1046,16 +1145,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!chessBoard) return;
         chessBoard.innerHTML = '';
 
-        for (let r = 0; r < 4; r++) {
-            for (let c = 0; c < 4; c++) {
+        for (let r = 0; r < chessBoardSize; r++) {
+            for (let c = 0; c < chessBoardSize; c++) {
                 const sq = document.createElement('div');
                 const isLight = (r + c) % 2 === 0;
                 sq.className = `chess-square ${isLight ? 'light' : 'dark'}`;
                 const piece = chessGrid[r][c];
-                if (piece) sq.textContent = piece.includes('👑') ? '👑' : piece;
+
+                if (piece) {
+                    if (piece.includes('👑')) sq.textContent = '👑';
+                    else if (piece.includes('🐴')) sq.textContent = '🐴';
+                    else if (piece.includes('🏰')) sq.textContent = '🏰';
+                    else sq.textContent = piece.includes('🐱') ? '🐱' : '🐟';
+                }
 
                 if (chessSelectedSq && chessSelectedSq.r === r && chessSelectedSq.c === c) {
                     sq.classList.add('selected-sq');
+                }
+
+                if (chessSelectedSq && isValidChessMove(chessSelectedSq.r, chessSelectedSq.c, r, c)) {
+                    sq.classList.add('valid-move');
                 }
 
                 sq.addEventListener('click', () => handleChessSquareClick(r, c));
@@ -1066,11 +1175,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleChessSquareClick(r, c) {
         if (!chessPlayerTurn) return;
-
         const piece = chessGrid[r][c];
 
         if (chessSelectedSq) {
-            // Move selected piece
             const fromR = chessSelectedSq.r;
             const fromC = chessSelectedSq.c;
 
@@ -1082,7 +1189,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderChessBoard();
 
                 if (captured && captured.includes('👑')) {
-                    if (chessStatusText) chessStatusText.textContent = '🎉 Νίκησες το Ψαράκι! 🥳';
+                    if (chessStatusText) chessStatusText.textContent = '🎉 Νίκησες τον Βασιλιά! 🥳';
                     score += 25;
                     localStorage.setItem('igatamou_game_score', score.toString());
                     updateScoreUI();
@@ -1093,7 +1200,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 chessPlayerTurn = false;
                 if (chessStatusText) chessStatusText.textContent = 'Σειρά της Μάγκας... 💭';
 
-                setTimeout(makeChessAIMove, 500);
+                setTimeout(makeChessAIMove, 450);
                 return;
             }
         }
@@ -1110,59 +1217,109 @@ document.addEventListener('DOMContentLoaded', () => {
     function isValidChessMove(fromR, fromC, toR, toC) {
         const piece = chessGrid[fromR][fromC];
         if (!piece) return false;
+        if (toR < 0 || toR >= chessBoardSize || toC < 0 || toC >= chessBoardSize) return false;
 
-        // Pawns move forward 1 row
-        if (fromR - 1 === toR && fromC === toC && !chessGrid[toR][toC]) return true;
-        // Pawns capture diagonally
-        if (fromR - 1 === toR && Math.abs(fromC - toC) === 1 && chessGrid[toR][toC] && chessGrid[toR][toC].includes('🐟')) return true;
+        const target = chessGrid[toR][toC];
+        const isCat = piece.includes('🐱');
+
+        // Cannot capture own piece
+        if (target && ((isCat && target.includes('🐱')) || (!isCat && target.includes('🐟')))) return false;
+
+        // Pawns
+        if (piece.startsWith('🐱') || piece.startsWith('🐟')) {
+            const dir = isCat ? -1 : 1;
+            if (fromR + dir === toR && fromC === toC && !target) return true;
+            if (fromR + dir === toR && Math.abs(fromC - toC) === 1 && target) return true;
+            return false;
+        }
+
+        // Kings
+        if (piece.includes('👑')) {
+            return Math.abs(fromR - toR) <= 1 && Math.abs(fromC - toC) <= 1;
+        }
+
+        // Knights (🐴)
+        if (piece.includes('🐴')) {
+            const rDiff = Math.abs(fromR - toR);
+            const cDiff = Math.abs(fromC - toC);
+            return (rDiff === 2 && cDiff === 1) || (rDiff === 1 && cDiff === 2);
+        }
+
+        // Rooks (🏰)
+        if (piece.includes('🏰')) {
+            if (fromR !== toR && fromC !== toC) return false;
+            const rDir = Math.sign(toR - fromR);
+            const cDir = Math.sign(toC - fromC);
+            let currR = fromR + rDir;
+            let currC = fromC + cDir;
+            while (currR !== toR || currC !== toC) {
+                if (chessGrid[currR][currC] !== null) return false;
+                currR += rDir;
+                currC += cDir;
+            }
+            return true;
+        }
 
         return false;
     }
 
     function makeChessAIMove() {
         const moves = [];
-        for (let r = 0; r < 4; r++) {
-            for (let c = 0; c < 4; c++) {
+        for (let r = 0; r < chessBoardSize; r++) {
+            for (let c = 0; c < chessBoardSize; c++) {
                 if (chessGrid[r][c] && chessGrid[r][c].includes('🐟')) {
-                    if (r + 1 < 4 && !chessGrid[r + 1][c]) moves.push({ fromR: r, fromC: c, toR: r + 1, toC: c });
-                    if (r + 1 < 4 && c - 1 >= 0 && chessGrid[r + 1][c - 1] && chessGrid[r + 1][c - 1].includes('🐱')) moves.push({ fromR: r, fromC: c, toR: r + 1, toC: c - 1 });
-                    if (r + 1 < 4 && c + 1 < 4 && chessGrid[r + 1][c + 1] && chessGrid[r + 1][c + 1].includes('🐱')) moves.push({ fromR: r, fromC: c, toR: r + 1, toC: c + 1 });
+                    for (let tr = 0; tr < chessBoardSize; tr++) {
+                        for (let tc = 0; tc < chessBoardSize; tc++) {
+                            if (isValidChessMove(r, c, tr, tc)) {
+                                moves.push({ fromR: r, fromC: c, toR: tr, toC: tc });
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        if (moves.length) {
-            const m = moves[Math.floor(Math.random() * moves.length)];
-            chessGrid[m.toR][m.toC] = chessGrid[m.fromR][m.fromC];
-            chessGrid[m.fromR][m.fromC] = null;
+        if (!moves.length) {
+            // Deadlock / Stalemate check
+            if (chessStatusText) chessStatusText.textContent = '🤝 Ισοπαλία! Δεν υπάρχουν άλλες κινήσεις!';
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Δεν υπάρχουν άλλες κινήσεις! Πάτα Νέος Γύρος! 🔄"`;
+            chessPlayerTurn = true;
+            return;
         }
 
+        // AI prefers capture moves
+        const captureMoves = moves.filter(m => chessGrid[m.toR][m.toC] !== null);
+        const m = captureMoves.length ? captureMoves[Math.floor(Math.random() * captureMoves.length)] : moves[Math.floor(Math.random() * moves.length)];
+
+        chessGrid[m.toR][m.toC] = chessGrid[m.fromR][m.fromC];
+        chessGrid[m.fromR][m.fromC] = null;
+
         chessPlayerTurn = true;
-        if (chessStatusText) chessStatusText.textContent = 'Σειρά σου: 🐱 (Γατούλες)';
+        if (chessStatusText) chessStatusText.textContent = `Σειρά σου: 🐱 (${currentDifficulty.toUpperCase()})`;
         renderChessBoard();
     }
 
     if (chessResetBtn) chessResetBtn.addEventListener('click', setupChessGame);
 
     // ----------------------------------------------------
-    // 14. CAT SOLITAIRE (🂠🐱 Γατο-Πασιέντζα)
+    // 14. CAT SOLITAIRE (LEVEL SCALING & RESHUFFLE DEADLOCK FIX)
     // ----------------------------------------------------
     let solitaireFoundations = { cat: [], fish: [], yarn: [] };
     let solitaireColumns = [[], [], []];
-    let solitaireSelected = null; // { colIndex, cardIndex, card }
+    let solitaireSelected = null;
 
     function setupSolitaireGame() {
-        const deck = [
-            { suit: 'cat', icon: '🐱', val: 1 },
-            { suit: 'cat', icon: '🐱', val: 2 },
-            { suit: 'cat', icon: '🐱', val: 3 },
-            { suit: 'fish', icon: '🐟', val: 1 },
-            { suit: 'fish', icon: '🐟', val: 2 },
-            { suit: 'fish', icon: '🐟', val: 3 },
-            { suit: 'yarn', icon: '🧶', val: 1 },
-            { suit: 'yarn', icon: '🧶', val: 2 },
-            { suit: 'yarn', icon: '🧶', val: 3 }
-        ];
+        let maxVal = 2;
+        if (currentDifficulty === 'medium') maxVal = 3;
+        if (currentDifficulty === 'hard') maxVal = 4;
+
+        const deck = [];
+        ['cat', 'fish', 'yarn'].forEach(suit => {
+            const icon = suit === 'cat' ? '🐱' : (suit === 'fish' ? '🐟' : '🧶');
+            for (let v = 1; v <= maxVal; v++) {
+                deck.push({ suit, icon, val: v });
+            }
+        });
 
         deck.sort(() => Math.random() - 0.5);
 
@@ -1170,12 +1327,13 @@ document.addEventListener('DOMContentLoaded', () => {
         solitaireColumns = [[], [], []];
         solitaireSelected = null;
 
-        solitaireColumns[0] = [deck[0], deck[1], deck[2]];
-        solitaireColumns[1] = [deck[3], deck[4], deck[5]];
-        solitaireColumns[2] = [deck[6], deck[7], deck[8]];
+        // Distribute deck into 3 columns
+        deck.forEach((card, index) => {
+            solitaireColumns[index % 3].push(card);
+        });
 
-        if (solitaireStatusText) solitaireStatusText.textContent = 'Βάλε τους αριθμούς (1 ➔ 2 ➔ 3) στα καλάθια!';
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Πάτα μια κάρτα & μετά το καλάθι της (1 ➔ 2 ➔ 3)! 🧺"`;
+        if (solitaireStatusText) solitaireStatusText.textContent = `Βάλε τους αριθμούς (1 ➔ ${maxVal}) στα καλάθια!`;
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Πάτα κάρτα & μετά το σωστό καλάθι (1 ➔ ${maxVal})! 🧺"`;
 
         renderSolitaireBoard();
     }
@@ -1188,7 +1346,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const yarnTop = solitaireFoundations.yarn.length ? solitaireFoundations.yarn[solitaireFoundations.yarn.length - 1] : null;
 
         solitaireBoard.innerHTML = `
-            <!-- Top Foundations / Baskets -->
             <div class="solitaire-foundations-row">
                 <div class="solitaire-foundation-basket" data-suit="cat">
                     <small>🧺 Γατούλες</small>
@@ -1221,7 +1378,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
 
-            <!-- Bottom Playing Columns -->
             <div class="solitaire-columns-row">
                 ${[0, 1, 2].map(colIdx => `
                     <div class="solitaire-column-stack" data-col="${colIdx}">
@@ -1238,9 +1394,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `).join('')}
             </div>
+
+            <button id="reshuffleSolitaireBtn" class="btn btn-back-menu" style="margin-top: 10px;">
+                🔀 Ανακάτεμα Καρτών
+            </button>
         `;
 
-        // Event listeners for cards in columns
+        const reshuffleBtn = solitaireBoard.querySelector('#reshuffleSolitaireBtn');
+        if (reshuffleBtn) {
+            reshuffleBtn.addEventListener('click', () => {
+                const remainingCards = [];
+                solitaireColumns.forEach(col => {
+                    remainingCards.push(...col);
+                    col.length = 0;
+                });
+                remainingCards.sort(() => Math.random() - 0.5);
+                remainingCards.forEach((c, idx) => {
+                    solitaireColumns[idx % 3].push(c);
+                });
+                solitaireSelected = null;
+                renderSolitaireBoard();
+            });
+        }
+
         solitaireBoard.querySelectorAll('.solitaire-card-item[data-col]').forEach(cardEl => {
             cardEl.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1249,7 +1425,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isTop = cardIdx === solitaireColumns[colIdx].length - 1;
 
                 if (!isTop) return;
-
                 const card = solitaireColumns[colIdx][cardIdx];
 
                 if (solitaireSelected && solitaireSelected.colIndex === colIdx && solitaireSelected.cardIndex === cardIdx) {
@@ -1262,7 +1437,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Event listeners for Foundation Baskets
         solitaireBoard.querySelectorAll('.solitaire-foundation-basket').forEach(basketEl => {
             basketEl.addEventListener('click', () => {
                 if (!solitaireSelected) return;
@@ -1285,7 +1459,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         playCatSoundEffect('correct');
                         triggerCorrectAnswerReaction();
 
-                        if (solitaireFoundations.cat.length === 3 && solitaireFoundations.fish.length === 3 && solitaireFoundations.yarn.length === 3) {
+                        let maxVal = 2;
+                        if (currentDifficulty === 'medium') maxVal = 3;
+                        if (currentDifficulty === 'hard') maxVal = 4;
+
+                        if (solitaireFoundations.cat.length === maxVal && solitaireFoundations.fish.length === maxVal && solitaireFoundations.yarn.length === maxVal) {
                             if (solitaireStatusText) solitaireStatusText.textContent = '🎉 Μπράβο! Κέρδισες τη Γατο-Πασιέντζα! 🥳';
                             if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Φανταστικά! Συμπλήρωσες όλα τα καλάθια! 🌟 +30 Πόντοι!"`;
                             score += 30;
@@ -1303,7 +1481,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Event listeners for Columns (to move card between columns)
         solitaireBoard.querySelectorAll('.solitaire-column-stack').forEach(colEl => {
             colEl.addEventListener('click', () => {
                 if (!solitaireSelected) return;

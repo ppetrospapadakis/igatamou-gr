@@ -2704,6 +2704,69 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     background: #fff0f3 !important;
 }
 
+/* ---------------------------------------------------- */
+/* DIFFICULTY BAR, PHOTO GROUPING & 5x5 CHESS GRID     */
+/* ---------------------------------------------------- */
+
+.difficulty-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: var(--radius-full);
+    border: 1.5px solid #cbd5e1;
+}
+
+.diff-btn {
+    background: transparent;
+    border: none;
+    padding: 5px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.diff-btn.active {
+    background: #ffffff;
+    color: var(--primary);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.btn-group-cat {
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-group-cat:hover {
+    background: #7c3aed;
+    transform: translateY(-2px);
+}
+
+/* 5x5 Chess Grid */
+.chess-board-grid.grid-5x5 {
+    grid-template-columns: repeat(5, 58px) !important;
+    grid-template-rows: repeat(5, 58px) !important;
+}
+
+.chess-board-grid.grid-5x5 .chess-square {
+    width: 58px !important;
+    height: 58px !important;
+    font-size: 2.1rem !important;
+}
+
+
 
 
 

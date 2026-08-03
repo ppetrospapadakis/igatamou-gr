@@ -135,6 +135,34 @@
         </div>
     </div>
 
+    <!-- ADMIN PHOTO GROUPING MODAL -->
+    <div id="groupModal" class="modal-overlay" hidden>
+        <div class="modal-card admin-group-modal">
+            <button id="closeGroupBtn" class="close-modal-btn" aria-label="Κλείσιμο">&times;</button>
+            <div class="menu-title-box">
+                <span class="cat-hero-emoji">📂🐱</span>
+                <h2>Ομαδοποίηση Φωτογραφιών σε Άλμπουμ</h2>
+                <p id="groupSourceCatName">Επίλεξε πού θέλεις να συγχωνεύσεις αυτή τη φωτογραφία:</p>
+            </div>
+
+            <form id="groupForm" class="admin-login-form">
+                <div class="form-group">
+                    <label for="groupTargetSelect">Συγχώνευση σε Υπάρχουσα Γατούλα / Άλμπουμ:</label>
+                    <select id="groupTargetSelect" class="input-field">
+                        <!-- Options injected dynamically by JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="groupNewNameInput">Ή Δημιουργία Νέου Ονόματος Άλμπουμ (Προαιρετικό):</label>
+                    <input type="text" id="groupNewNameInput" placeholder="π.χ. Γατούλες της Γειτονιάς" class="input-field">
+                </div>
+                <button type="submit" class="btn btn-submit-upload">
+                    ✨ Συγχώνευση & Ομαδοποίηση!
+                </button>
+            </form>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
