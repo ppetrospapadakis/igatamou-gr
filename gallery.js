@@ -512,7 +512,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         owner: newCat.owner,
                         bio: newCat.bio,
                         image: newCat.image,
-                        gallery: JSON.stringify(newCat.gallery),
                         status: newCat.status,
                         likes: newCat.likes,
                         date: newCat.date
@@ -802,7 +801,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 owner: targetCat.owner,
                                 bio: targetCat.bio,
                                 image: targetCat.image,
-                                gallery: JSON.stringify(targetCat.gallery),
                                 status: targetCat.status,
                                 likes: targetCat.likes,
                                 date: targetCat.date
