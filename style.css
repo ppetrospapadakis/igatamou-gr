@@ -2811,9 +2811,60 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 
 .solitaire-card-item.selected-card {
     border-color: var(--primary) !important;
-    transform: scale(1.12) translateY(-4px) !important;
-    box-shadow: 0 10px 24px rgba(255, 94, 126, 0.4) !important;
+    transform: scale(1.12) translateY(-6px) !important;
+    box-shadow: 0 10px 24px rgba(255, 94, 126, 0.45) !important;
     background: #fff0f3 !important;
+    z-index: 10 !important;
+}
+
+.solitaire-instructions {
+    background: #ffffff;
+    color: #334155;
+    padding: 10px 18px;
+    border-radius: 16px;
+    font-size: 0.98rem;
+    line-height: 1.45;
+    border: 2px dashed #ff7597;
+    box-shadow: 0 4px 12px rgba(255, 117, 151, 0.12);
+    margin-top: 6px;
+    display: inline-block;
+}
+
+.basket-placeholder {
+    font-size: 1.4rem;
+    opacity: 0.45;
+    font-weight: bold;
+    color: #64748b;
+}
+
+.empty-col-text {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    font-weight: bold;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.solitaire-card-item.stacked-card {
+    margin-top: -50px;
+    opacity: 0.88;
+}
+
+.solitaire-card-item.top-card {
+    margin-top: -50px;
+    border-color: #ff7597;
+    box-shadow: 0 8px 18px rgba(255, 117, 151, 0.2);
+    z-index: 5;
+}
+
+.solitaire-column-stack .solitaire-card-item:first-child {
+    margin-top: 0 !important;
+}
+
+.solitaire-card-item.card-in-basket {
+    margin-top: 0 !important;
+    border-color: #06d6a0;
+    background: #f0fdf4;
 }
 
 /* ---------------------------------------------------- */

@@ -1841,16 +1841,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (chessResetBtn) chessResetBtn.addEventListener('click', setupChessGame);
 
     // ----------------------------------------------------
-    // 14. CAT SOLITAIRE
+    // 14. CAT SOLITAIRE (ΓΑΤΟ-ΠΑΣΙΕΝΤΖΑ)
     // ----------------------------------------------------
     let solitaireFoundations = { cat: [], fish: [], yarn: [] };
     let solitaireColumns = [[], [], []];
     let solitaireSelected = null;
+    let solitaireMoves = 0;
+    let solitaireMaxMoves = 25;
 
     function setupSolitaireGame() {
-        let maxVal = 2;
-        if (currentDifficulty === 'medium') maxVal = 3;
-        if (currentDifficulty === 'hard') maxVal = 4;
+        let maxVal = 3;
+        solitaireMaxMoves = 25;
+        if (currentDifficulty === 'medium') { maxVal = 5; solitaireMaxMoves = 35; }
+        if (currentDifficulty === 'hard') { maxVal = 7; solitaireMaxMoves = 45; }
+
+        solitaireMoves = 0;
+        const solitaireScore = document.getElementById('solitaireScore');
+        if (solitaireScore) solitaireScore.textContent = `0 / ${solitaireMaxMoves}`;
 
         const deck = [];
         ['cat', 'fish', 'yarn'].forEach(suit => {
@@ -1870,7 +1877,16 @@ document.addEventListener('DOMContentLoaded', () => {
             solitaireColumns[index % 3].push(card);
         });
 
-        if (solitaireStatusText) solitaireStatusText.textContent = `Βάλε τους αριθμούς (1 ➔ ${maxVal}) στα καλάθια!`;
+        if (questionNumber) questionNumber.textContent = `🂠🐱 Γατο-Πασιέντζα (${currentDifficulty.toUpperCase()})`;
+        if (questionText) questionText.textContent = `Ταξινόμησε τους αριθμούς (1 ➔ ${maxVal}) στα 3 καλάθια!`;
+        if (visualHelper) {
+            visualHelper.innerHTML = `
+                <div class="solitaire-instructions">
+                    💡 <strong>Οδηγίες:</strong> Πάτα την πάνω κάρτα από μια στήλη και μετά πάτα το αντίστοιχο καλάθι (🐱, 🐟, 🧶) με τη σειρά (1 ➔ 2 ➔ 3)!
+                </div>
+            `;
+        }
+
         if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Πάτα κάρτα & μετά το σωστό καλάθι (1 ➔ ${maxVal})! 🧺"`;
 
         renderSolitaireBoard();
@@ -1879,6 +1895,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderSolitaireBoard() {
         if (!solitaireBoard) return;
 
+        let maxVal = 3;
+        if (currentDifficulty === 'medium') maxVal = 5;
+        if (currentDifficulty === 'hard') maxVal = 7;
+
         const catTop = solitaireFoundations.cat.length ? solitaireFoundations.cat[solitaireFoundations.cat.length - 1] : null;
         const fishTop = solitaireFoundations.fish.length ? solitaireFoundations.fish[solitaireFoundations.fish.length - 1] : null;
         const yarnTop = solitaireFoundations.yarn.length ? solitaireFoundations.yarn[solitaireFoundations.yarn.length - 1] : null;
@@ -1886,43 +1906,45 @@ document.addEventListener('DOMContentLoaded', () => {
         solitaireBoard.innerHTML = `
             <div class="solitaire-foundations-row">
                 <div class="solitaire-foundation-basket" data-suit="cat">
-                    <small>🧺 Γατούλες</small>
+                    <small>🧺 Γατούλες (${solitaireFoundations.cat.length}/${maxVal})</small>
                     ${catTop ? `
-                        <div class="solitaire-card-item">
+                        <div class="solitaire-card-item card-in-basket">
                             <span class="card-suit">🐱</span>
                             <span class="card-val">${catTop.val}</span>
                         </div>
-                    ` : '<span style="font-size: 1.4rem; opacity: 0.4;">🐱 1</span>'}
+                    ` : '<span class="basket-placeholder">🐱 1</span>'}
                 </div>
 
                 <div class="solitaire-foundation-basket" data-suit="fish">
-                    <small>🧺 Ψαράκια</small>
+                    <small>🧺 Ψαράκια (${solitaireFoundations.fish.length}/${maxVal})</small>
                     ${fishTop ? `
-                        <div class="solitaire-card-item">
+                        <div class="solitaire-card-item card-in-basket">
                             <span class="card-suit">🐟</span>
                             <span class="card-val">${fishTop.val}</span>
                         </div>
-                    ` : '<span style="font-size: 1.4rem; opacity: 0.4;">🐟 1</span>'}
+                    ` : '<span class="basket-placeholder">🐟 1</span>'}
                 </div>
 
                 <div class="solitaire-foundation-basket" data-suit="yarn">
-                    <small>🧺 Κουβάρια</small>
+                    <small>🧺 Κουβάρια (${solitaireFoundations.yarn.length}/${maxVal})</small>
                     ${yarnTop ? `
-                        <div class="solitaire-card-item">
+                        <div class="solitaire-card-item card-in-basket">
                             <span class="card-suit">🧶</span>
                             <span class="card-val">${yarnTop.val}</span>
                         </div>
-                    ` : '<span style="font-size: 1.4rem; opacity: 0.4;">🧶 1</span>'}
+                    ` : '<span class="basket-placeholder">🧶 1</span>'}
                 </div>
             </div>
 
             <div class="solitaire-columns-row">
                 ${[0, 1, 2].map(colIdx => `
                     <div class="solitaire-column-stack" data-col="${colIdx}">
+                        ${solitaireColumns[colIdx].length === 0 ? '<span class="empty-col-text">Άδεια Στήλη</span>' : ''}
                         ${solitaireColumns[colIdx].map((card, cardIdx) => {
+                            const isTop = cardIdx === solitaireColumns[colIdx].length - 1;
                             const isSelected = solitaireSelected && solitaireSelected.colIndex === colIdx && solitaireSelected.cardIndex === cardIdx;
                             return `
-                                <div class="solitaire-card-item ${isSelected ? 'selected-card' : ''}" 
+                                <div class="solitaire-card-item ${isSelected ? 'selected-card' : ''} ${isTop ? 'top-card' : 'stacked-card'}" 
                                      data-col="${colIdx}" data-idx="${cardIdx}">
                                     <span class="card-suit">${card.icon}</span>
                                     <span class="card-val">${card.val}</span>
@@ -1933,11 +1955,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 `).join('')}
             </div>
 
-            <button id="reshuffleSolitaireBtn" class="btn btn-back-menu" style="margin-top: 10px;">
+            <button id="reshuffleSolitaireBtn" class="btn btn-back-menu" style="margin-top: 12px; font-weight: bold;">
                 🔀 Ανακάτεμα Καρτών
             </button>
         `;
 
+        // Reshuffle button click
         const reshuffleBtn = solitaireBoard.querySelector('#reshuffleSolitaireBtn');
         if (reshuffleBtn) {
             reshuffleBtn.addEventListener('click', () => {
@@ -1951,10 +1974,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     solitaireColumns[idx % 3].push(c);
                 });
                 solitaireSelected = null;
+                playCatSoundEffect('click');
                 renderSolitaireBoard();
             });
         }
 
+        // Card items click handlers
         solitaireBoard.querySelectorAll('.solitaire-card-item[data-col]').forEach(cardEl => {
             cardEl.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1975,12 +2000,17 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        // Foundation baskets click handlers
         solitaireBoard.querySelectorAll('.solitaire-foundation-basket').forEach(basketEl => {
             basketEl.addEventListener('click', () => {
                 if (!solitaireSelected) return;
 
                 const targetSuit = basketEl.getAttribute('data-suit');
                 const card = solitaireSelected.card;
+
+                solitaireMoves++;
+                const solitaireScore = document.getElementById('solitaireScore');
+                if (solitaireScore) solitaireScore.textContent = `${solitaireMoves} / ${solitaireMaxMoves}`;
 
                 if (card.suit === targetSuit) {
                     const currentPile = solitaireFoundations[targetSuit];
@@ -1991,21 +2021,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         solitaireColumns[solitaireSelected.colIndex].pop();
                         solitaireSelected = null;
 
-                        score += 10;
+                        score += 15;
                         localStorage.setItem('igatamou_game_score', score.toString());
                         updateScoreUI();
                         playCatSoundEffect('correct');
                         triggerCorrectAnswerReaction();
 
-                        let maxVal = 2;
-                        if (currentDifficulty === 'medium') maxVal = 3;
-                        if (currentDifficulty === 'hard') maxVal = 4;
-
                         if (solitaireFoundations.cat.length === maxVal && solitaireFoundations.fish.length === maxVal && solitaireFoundations.yarn.length === maxVal) {
-                            if (solitaireStatusText) solitaireStatusText.textContent = '🎉 Μπράβο! Κέρδισες τη Γατο-Πασιέντζα! 🥳';
-                            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Φανταστικά! Συμπλήρωσες όλα τα καλάθια! 🌟 +30 Πόντοι!"`;
-                            score += 30;
-                            updateScoreUI();
+                            setTimeout(() => showSolitaireResultModal(true), 400);
+                            return;
                         }
                     } else {
                         playCatSoundEffect('wrong');
@@ -2015,24 +2039,73 @@ document.addEventListener('DOMContentLoaded', () => {
                     playCatSoundEffect('wrong');
                     triggerWrongAnswerReaction();
                 }
+
+                if (solitaireMoves >= solitaireMaxMoves) {
+                    setTimeout(() => showSolitaireResultModal(false), 500);
+                    return;
+                }
+
                 renderSolitaireBoard();
             });
         });
 
+        // Empty column stack click handlers
         solitaireBoard.querySelectorAll('.solitaire-column-stack').forEach(colEl => {
             colEl.addEventListener('click', () => {
                 if (!solitaireSelected) return;
                 const targetColIdx = parseInt(colEl.getAttribute('data-col'), 10);
                 if (targetColIdx === solitaireSelected.colIndex) return;
 
+                solitaireMoves++;
+                const solitaireScore = document.getElementById('solitaireScore');
+                if (solitaireScore) solitaireScore.textContent = `${solitaireMoves} / ${solitaireMaxMoves}`;
+
                 const card = solitaireSelected.card;
                 solitaireColumns[solitaireSelected.colIndex].pop();
                 solitaireColumns[targetColIdx].push(card);
                 solitaireSelected = null;
                 playCatSoundEffect('click');
+
+                if (solitaireMoves >= solitaireMaxMoves) {
+                    setTimeout(() => showSolitaireResultModal(false), 500);
+                    return;
+                }
+
                 renderSolitaireBoard();
             });
         });
+    }
+
+    function showSolitaireResultModal(isWin) {
+        if (isWin) {
+            score += 100;
+            localStorage.setItem('igatamou_game_score', score.toString());
+            updateScoreUI();
+
+            if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
+            if (quizResultTitle) quizResultTitle.textContent = 'ΤΕΛΕΙΑ! Κέρδισες τη Γατο-Πασιέντζα! 😸🎉';
+            if (quizResultScoreText) quizResultScoreText.textContent = `${solitaireMoves} Κινήσεις`;
+            if (quizResultMessage) quizResultMessage.textContent = '«Απίστευτο! Ταξινόμησες όλες τις γατο-κάρτες στα 3 καλάθια! Κέρδισες +100 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎀✨»';
+            
+            if (quizResultModal) {
+                const card = quizResultModal.querySelector('.modal-card');
+                if (card) card.className = 'modal-card quiz-result-card result-perfect';
+                quizResultModal.hidden = false;
+            }
+            playCatSoundEffect('win');
+        } else {
+            if (quizResultEmoji) quizResultEmoji.textContent = '😿';
+            if (quizResultTitle) quizResultTitle.textContent = 'Η γατούλα είναι στενοχωρημένη... 😿';
+            if (quizResultScoreText) quizResultScoreText.textContent = `${solitaireMoves} / ${solitaireMaxMoves} Κινήσεις`;
+            if (quizResultMessage) quizResultMessage.textContent = '«Εξαντλήθηκαν οι κινήσεις! Μη στεναχωριέσαι, πάτα "Παίξε ξανά" και θα τα καταφέρεις! 🐾»';
+            
+            if (quizResultModal) {
+                const card = quizResultModal.querySelector('.modal-card');
+                if (card) card.className = 'modal-card quiz-result-card result-sad';
+                quizResultModal.hidden = false;
+            }
+            playCatSoundEffect('wrong');
+        }
     }
 
     if (solitaireResetBtn) solitaireResetBtn.addEventListener('click', setupSolitaireGame);
