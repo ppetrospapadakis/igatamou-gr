@@ -1280,10 +1280,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const piece = chessGrid[r][c];
 
                 if (piece) {
-                    if (piece.includes('👑')) sq.textContent = '👑';
-                    else if (piece.includes('🐴')) sq.textContent = '🐴';
-                    else if (piece.includes('🏰')) sq.textContent = '🏰';
-                    else sq.textContent = piece.includes('🐱') ? '🐱' : '🐟';
+                    const isCat = piece.includes('🐱');
+                    let displayContent = '';
+
+                    if (piece.includes('👑')) {
+                        displayContent = isCat ? '👑🐱' : '👑🐟';
+                    } else if (piece.includes('🐴')) {
+                        displayContent = isCat ? '🐴🐱' : '🐴🐟';
+                    } else if (piece.includes('🏰')) {
+                        displayContent = isCat ? '🏰🐱' : '🏰🐟';
+                    } else {
+                        displayContent = isCat ? '🐱' : '🐟';
+                    }
+
+                    const pieceTeamClass = isCat ? 'cat-piece' : 'fish-piece';
+                    sq.innerHTML = `<span class="chess-piece-wrapper ${pieceTeamClass}">${displayContent}</span>`;
                 }
 
                 if (chessSelectedSq && chessSelectedSq.r === r && chessSelectedSq.c === c) {

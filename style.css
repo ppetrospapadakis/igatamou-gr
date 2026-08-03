@@ -2606,6 +2606,30 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     background: #bbf7d0 !important;
 }
 
+.chess-piece-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 6px;
+    border-radius: 16px;
+    font-size: 1.8rem;
+    line-height: 1;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.chess-piece-wrapper.cat-piece {
+    background: rgba(255, 94, 126, 0.15);
+    border: 2.5px solid #ff5e7e;
+    box-shadow: 0 4px 12px rgba(255, 94, 126, 0.3);
+}
+
+.chess-piece-wrapper.fish-piece {
+    background: rgba(56, 189, 248, 0.15);
+    border: 2.5px solid #38bdf8;
+    box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+}
+
 /* 14. CAT SOLITAIRE */
 .solitaire-board-wrapper {
     display: flex;
@@ -2884,6 +2908,12 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
         justify-content: center !important;
     }
 
+    .chess-piece-wrapper {
+        font-size: 2.4rem !important;
+        padding: 4px 8px !important;
+        border-radius: 20px !important;
+    }
+
     .chess-board-grid.grid-5x5 {
         grid-template-columns: repeat(5, 88px) !important;
         grid-template-rows: repeat(5, 88px) !important;
@@ -2898,6 +2928,11 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
         font-size: 3.2rem !important;
         line-height: 1 !important;
         box-sizing: border-box !important;
+    }
+
+    .chess-board-grid.grid-5x5 .chess-piece-wrapper {
+        font-size: 2.0rem !important;
+        padding: 3px 5px !important;
     }
 
     /* 5. Cat Solitaire 50% Enlarged */
