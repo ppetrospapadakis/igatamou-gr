@@ -70,7 +70,7 @@
                     📷 Ανέβασε τη Γατούλα σου! 🐾
                 </button>
                 <a href="admin.html" class="admin-link-btn" title="Περιοχή Διαχειριστή">
-                    🔒 Admin Login
+                    🔒 Είσοδος Διαχειριστή
                 </a>
             </div>
         </header>
@@ -80,7 +80,7 @@
             <div class="category-menu-card gallery-main-card">
                 <div class="menu-title-box">
                     <span class="cat-hero-emoji">📸🐱</span>
-                    <h1>Γατο-Gallery: Οι Γατούλες μας!</h1>
+                    <h1>Γατο-Άλμπουμ: Οι Γατούλες μας!</h1>
                     <p>Δες όλες τις γατούλες της παρέας μας & δώσε τους ένα γατο-χάδι! 💖</p>
                 </div>
 
@@ -92,7 +92,7 @@
                 <!-- Empty State Message (shown if no approved cats yet) -->
                 <div id="emptyGallery" class="empty-gallery-card" hidden>
                     <span class="empty-icon">🐱💬</span>
-                    <h3>Δεν υπάρχουν ακόμα φωτογραφίες στο Gallery!</h3>
+                    <h3>Δεν υπάρχουν ακόμα φωτογραφίες στο Άλμπουμ!</h3>
                     <p>Γίνε ο/η πρώτος/η που θα ανεβάσει τη γατούλα του!</p>
                     <button class="btn btn-games-cta openUploadTrigger">
                         📷 Ανέβασε τη Γατούλα σου Τώρα! 🐾
@@ -108,36 +108,35 @@
                 <h2>📸 Ανέβαστε τη Γατούλα σου!</h2>
                 <p>Συμπλήρωσε τα στοιχεία & διάλεξε μια όμορφη φωτογραφία!</p>
 
-                <form id="catUploadForm" class="upload-form">
+                <form id="uploadForm" class="upload-form">
                     <div class="form-group">
                         <label for="catNameInput">Όνομα Γατούλας: *</label>
-                        <input type="text" id="catNameInput" placeholder="π.χ. Μιλού, Ψιψίνος, Φοίβος" required class="input-field">
+                        <input type="text" id="catNameInput" placeholder="π.χ. Μάγκας, Μούργος, Σίμπα..." required class="input-field">
                     </div>
 
                     <div class="form-group">
-                        <label for="ownerNameInput">Το Όνομά σου (Ιδιοκτήτης/ρια): *</label>
-                        <input type="text" id="ownerNameInput" placeholder="π.χ. Μαρία (8 ετών)" required class="input-field">
+                        <label for="ownerNameInput">Το Όνομά σου & Ηλικία: *</label>
+                        <input type="text" id="ownerNameInput" placeholder="π.χ. Αριάδνη (7 ετών)" required class="input-field">
                     </div>
 
                     <div class="form-group">
                         <label for="catBioInput">Λίγα λόγια για τη γατούλα σου: (προαιρετικό)</label>
-                        <input type="text" id="catBioInput" placeholder="π.χ. Της αρέσει να κοιμάται στον ήλιο!" class="input-field">
+                        <textarea id="catBioInput" placeholder="π.χ. Της αρέσει να κοιμάται στον ήλιο & να τρώει ψαράκια! 🐟" rows="3" class="input-field textarea-field"></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label for="catPhotoInput">Φωτογραφίες Γατούλας: *</label>
-                        <input type="file" id="catPhotoInput" accept="image/*" multiple required class="input-file">
-                        <small class="file-hint">💡 Μπορείς να διαλέξεις μία ή περισσότερες φωτογραφίες για το άλμπουμ!</small>
+                        <label for="catPhotoInput">Επιλογή Φωτογραφίας: *</label>
+                        <input type="file" id="catPhotoInput" accept="image/*" required class="file-input-field">
+                        <small class="form-help">Μπορείς να ανεβάσεις οποιαδήποτε εικόνα της γατούλας σου!</small>
                     </div>
 
-                    <!-- Image Preview Container -->
-                    <div id="imagePreviewBox" class="image-preview-box" hidden>
-                        <img id="previewImg" src="" alt="Προεπισκόπηση">
-                        <div id="previewCountBadge" class="preview-count-badge" hidden></div>
+                    <div id="imagePreviewContainer" class="image-preview-container" hidden>
+                        <p>Προεπισκόπηση:</p>
+                        <img id="imagePreview" src="" alt="Προεπισκόπηση γατούλας" class="image-preview-img">
                     </div>
 
-                    <button type="submit" id="submitUploadBtn" class="btn btn-submit-upload">
-                        🚀 Αποστολή για Έγκριση! 🐾
+                    <button type="submit" id="submitCatBtn" class="btn btn-submit-upload">
+                        ✨ Αποστολή για Έγκριση 🐾
                     </button>
                 </form>
             </div>

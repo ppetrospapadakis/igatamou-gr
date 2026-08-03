@@ -363,6 +363,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         clearArenaContainers();
 
+        function getGreekDifficulty() {
+            if (currentDifficulty === 'easy') return 'ΕΥΚΟΛΟ';
+            if (currentDifficulty === 'medium') return 'ΜΕΣΑΙΟ';
+            if (currentDifficulty === 'hard') return 'ΔΥΣΚΟΛΟ';
+            return currentDifficulty ? currentDifficulty.toUpperCase() : '';
+        }
+
         const catTitles = {
             math: "🧮 Μαθηματικά",
             spelling: "✏️ Ορθογραφία",
@@ -370,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
             riddles: "💡 Γρίφοι & Σκέψη",
             nature: "🌿 Γνώσεις & Φύση",
             geography: "🗺️ Γεωγραφία",
-            memory: "🧩 Γατο-Memory",
+            memory: "🧩 Παιχνίδι Μνήμης",
             tictactoe: "❌⭕ Γατο-Τρίλιζα",
             snake: "🐍🐾 Γατο-Φιδάκι",
             tetris: "🧩🧱 Γατο-Τέτρις",
@@ -647,7 +654,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // MEMORY GAME LOGIC (EASY / MEDIUM / HARD)
     // ----------------------------------------------------
     function setupMemoryGame() {
-        if (questionNumber) questionNumber.textContent = `Γατο-Memory (${currentDifficulty.toUpperCase()})`;
+        let diffLabel = 'ΕΥΚΟΛΟ';
+        if (currentDifficulty === 'medium') diffLabel = 'ΜΕΣΑΙΟ';
+        if (currentDifficulty === 'hard') diffLabel = 'ΔΥΣΚΟΛΟ';
+        if (questionNumber) questionNumber.textContent = `Παιχνίδι Μνήμης (${diffLabel})`;
         if (questionText) questionText.textContent = 'Βρες τα ζευγάρια με τις γατούλες!';
 
         memoryAttempts = 0;
