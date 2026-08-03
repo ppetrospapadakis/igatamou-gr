@@ -381,7 +381,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const q = currentQuestions[currentQIndex];
         if (questionNumber) questionNumber.textContent = `Ερώτηση ${currentQIndex + 1} από ${currentQuestions.length}`;
         if (questionText) questionText.textContent = q.q;
-        if (visualHelper) visualHelper.textContent = q.helper || '';
+        if (visualHelper) {
+            visualHelper.innerHTML = '';
+            if (q.helper) {
+                const hintBtn = document.createElement('button');
+                hintBtn.className = 'btn-hint-toggle';
+                hintBtn.type = 'button';
+                hintBtn.innerHTML = '💡 Βοήθεια';
+
+                const hintBox = document.createElement('div');
+                hintBox.className = 'hint-text-box';
+                hintBox.hidden = true;
+                hintBox.textContent = q.helper;
+
+                hintBtn.addEventListener('click', () => {
+                    hintBox.hidden = !hintBox.hidden;
+                    hintBtn.innerHTML = hintBox.hidden ? '💡 Βοήθεια' : '💡 Απόκρυψη βοήθειας';
+                });
+
+                visualHelper.appendChild(hintBtn);
+                visualHelper.appendChild(hintBox);
+            }
+        }
 
         if (optionsGrid) {
             optionsGrid.innerHTML = '';

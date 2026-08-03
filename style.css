@@ -968,8 +968,45 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 
 .visual-helper {
     margin-top: 12px;
-    font-size: 2.2rem;
-    letter-spacing: 4px;
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+}
+
+.btn-hint-toggle {
+    background: #fffbe6;
+    color: #946200;
+    border: 1.5px solid #ffe8b5;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+}
+
+.btn-hint-toggle:hover {
+    background: #fff3c4;
+    transform: scale(1.04);
+    border-color: #ffd166;
+}
+
+.hint-text-box {
+    margin-top: 10px;
+    font-size: 1.4rem;
+    color: var(--primary);
+    background: #ffffff;
+    padding: 8px 18px;
+    border-radius: var(--radius-md);
+    border: 2px dashed #fbc2eb;
+    display: inline-block;
+    box-shadow: 0 4px 12px rgba(255, 94, 126, 0.1);
+    animation: fadeIn 0.3s ease;
 }
 
 /* Options Grid */
