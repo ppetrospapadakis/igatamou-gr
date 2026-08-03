@@ -1393,21 +1393,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // 12. BUBBLE POP GAME
     // ----------------------------------------------------
     let bubblesLoop = null;
-    let bubblesPoints = 0;
+    let bubblesPopped = 0;
+    let bubblesGoodSpawned = 0;
+    let bubblesBombsSpawned = 0;
 
     function setupBubblesGame() {
         stopBubblesGame();
-        bubblesPoints = 0;
+        bubblesPopped = 0;
+        bubblesGoodSpawned = 0;
+        bubblesBombsSpawned = 0;
         if (bubblesScore) bubblesScore.textContent = '0';
 
-        let spawnRate = 900;
-        if (currentDifficulty === 'medium') spawnRate = 650;
-        if (currentDifficulty === 'hard') spawnRate = 450;
+        if (questionNumber) questionNumber.textContent = `🎈 Γατο-Μπαλόνια (${currentDifficulty.toUpperCase()})`;
+        if (questionText) questionText.textContent = '🎯 Σκάσε 50 καλά μπαλόνια για να κερδίσεις!';
+        if (visualHelper) {
+            visualHelper.innerHTML = `
+                <div class="bubbles-instructions">
+                    💡 <strong>Οδηγίες:</strong> Σκάσε τα καλά μπαλόνια (🎈, 🐱, 🧶, 🐟, 🎀)! 
+                    <span style="color:#d63031; font-weight:bold;">Προσοχή:</span> Μην αγγίζεις τις βόμβες 💣 (αφαιρούν 1 πόντο)!
+                </div>
+            `;
+        }
 
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Σκάσε τα μπαλόνια με τη γατούλα! 🎈"`;
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Σκάσε 50 μπαλόνια & απέφυγε τις βόμβες 💣!"`;
 
         if (!bubblesBox) return;
         bubblesBox.innerHTML = '';
+
+        let spawnRate = 600; // Medium (current speed)
+        if (currentDifficulty === 'easy') spawnRate = 850;
+        if (currentDifficulty === 'hard') spawnRate = 380;
 
         bubblesLoop = setInterval(spawnBubble, spawnRate);
     }
@@ -1418,36 +1433,117 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function spawnBubble() {
         if (!bubblesBox) return;
+
+        // Check total spawn limits (100 good, 100 bombs max)
+        if (bubblesGoodSpawned >= 100 && bubblesBombsSpawned >= 100) {
+            stopBubblesGame();
+            if (bubblesBox.children.length === 0 && bubblesPopped < 50) {
+                showBubblesResultModal(false);
+            }
+            return;
+        }
+
+        // Determine if good bubble or bomb
+        let isBomb = false;
+        if (bubblesGoodSpawned >= 100) {
+            isBomb = true;
+        } else if (bubblesBombsSpawned >= 100) {
+            isBomb = false;
+        } else {
+            isBomb = Math.random() < 0.45; // ~45% bombs, 55% good
+        }
+
+        if (isBomb) bubblesBombsSpawned++;
+        else bubblesGoodSpawned++;
+
         const bubble = document.createElement('div');
         bubble.className = 'floating-bubble';
 
-        const icons = ['🎈', '🐱', '🧶', '🐟', '🎀'];
-        if (currentDifficulty === 'hard') icons.push('💣');
-
-        const chosenIcon = icons[Math.floor(Math.random() * icons.length)];
+        const goodIcons = ['🎈', '🐱', '🧶', '🐟', '🎀'];
+        const chosenIcon = isBomb ? '💣' : goodIcons[Math.floor(Math.random() * goodIcons.length)];
         bubble.textContent = chosenIcon;
 
-        const maxLeft = (bubblesBox.clientWidth || 300) - 80;
+        if (isBomb) {
+            bubble.classList.add('bomb-bubble');
+        }
+
+        // Speed per difficulty level ("η τωρινή ταχύτητα ας είναι το μεσαίο επίπεδο")
+        let floatSec = 3.8; // Medium
+        if (currentDifficulty === 'easy') floatSec = 5.5; // Easy (slower)
+        if (currentDifficulty === 'hard') floatSec = 2.2; // Hard (faster)
+
+        bubble.style.animation = `floatUp ${floatSec}s linear forwards`;
+
+        const maxLeft = (bubblesBox.clientWidth || 300) - 70;
         bubble.style.left = `${Math.floor(Math.random() * Math.max(10, maxLeft))}px`;
 
         bubble.addEventListener('click', () => {
             if (chosenIcon === '💣') {
-                bubblesPoints = Math.max(0, bubblesPoints - 2);
+                bubblesPopped = Math.max(0, bubblesPopped - 1);
                 playCatSoundEffect('wrong');
                 triggerWrongAnswerReaction();
             } else {
-                bubblesPoints++;
+                bubblesPopped++;
                 score += 4;
                 playCatSoundEffect('correct');
+
+                if (bubblesPopped >= 50) {
+                    stopBubblesGame();
+                    if (bubblesScore) bubblesScore.textContent = '50';
+                    setTimeout(() => showBubblesResultModal(true), 300);
+                    bubble.remove();
+                    return;
+                }
             }
-            if (bubblesScore) bubblesScore.textContent = bubblesPoints.toString();
+
+            if (bubblesScore) bubblesScore.textContent = bubblesPopped.toString();
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
             bubble.remove();
         });
 
         bubblesBox.appendChild(bubble);
-        setTimeout(() => { if (bubble.parentNode) bubble.remove(); }, 3500);
+        setTimeout(() => {
+            if (bubble.parentNode) bubble.remove();
+            if (bubblesGoodSpawned >= 100 && bubblesBombsSpawned >= 100 && bubblesBox.children.length === 0 && bubblesPopped < 50) {
+                showBubblesResultModal(false);
+            }
+        }, floatSec * 1000 + 100);
+    }
+
+    function showBubblesResultModal(isWin) {
+        stopBubblesGame();
+        if (bubblesBox) bubblesBox.innerHTML = '';
+
+        if (isWin) {
+            score += 100;
+            localStorage.setItem('igatamou_game_score', score.toString());
+            updateScoreUI();
+
+            if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
+            if (quizResultTitle) quizResultTitle.textContent = 'ΤΕΛΕΙΑ! Σκάσατε 50 Μπαλόνια! 😸🎉';
+            if (quizResultScoreText) quizResultScoreText.textContent = `${bubblesPopped} / 50 Μπαλόνια`;
+            if (quizResultMessage) quizResultMessage.textContent = '«Απίστευτο! Τα κατάφερες και έσκασες 50 γατο-μπαλόνια! Κέρδισες +100 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎀✨»';
+            
+            if (quizResultModal) {
+                const card = quizResultModal.querySelector('.modal-card');
+                if (card) card.className = 'modal-card quiz-result-card result-perfect';
+                quizResultModal.hidden = false;
+            }
+            playCatSoundEffect('win');
+        } else {
+            if (quizResultEmoji) quizResultEmoji.textContent = '😿';
+            if (quizResultTitle) quizResultTitle.textContent = 'Η γατούλα είναι στενοχωρημένη... 😿';
+            if (quizResultScoreText) quizResultScoreText.textContent = `${bubblesPopped} / 50 Μπαλόνια`;
+            if (quizResultMessage) quizResultMessage.textContent = `«Έσκασες ${bubblesPopped} από τα 50 μπαλόνια. Μη στεναχωριέσαι, πάτα "Παίξε ξανά" και θα τα καταφέρεις! 🐾»`;
+            
+            if (quizResultModal) {
+                const card = quizResultModal.querySelector('.modal-card');
+                if (card) card.className = 'modal-card quiz-result-card result-sad';
+                quizResultModal.hidden = false;
+            }
+            playCatSoundEffect('wrong');
+        }
     }
 
     if (bubblesStartBtn) bubblesStartBtn.addEventListener('click', setupBubblesGame);
