@@ -1,0 +1,16 @@
+# robots.txt for igatamou.gr
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /games.html
+Allow: /gallery.html
+Allow: /style.css
+Allow: /app.js
+Allow: /games.js
+Allow: /gallery.js
+Allow: /magkas_logo.png
+Allow: /magkas.jpg
+
+Disallow: /admin.html
+
+Sitemap: https://www.igatamou.gr/sitemap.xml
