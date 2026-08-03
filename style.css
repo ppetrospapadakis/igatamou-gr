@@ -16,6 +16,11 @@
     --radius-full: 999px;
 }
 
+html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -72,7 +77,8 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 .page-wrapper {
     position: relative;
     z-index: 1;
-    max-width: 980px;
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
     display: flex;
@@ -3087,7 +3093,7 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 
 @media (min-width: 900px) {
     .page-wrapper {
-        max-width: 1350px !important;
+        max-width: 1200px !important;
     }
 
     .game-arena-card {
