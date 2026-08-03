@@ -2792,87 +2792,125 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
         border-radius: 22px !important;
     }
 
-    /* 1. Tic-Tac-Toe 50% Enlarged */
+    /* 1. Tic-Tac-Toe 50% Enlarged - Locked Dimensions to Prevent Layout Shift */
     .tictactoe-grid, #tttGrid {
         grid-template-columns: repeat(3, 135px) !important;
         grid-template-rows: repeat(3, 135px) !important;
         gap: 16px !important;
         margin: 15px auto !important;
+        width: 437px !important;
+        height: 437px !important;
+        box-sizing: border-box !important;
     }
 
     .ttt-cell {
         width: 135px !important;
         height: 135px !important;
         font-size: 4.5rem !important;
+        line-height: 1 !important;
+        box-sizing: border-box !important;
+        flex-shrink: 0 !important;
+        overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         border-radius: 26px !important;
     }
 
-    /* 2. Whack-a-Fish 50% Enlarged */
+    /* 2. Whack-a-Fish 50% Enlarged - Locked Dimensions */
     .whack-grid {
         grid-template-columns: repeat(3, 135px) !important;
         grid-template-rows: repeat(3, 135px) !important;
         gap: 20px !important;
         margin: 15px auto !important;
+        width: 445px !important;
+        height: 445px !important;
+        box-sizing: border-box !important;
     }
 
     .whack-hole {
         width: 135px !important;
         height: 135px !important;
+        box-sizing: border-box !important;
+        flex-shrink: 0 !important;
     }
 
     .whack-item {
         font-size: 4.2rem !important;
         bottom: -80px !important;
+        line-height: 1 !important;
     }
 
     .whack-hole.up .whack-item {
         bottom: 18px !important;
     }
 
-    /* 3. Bubbles Box 50% Enlarged */
+    /* 3. Bubbles Box 50% Enlarged - Locked Dimensions */
     .bubbles-box {
         width: 450px !important;
         height: 480px !important;
         border-radius: 32px !important;
+        flex-shrink: 0 !important;
+        box-sizing: border-box !important;
     }
 
     .floating-bubble {
         width: 78px !important;
         height: 78px !important;
         font-size: 2.6rem !important;
+        line-height: 1 !important;
+        box-sizing: border-box !important;
     }
 
-    /* 4. Mini Cat Chess 50% Enlarged */
+    /* 4. Mini Cat Chess 50% Enlarged - Locked Dimensions */
     .chess-board-grid {
         grid-template-columns: repeat(4, 105px) !important;
         grid-template-rows: repeat(4, 105px) !important;
+        width: 420px !important;
+        height: 420px !important;
+        box-sizing: border-box !important;
     }
 
     .chess-square {
         width: 105px !important;
         height: 105px !important;
         font-size: 3.8rem !important;
+        line-height: 1 !important;
+        box-sizing: border-box !important;
+        flex-shrink: 0 !important;
+        overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     .chess-board-grid.grid-5x5 {
         grid-template-columns: repeat(5, 88px) !important;
         grid-template-rows: repeat(5, 88px) !important;
+        width: 440px !important;
+        height: 440px !important;
+        box-sizing: border-box !important;
     }
 
     .chess-board-grid.grid-5x5 .chess-square {
         width: 88px !important;
         height: 88px !important;
         font-size: 3.2rem !important;
+        line-height: 1 !important;
+        box-sizing: border-box !important;
     }
 
     /* 5. Cat Solitaire 50% Enlarged */
     .solitaire-board-wrapper {
         max-width: 540px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .solitaire-foundation-basket {
         height: 160px !important;
         border-radius: 26px !important;
+        box-sizing: border-box !important;
     }
 
     .solitaire-foundation-basket small {
@@ -2882,36 +2920,48 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     .solitaire-column-stack {
         min-height: 270px !important;
         border-radius: 26px !important;
+        box-sizing: border-box !important;
     }
 
     .solitaire-card-item {
         width: 96px !important;
         height: 124px !important;
         border-radius: 22px !important;
+        box-sizing: border-box !important;
+        flex-shrink: 0 !important;
+        line-height: 1 !important;
     }
 
     .solitaire-card-item .card-suit {
         font-size: 2.4rem !important;
+        line-height: 1 !important;
     }
 
     .solitaire-card-item .card-val {
         font-size: 1.5rem !important;
+        line-height: 1 !important;
     }
 
     /* 6. Cat Memory 50% Enlarged */
     .memory-board {
         gap: 18px !important;
+        max-width: 580px !important;
+        box-sizing: border-box !important;
     }
 
     .memory-card-tile {
         width: 115px !important;
         height: 145px !important;
         border-radius: 22px !important;
+        box-sizing: border-box !important;
+        flex-shrink: 0 !important;
     }
 
     .memory-emoji, .memory-paw {
         font-size: 3.4rem !important;
+        line-height: 1 !important;
     }
+}
 }
 
 
