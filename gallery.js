@@ -608,23 +608,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Tab Switching
+        const tabDrawings = document.getElementById('tabDrawings');
+        const adminDrawingsSection = document.getElementById('adminDrawingsSection');
+
         if (tabPending && tabApproved) {
             tabPending.addEventListener('click', () => {
                 tabPending.classList.add('active');
                 tabApproved.classList.remove('active');
                 if (tabSubscribers) tabSubscribers.classList.remove('active');
+                if (tabDrawings) tabDrawings.classList.remove('active');
                 if (adminPendingSection) adminPendingSection.hidden = false;
                 if (adminApprovedSection) adminApprovedSection.hidden = true;
                 if (adminSubscribersSection) adminSubscribersSection.hidden = true;
+                if (adminDrawingsSection) adminDrawingsSection.hidden = true;
             });
 
             tabApproved.addEventListener('click', () => {
                 tabApproved.classList.add('active');
                 tabPending.classList.remove('active');
                 if (tabSubscribers) tabSubscribers.classList.remove('active');
+                if (tabDrawings) tabDrawings.classList.remove('active');
                 if (adminApprovedSection) adminApprovedSection.hidden = false;
                 if (adminPendingSection) adminPendingSection.hidden = true;
                 if (adminSubscribersSection) adminSubscribersSection.hidden = true;
+                if (adminDrawingsSection) adminDrawingsSection.hidden = true;
             });
 
             if (tabSubscribers) {
@@ -632,10 +639,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     tabSubscribers.classList.add('active');
                     tabPending.classList.remove('active');
                     tabApproved.classList.remove('active');
+                    if (tabDrawings) tabDrawings.classList.remove('active');
                     if (adminSubscribersSection) adminSubscribersSection.hidden = false;
                     if (adminPendingSection) adminPendingSection.hidden = true;
                     if (adminApprovedSection) adminApprovedSection.hidden = true;
+                    if (adminDrawingsSection) adminDrawingsSection.hidden = true;
                     renderSubscribersSection();
+                });
+            }
+
+            if (tabDrawings) {
+                tabDrawings.addEventListener('click', () => {
+                    tabDrawings.classList.add('active');
+                    tabPending.classList.remove('active');
+                    tabApproved.classList.remove('active');
+                    if (tabSubscribers) tabSubscribers.classList.remove('active');
+                    if (adminDrawingsSection) adminDrawingsSection.hidden = false;
+                    if (adminPendingSection) adminPendingSection.hidden = true;
+                    if (adminApprovedSection) adminApprovedSection.hidden = true;
+                    if (adminSubscribersSection) adminSubscribersSection.hidden = true;
+                    renderDrawingsAdminSection();
                 });
             }
         }
@@ -763,6 +786,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const subs = getSubscribersData();
         if (subscribersCountEl) subscribersCountEl.textContent = subs.length;
+
+        const localDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
+        const pendingDrawingsCountEl = document.getElementById('pendingDrawingsCount');
+        if (pendingDrawingsCountEl) {
+            pendingDrawingsCountEl.textContent = localDrawings.filter(d => d.status === 'pending').length;
+        }
 
         // 1. Pending Grid
         if (adminPendingGrid) {
@@ -1030,5 +1059,138 @@ document.addEventListener('DOMContentLoaded', () => {
             renderAdminDashboard();
             if (galleryGrid) renderPublicGallery();
         });
+    }
+
+    // ----------------------------------------------------
+    // DRAWINGS ADMIN MANAGEMENT
+    // ----------------------------------------------------
+    async function renderDrawingsAdminSection() {
+        let localDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
+
+        if (supabase) {
+            try {
+                const { data } = await supabase.from('drawings').select('*');
+                if (data && Array.isArray(data)) {
+                    const drawingMap = new Map();
+                    localDrawings.forEach(d => drawingMap.set(d.id, d));
+                    data.forEach(d => drawingMap.set(d.id, d));
+                    localDrawings = Array.from(drawingMap.values());
+                    localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
+                }
+            } catch (err) {
+                console.log('Supabase drawings admin sync notice:', err);
+            }
+        }
+
+        const pendingDrawings = localDrawings.filter(d => d.status === 'pending');
+        const approvedDrawings = localDrawings.filter(d => d.status === 'approved');
+
+        const pendingDrawingsCountEl = document.getElementById('pendingDrawingsCount');
+        if (pendingDrawingsCountEl) pendingDrawingsCountEl.textContent = pendingDrawings.length;
+
+        const adminPendingDrawingsGrid = document.getElementById('adminPendingDrawingsGrid');
+        const emptyAdminDrawingsPending = document.getElementById('emptyAdminDrawingsPending');
+        const adminApprovedDrawingsGrid = document.getElementById('adminApprovedDrawingsGrid');
+        const emptyAdminDrawingsApproved = document.getElementById('emptyAdminDrawingsApproved');
+
+        // Render Pending Drawings
+        if (adminPendingDrawingsGrid) {
+            adminPendingDrawingsGrid.innerHTML = '';
+            if (pendingDrawings.length === 0) {
+                if (emptyAdminDrawingsPending) emptyAdminDrawingsPending.hidden = false;
+            } else {
+                if (emptyAdminDrawingsPending) emptyAdminDrawingsPending.hidden = true;
+                pendingDrawings.forEach(d => {
+                    const card = document.createElement('div');
+                    card.className = 'drawing-card';
+                    card.innerHTML = `
+                        <div class="drawing-img-wrapper">
+                            <img src="${d.image_data}" alt="${d.name}" class="drawing-img">
+                        </div>
+                        <div class="drawing-card-body">
+                            <div class="drawing-author">🎨 Από: <strong>${escapeHtml(d.name)}</strong></div>
+                            <div style="display: flex; gap: 8px; margin-top: 10px;">
+                                <button class="btn btn-submit-upload approve-draw-btn" style="flex: 1; padding: 8px; font-size: 0.9rem; background: #10b981;">✅ Έγκριση</button>
+                                <button class="btn btn-back-menu reject-draw-btn" style="flex: 1; padding: 8px; font-size: 0.9rem; background: #ef4444; color: white;">🗑️ Απόρριψη</button>
+                            </div>
+                        </div>
+                    `;
+
+                    card.querySelector('.approve-draw-btn').addEventListener('click', async () => {
+                        d.status = 'approved';
+                        updateLocalAndDbDrawing(d);
+                        renderDrawingsAdminSection();
+                        renderAdminDashboard();
+                    });
+
+                    card.querySelector('.reject-draw-btn').addEventListener('click', async () => {
+                        if (confirm('Θέλετε να απορρίψετε αυτή τη ζωγραφιά;')) {
+                            deleteLocalAndDbDrawing(d.id);
+                            renderDrawingsAdminSection();
+                            renderAdminDashboard();
+                        }
+                    });
+
+                    adminPendingDrawingsGrid.appendChild(card);
+                });
+            }
+        }
+
+        // Render Approved Drawings
+        if (adminApprovedDrawingsGrid) {
+            adminApprovedDrawingsGrid.innerHTML = '';
+            if (approvedDrawings.length === 0) {
+                if (emptyAdminDrawingsApproved) emptyAdminDrawingsApproved.hidden = false;
+            } else {
+                if (emptyAdminDrawingsApproved) emptyAdminDrawingsApproved.hidden = true;
+                approvedDrawings.forEach(d => {
+                    const card = document.createElement('div');
+                    card.className = 'drawing-card';
+                    card.innerHTML = `
+                        <div class="drawing-img-wrapper">
+                            <img src="${d.image_data}" alt="${d.name}" class="drawing-img">
+                        </div>
+                        <div class="drawing-card-body">
+                            <div class="drawing-author">🎨 Από: <strong>${escapeHtml(d.name)}</strong></div>
+                            <div style="margin-top: 10px;">
+                                <button class="btn btn-back-menu delete-draw-btn" style="width: 100%; padding: 8px; font-size: 0.9rem; background: #ef4444; color: white;">🗑️ Διαγραφή</button>
+                            </div>
+                        </div>
+                    `;
+
+                    card.querySelector('.delete-draw-btn').addEventListener('click', async () => {
+                        if (confirm('Θέλετε να διαγράψετε αυτή τη ζωγραφιά;')) {
+                            deleteLocalAndDbDrawing(d.id);
+                            renderDrawingsAdminSection();
+                            renderAdminDashboard();
+                        }
+                    });
+
+                    adminApprovedDrawingsGrid.appendChild(card);
+                });
+            }
+        }
+    }
+
+    function updateLocalAndDbDrawing(drawing) {
+        let localDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
+        const idx = localDrawings.findIndex(d => d.id === drawing.id);
+        if (idx !== -1) localDrawings[idx] = drawing;
+        else localDrawings.push(drawing);
+        localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
+
+        if (supabase) {
+            supabase.from('drawings').upsert([drawing]).then();
+        }
+    }
+
+    function deleteLocalAndDbDrawing(id) {
+        let localDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
+        localDrawings = localDrawings.filter(d => d.id !== id);
+        localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
+
+        if (supabase) {
+            supabase.from('drawings').delete().eq('id', id).then();
+        }
     }
 });

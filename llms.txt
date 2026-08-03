@@ -27,8 +27,14 @@
 - Άλμπουμ με φωτογραφίες γατών της κοινότητας.
 - Δυνατότητα στα παιδιά & στους γονείς να ανεβάζουν τις δικές τους φωτογραφίες γατών με όνομα & περιγραφή.
 
+## 🎨 Ζωγράφισε τη Γάτα & Άλμπουμ Ζωγραφιών (`https://www.igatamou.gr/draw.html` & `https://www.igatamou.gr/drawings-gallery.html`)
+- Διαδραστικός καμβάς ζωγραφικής με χρώματα, μεγέθη πινέλων, γόμα, κουβά & έτοιμα σχέδια για χρωμάτισμα.
+- Δημόσιο Άλμπουμ Ζωγραφιών με τις εγκεκριμένες δημιουργίες των παιδιών & κουμπί «Γατο-Χάδι» (Likes).
+
 ## 🗺️ Sitemap & Links
 - [Αρχική Σελίδα](https://www.igatamou.gr/)
 - [Εκπαιδευτικά Παιχνίδια](https://www.igatamou.gr/games.html)
 - [Γατο-Άλμπουμ & Upload](https://www.igatamou.gr/gallery.html)
+- [Παιχνίδι Ζωγραφικής](https://www.igatamou.gr/draw.html)
+- [Άλμπουμ Ζωγραφιών](https://www.igatamou.gr/drawings-gallery.html)
 - [Sitemap XML](https://www.igatamou.gr/sitemap.xml)

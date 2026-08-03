@@ -31,6 +31,9 @@
                 <a href="games.html" class="nav-games-btn" title="Παίξε εκπαιδευτικά παιχνίδια!">
                     🎮 Παιχνίδια 🐾
                 </a>
+                <a href="draw.html" class="nav-draw-btn" title="Ζωγράφισε τη δική σου γατούλα!">
+                    🎨 Ζωγράφισε 🐾
+                </a>
                 <div class="designer-badge">
                     <span class="badge-icon">🎨</span>
                     <span class="badge-text">Σχεδιάστρια: <strong>Αριάδνη (7 ετών)</strong></span>
@@ -83,6 +86,9 @@
                     </button>
                     <button class="admin-tab-btn" id="tabSubscribers">
                         📧 Ειδοποιήσεις / Emails (<span id="subscribersCount">0</span>)
+                    </button>
+                    <button class="admin-tab-btn" id="tabDrawings">
+                        🎨 Εγκρίσεις Ζωγραφιών (<span id="pendingDrawingsCount">0</span>)
                     </button>
                 </div>
 
@@ -147,6 +153,28 @@
                         <span class="empty-icon">📧</span>
                         <h3>Δεν υπάρχουν ακόμα εγγεγραμμένα emails.</h3>
                         <p>Όσοι εγγράφονται στην αρχική σελίδα θα εμφανίζονται εδώ!</p>
+                    </div>
+                </div>
+
+                <!-- DRAWINGS APPROVAL SECTION -->
+                <div id="adminDrawingsSection" class="admin-section" hidden>
+                    <h3 class="section-title">⏳ Εκκρεμείς Ζωγραφιές σε αναμονή της Μάγκας:</h3>
+                    <div id="adminPendingDrawingsGrid" class="drawings-grid">
+                        <!-- Injected dynamically by gallery.js -->
+                    </div>
+                    <div id="emptyAdminDrawingsPending" class="empty-gallery-card" hidden>
+                        <span class="empty-icon">🎨✨</span>
+                        <h3>Δεν υπάρχουν ζωγραφιές σε αναμονή!</h3>
+                        <p>Όλες οι ζωγραφιές έχουν ελεγχθεί!</p>
+                    </div>
+
+                    <h3 class="section-title" style="margin-top: 36px;">✅ Εγκεκριμένες Ζωγραφιές στο Άλμπουμ:</h3>
+                    <div id="adminApprovedDrawingsGrid" class="drawings-grid">
+                        <!-- Injected dynamically by gallery.js -->
+                    </div>
+                    <div id="emptyAdminDrawingsApproved" class="empty-gallery-card" hidden>
+                        <span class="empty-icon">🖼️</span>
+                        <h3>Δεν υπάρχουν ακόμα εγκεκριμένες ζωγραφιές.</h3>
                     </div>
                 </div>
             </div>
