@@ -4,13 +4,27 @@ Allow: /
 Allow: /index.html
 Allow: /games.html
 Allow: /gallery.html
-Allow: /style.css
-Allow: /app.js
-Allow: /games.js
-Allow: /gallery.js
-Allow: /magkas_logo.png
-Allow: /magkas.jpg
+Allow: /draw.html
+Allow: /drawings-gallery.html
+Allow: /llms.txt
 
+# AI Search Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Private Admin Area
 Disallow: /admin.html
 
 Sitemap: https://www.igatamou.gr/sitemap.xml
