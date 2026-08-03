@@ -60,24 +60,23 @@
     </div>
 
     <div class="page-wrapper">
-        <!-- Top Games Navbar -->
-        <header class="header games-header">
+        <!-- Top Navbar -->
+        <header class="header">
             <a href="index.html" class="logo" style="text-decoration: none;" title="igatamou.gr | Αρχική Σελίδα">
                 <img src="magkas_logo.png" alt="Μάγκας 🐱" class="logo-avatar-img">
                 <span class="logo-text">igatamou<span class="highlight">.gr</span></span>
             </a>
-
-            <div class="score-trophy-bar">
-                <!-- Score Counter -->
-                <div class="score-pill" title="Τα Γατο-Νομίσματά σου!">
-                    <span class="coin-icon">🪙</span>
-                    <span id="scoreDisplay">0</span> <small>Πόντοι</small>
+            <div class="header-nav-right">
+                <a href="gallery.html" class="nav-gallery-btn" title="Δες & ανέβασε φωτογραφίες γατών!">
+                    📸 Γατο-Άλμπουμ 🐾
+                </a>
+                <a href="games.html" class="nav-games-btn" title="Παίξε εκπαιδευτικά παιχνίδια!">
+                    🎮 Παιχνίδια 🐾
+                </a>
+                <div class="designer-badge">
+                    <span class="badge-icon">🎨</span>
+                    <span class="badge-text">Σχεδιάστρια: <strong>Αριάδνη (7 ετών)</strong></span>
                 </div>
-
-                <!-- Trophy Progress Badge Button -->
-                <button id="trophyBtn" class="trophy-btn" title="Δες τα Κύπελλά σου!">
-                    🏆 <span id="trophyBadgeName">Τα Κύπελλά σου</span>
-                </button>
             </div>
         </header>
 
@@ -89,6 +88,17 @@
                     <span class="cat-hero-emoji">🎓🐱</span>
                     <h1>Γατο-Σχολείο: Διάλεξε Παιχνίδι!</h1>
                     <p>Μάζεψε πόντους, κάνε τη Μάγκα χαρούμενη & γίνε Πρώτος Γατο-Επιστήμονας!</p>
+
+                    <!-- Score & Trophy Bar (Inside Title Box above games grid) -->
+                    <div class="score-trophy-bar" style="margin-top: 16px; justify-content: center; display: flex; gap: 14px; flex-wrap: wrap;">
+                        <div class="score-pill" title="Τα Γατο-Νομίσματά σου!">
+                            <span class="coin-icon">🪙</span>
+                            <span id="scoreDisplay">0</span> <small>Πόντοι</small>
+                        </div>
+                        <button id="trophyBtn" class="trophy-btn" title="Δες τα Κύπελλά σου!">
+                            🏆 <span id="trophyBadgeName">Τα Κύπελλά σου</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Categories Grid -->

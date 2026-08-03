@@ -18,17 +18,28 @@
 
     <div class="page-wrapper">
         <!-- Top Navbar -->
-        <header class="header games-header">
+        <header class="header">
             <a href="index.html" class="logo" style="text-decoration: none;" title="igatamou.gr | Αρχική Σελίδα">
                 <img src="magkas_logo.png" alt="Μάγκας 🐱" class="logo-avatar-img">
                 <span class="logo-text">igatamou<span class="highlight">.gr</span></span>
             </a>
 
-            <div id="adminHeaderActions" class="gallery-nav-actions" hidden>
-                <span class="admin-badge-label">👑 Admin Panel</span>
-                <button id="adminLogoutBtn" class="btn btn-back-menu">
-                    🚪 Έξοδος
-                </button>
+            <div class="header-nav-right">
+                <a href="gallery.html" class="nav-gallery-btn" title="Δες & ανέβασε φωτογραφίες γατών!">
+                    📸 Γατο-Άλμπουμ 🐾
+                </a>
+                <a href="games.html" class="nav-games-btn" title="Παίξε εκπαιδευτικά παιχνίδια!">
+                    🎮 Παιχνίδια 🐾
+                </a>
+                <div class="designer-badge">
+                    <span class="badge-icon">🎨</span>
+                    <span class="badge-text">Σχεδιάστρια: <strong>Αριάδνη (7 ετών)</strong></span>
+                </div>
+                <div id="adminHeaderActions" style="display: flex; align-items: center; gap: 8px;" hidden>
+                    <button id="adminLogoutBtn" class="btn btn-back-menu" style="padding: 6px 12px; font-size: 0.85rem;">
+                        🚪 Έξοδος
+                    </button>
+                </div>
             </div>
         </header>
 
