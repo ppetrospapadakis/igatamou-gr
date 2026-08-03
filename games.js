@@ -172,6 +172,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let streak = 0;
     let memoryFlippedCards = [];
     let memoryMatchedPairs = 0;
+    let quizRoundCorrect = 0;
+    let quizRoundWrong = 0;
 
     // DOM Elements
     const categoryMenu = document.getElementById('categoryMenu');
@@ -190,11 +192,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const mascotCrown = document.getElementById('mascotCrown');
     const scoreDisplay = document.getElementById('scoreDisplay');
     const streakCount = document.getElementById('streakCount');
+    const quizCorrectCount = document.getElementById('quizCorrectCount');
+    const quizWrongCount = document.getElementById('quizWrongCount');
     const trophyBtn = document.getElementById('trophyBtn');
     const trophyBadgeName = document.getElementById('trophyBadgeName');
     const trophyModal = document.getElementById('trophyModal');
     const closeTrophyBtn = document.getElementById('closeTrophyBtn');
     const difficultyBar = document.getElementById('difficultyBar');
+
+    const quizResultModal = document.getElementById('quizResultModal');
+    const closeQuizResultBtn = document.getElementById('closeQuizResultBtn');
+    const quizResultEmoji = document.getElementById('quizResultEmoji');
+    const quizResultTitle = document.getElementById('quizResultTitle');
+    const quizResultScoreText = document.getElementById('quizResultScoreText');
+    const quizResultMessage = document.getElementById('quizResultMessage');
+    const restartQuizBtn = document.getElementById('restartQuizBtn');
+    const menuFromQuizBtn = document.getElementById('menuFromQuizBtn');
 
     // Arcade Game Elements
     const tictactoeArena = document.getElementById('tictactoeArena');
@@ -256,6 +269,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (backToMenuBtn) backToMenuBtn.addEventListener('click', showCategoryMenu);
     if (trophyBtn) trophyBtn.addEventListener('click', () => { if (trophyModal) trophyModal.hidden = false; });
     if (closeTrophyBtn) closeTrophyBtn.addEventListener('click', () => { if (trophyModal) trophyModal.hidden = true; });
+
+    if (closeQuizResultBtn) closeQuizResultBtn.addEventListener('click', () => { if (quizResultModal) quizResultModal.hidden = true; });
+    if (restartQuizBtn) restartQuizBtn.addEventListener('click', () => {
+        if (quizResultModal) quizResultModal.hidden = true;
+        if (currentCategory) startCategoryGame(currentCategory);
+    });
+    if (menuFromQuizBtn) menuFromQuizBtn.addEventListener('click', () => {
+        if (quizResultModal) quizResultModal.hidden = true;
+        showCategoryMenu();
+    });
 
     // Difficulty Bar Buttons
     if (difficultyBar) {
@@ -385,6 +408,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (optionsGrid) optionsGrid.hidden = false;
             if (memoryBoard) memoryBoard.hidden = true;
 
+            quizRoundCorrect = 0;
+            quizRoundWrong = 0;
+            if (quizCorrectCount) quizCorrectCount.textContent = '0';
+            if (quizWrongCount) quizWrongCount.textContent = '0';
+
             let allCatQuestions = [];
             if (gameDatabase[categoryKey]) {
                 const dbEntry = gameDatabase[categoryKey];
@@ -461,6 +489,8 @@ document.addEventListener('DOMContentLoaded', () => {
             btnEl.classList.add('correct');
             score += 10;
             streak++;
+            quizRoundCorrect++;
+            if (quizCorrectCount) quizCorrectCount.textContent = quizRoundCorrect.toString();
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
             playCatSoundEffect('correct');
@@ -473,6 +503,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             btnEl.classList.add('wrong');
             streak = 0;
+            quizRoundWrong++;
+            if (quizWrongCount) quizWrongCount.textContent = quizRoundWrong.toString();
             updateScoreUI();
             playCatSoundEffect('wrong');
             triggerWrongAnswerReaction();
@@ -489,23 +521,78 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showCategoryCompleted() {
-        if (questionNumber) questionNumber.textContent = '🎉 Μπράβο!';
-        if (questionText) questionText.textContent = 'Ολοκλήρωσες όλες τις ερωτήσεις αυτής της κατηγορίας!';
-        if (visualHelper) visualHelper.textContent = '✨ Κέρδισες επιπλέον +20 Γατο-Πόντους!';
-        if (optionsGrid) optionsGrid.innerHTML = '';
+        const total = currentQuestions.length || 20;
+        const correct = quizRoundCorrect;
 
-        score += 20;
+        let emoji = '🏆';
+        let title = '';
+        let message = '';
+        let themeClass = '';
+
+        if (correct < 10) {
+            emoji = '😿';
+            title = 'Η γατούλα κλαίει... 😿';
+            message = '«Μη στεναχωριέσαι! Η Μάγκας είναι σίγουρη ότι αν προσπαθήσεις ξανά θα τα πας πολύ καλύτερα! Πάτα "Παίξε ξανά"!»';
+            themeClass = 'result-sad';
+        } else if (correct <= 14) {
+            emoji = '😸';
+            title = 'Καλή Προσπάθεια! 😸';
+            message = '«Πήγες καλά! Με λίγη εξάσκηση ακόμα θα γίνεις αληθινό ξεφτέρι! 🐱🐾»';
+            themeClass = 'result-ok';
+        } else if (correct <= 16) {
+            emoji = '🐱✨';
+            title = 'Πολύ Καλά! 🐱✨';
+            message = '«Πολύ καλό σκορ! Η Μάγκας είναι περήφανη για σένα! 🎀»';
+            themeClass = 'result-good';
+        } else if (correct <= 18) {
+            emoji = '🌟';
+            title = 'Μπράβο! Αρκετά Καλά! 🌟';
+            message = '«Εξαιρετική επίδοση! Έφτασες σχεδόν στην κορυφή! 🚀✨»';
+            themeClass = 'result-great';
+        } else if (correct === 19) {
+            emoji = '🏆';
+            title = 'Σχεδόν Τέλεια! 🏆';
+            message = '«19 στα 20! Έχασες μόνο μία! Είσαι φοβερό μυαλό! 🧠✨»';
+            themeClass = 'result-almost-perfect';
+        } else {
+            emoji = '👑🎉';
+            title = 'ΤΕΛΕΙΑ! 20 στα 20! 👑🎉';
+            message = '«ΑΠΙΣΤΕΥΤΟ! 100% Επιτυχία! Είσαι ο απόλυτος Master Γατο-Επιστήμονας! 👑🐾»';
+            themeClass = 'result-perfect';
+        }
+
+        if (quizResultEmoji) quizResultEmoji.textContent = emoji;
+        if (quizResultTitle) quizResultTitle.textContent = title;
+        if (quizResultScoreText) quizResultScoreText.textContent = `${correct} / ${total}`;
+        if (quizResultMessage) quizResultMessage.textContent = message;
+
+        if (quizResultModal) {
+            const card = quizResultModal.querySelector('.modal-card');
+            if (card) {
+                card.className = `modal-card quiz-result-card ${themeClass}`;
+            }
+            quizResultModal.hidden = false;
+        }
+
+        score += (correct * 2);
         localStorage.setItem('igatamou_game_score', score.toString());
         updateScoreUI();
+        playCatSoundEffect(correct >= 15 ? 'win' : (correct >= 10 ? 'click' : 'wrong'));
+
+        if (questionNumber) questionNumber.textContent = '🎉 Μπράβο!';
+        if (questionText) questionText.textContent = `Ολοκλήρωσες τις 20 ερωτήσεις! Σωστά: ${correct}/20`;
+        if (visualHelper) visualHelper.textContent = '✨ Πάτα παρακάτω για νέο γύρο!';
+        if (optionsGrid) optionsGrid.innerHTML = '';
 
         const replayBtn = document.createElement('button');
-        replayBtn.className = 'btn btn-games-cta';
-        replayBtn.textContent = '🔄 Παίξε Ξανά!';
+        replayBtn.className = 'quiz-option-btn';
+        replayBtn.style.background = 'var(--primary)';
+        replayBtn.style.color = 'white';
+        replayBtn.textContent = '🔄 Παίξε Ξανά (20 Νέες Ερωτήσεις)!';
         replayBtn.addEventListener('click', () => startCategoryGame(currentCategory));
 
         const menuBtn = document.createElement('button');
-        menuBtn.className = 'btn btn-back-menu';
-        menuBtn.style.marginTop = '10px';
+        menuBtn.className = 'quiz-option-btn';
         menuBtn.textContent = '📜 Επιστροφή στο Μενού';
         menuBtn.addEventListener('click', showCategoryMenu);
 
@@ -514,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
             optionsGrid.appendChild(menuBtn);
         }
 
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Είμαι περήφανη για σένα! 🥳✨"`;
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "${correct >= 15 ? 'Είσαι απίθανο μυαλό! 🥳✨' : 'Πάτα Παίξε Ξανά! 🐾'}"`;
     }
 
     // ----------------------------------------------------

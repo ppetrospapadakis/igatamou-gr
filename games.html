@@ -190,8 +190,11 @@
                         <button class="diff-btn" data-diff="medium">⭐⭐ Μεσαίο</button>
                         <button class="diff-btn" data-diff="hard">⭐⭐⭐ Δύσκολο</button>
                     </div>
-                    <div class="arena-streak">
-                        🔥 Σερί: <strong id="streakCount">0</strong>
+                    <div class="arena-stats-box">
+                        <span class="arena-stat-item">🔥 Σερί: <strong id="streakCount">0</strong></span>
+                        <span class="arena-stat-item quiz-score-stats" title="Σωστά | Λάθη σε αυτόν τον γύρο">
+                            ✅ <strong id="quizCorrectCount">0</strong> &nbsp;|&nbsp; ❌ <strong id="quizWrongCount">0</strong>
+                        </span>
                     </div>
                 </div>
 
@@ -365,6 +368,34 @@
                         </div>
                         <span class="t-status" id="statusT3">🔒 200 Πόντοι</span>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ END RESULT MODAL -->
+        <div id="quizResultModal" class="modal-overlay" hidden>
+            <div class="modal-card quiz-result-card">
+                <button id="closeQuizResultBtn" class="close-modal-btn">✖</button>
+                
+                <div class="quiz-result-hero">
+                    <span id="quizResultEmoji" class="quiz-result-emoji">🏆</span>
+                    <h2 id="quizResultTitle">Τίτλος Αποτελέσματος</h2>
+                    <div class="quiz-result-score-badge">
+                        Σωστά Απαντημένα: <strong id="quizResultScoreText">20 / 20</strong>
+                    </div>
+                </div>
+
+                <p id="quizResultMessage" class="quiz-result-message">
+                    «Μήνυμα γατούλας!»
+                </p>
+
+                <div class="quiz-result-actions">
+                    <button id="restartQuizBtn" class="btn btn-submit-upload">
+                        🔄 Παίξε ξανά (20 νέες ερωτήσεις)!
+                    </button>
+                    <button id="menuFromQuizBtn" class="btn btn-back-menu">
+                        🏠 Πίσω στα Παιχνίδια
+                    </button>
                 </div>
             </div>
         </div>
