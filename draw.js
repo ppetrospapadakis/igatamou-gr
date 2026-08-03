@@ -369,8 +369,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 ctx.bezierCurveTo(0, -12 * scale, 0, -12 * scale, 12 * scale, -22 * scale);
                 ctx.bezierCurveTo(30 * scale, -15 * scale, 25 * scale, 10 * scale, 0, 5 * scale);
                 ctx.closePath();
-                ctx.fillStyle = '#0f172a';
-                ctx.fill();
                 ctx.stroke();
 
                 // 4 Toe Pads (Arranged in an arc above the main pad)
@@ -384,7 +382,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 toes.forEach(t => {
                     ctx.beginPath();
                     ctx.ellipse(t.x, t.y, t.rx, t.ry, t.rot, 0, Math.PI * 2);
-                    ctx.fill();
                     ctx.stroke();
                 });
 
