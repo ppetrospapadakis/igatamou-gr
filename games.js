@@ -1306,20 +1306,30 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     // 11. WHACK A FISH
     // ----------------------------------------------------
-    let whackTimer = null;
     let whackLoop = null;
-    let whackPoints = 0;
+    let whackFishCaught = 0;
+    let whackFishSpawned = 0;
+    let whackOtherSpawned = 0;
 
     function setupWhackGame() {
         stopWhackGame();
-        whackPoints = 0;
+        whackFishCaught = 0;
+        whackFishSpawned = 0;
+        whackOtherSpawned = 0;
         if (whackScore) whackScore.textContent = '0';
 
-        let popRate = 900;
-        if (currentDifficulty === 'medium') popRate = 650;
-        if (currentDifficulty === 'hard') popRate = 450;
+        if (questionNumber) questionNumber.textContent = `🔨🐟 Πιάσε το Ψαράκι! (${currentDifficulty.toUpperCase()})`;
+        if (questionText) questionText.textContent = '🎯 Πιάσε 20 ψαράκια για να κερδίσεις!';
+        if (visualHelper) {
+            visualHelper.innerHTML = `
+                <div class="whack-instructions">
+                    💡 <strong>Οδηγίες:</strong> Πάτα τα ψαράκια 🐟 (+1 πόντος)! 
+                    <span style="color:#d63031; font-weight:bold;">Προσοχή:</span> Μην αγγίζεις τα άλλα αντικείμενα (💣, 🦔, 💩, 👟) γιατί σου αφαιρούν 1 πόντο!
+                </div>
+            `;
+        }
 
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Πάτα τα ψαράκια! (Απόφυγε τις βόμβες 💣 στο δύσκολο!)"`;
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Πιάσε 20 ψαράκια 🐟!"`;
 
         if (!whackGrid) return;
         whackGrid.innerHTML = '';
@@ -1335,56 +1345,126 @@ document.addEventListener('DOMContentLoaded', () => {
             whackGrid.appendChild(hole);
         }
 
-        whackLoop = setInterval(popRandomWhackItem, popRate);
+        let popInterval = 450; // Hard (current speed)
+        if (currentDifficulty === 'medium') popInterval = 750;
+        if (currentDifficulty === 'easy') popInterval = 1200;
 
-        let timeLeft = 20;
-        whackTimer = setInterval(() => {
-            timeLeft--;
-            if (timeLeft <= 0) {
-                stopWhackGame();
-                if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Τέλος χρόνου! ⏱️ Έπιασες ${whackPoints} ψαράκια!"`;
-                score += whackPoints * 3;
-                localStorage.setItem('igatamou_game_score', score.toString());
-                updateScoreUI();
-            }
-        }, 1000);
+        whackLoop = setInterval(popRandomWhackItem, popInterval);
     }
 
     function stopWhackGame() {
         if (whackLoop) { clearInterval(whackLoop); whackLoop = null; }
-        if (whackTimer) { clearInterval(whackTimer); whackTimer = null; }
     }
 
     function popRandomWhackItem() {
         if (!whackGrid) return;
+
+        // Total spawn limits (50 fish max, 100 other items max)
+        if (whackFishSpawned >= 50 && whackOtherSpawned >= 100) {
+            stopWhackGame();
+            if (whackFishCaught < 20) {
+                showWhackResultModal(false);
+            }
+            return;
+        }
+
+        // Determine if fish or other obstacle
+        let isFish = false;
+        if (whackFishSpawned >= 50) {
+            isFish = false;
+        } else if (whackOtherSpawned >= 100) {
+            isFish = true;
+        } else {
+            isFish = Math.random() < 0.35; // ~35% fish, 65% other items
+        }
+
+        if (isFish) whackFishSpawned++;
+        else whackOtherSpawned++;
+
         const holes = Array.from(whackGrid.children);
         holes.forEach(h => h.classList.remove('up'));
 
         const randomHole = holes[Math.floor(Math.random() * holes.length)];
         const item = randomHole.querySelector('.whack-item');
-        const icons = ['🐟', '🐭', '🍗', '🐟'];
-        if (currentDifficulty === 'hard') icons.push('💣');
 
-        if (item) item.textContent = icons[Math.floor(Math.random() * icons.length)];
+        const otherIcons = ['💣', '🦔', '💩', '👟', '📦', '💣'];
+        const chosenIcon = isFish ? '🐟' : otherIcons[Math.floor(Math.random() * otherIcons.length)];
+
+        if (item) item.textContent = chosenIcon;
+
+        let upDuration = 550; // Hard
+        if (currentDifficulty === 'medium') upDuration = 900;
+        if (currentDifficulty === 'easy') upDuration = 1400;
 
         randomHole.classList.add('up');
-        setTimeout(() => { randomHole.classList.remove('up'); }, 550);
+        setTimeout(() => {
+            randomHole.classList.remove('up');
+            if (whackFishSpawned >= 50 && whackOtherSpawned >= 100 && whackFishCaught < 20) {
+                const activeUp = holes.some(h => h.classList.contains('up'));
+                if (!activeUp) showWhackResultModal(false);
+            }
+        }, upDuration);
     }
 
     function handleWhackClick(hole, item) {
         if (!hole.classList.contains('up')) return;
         hole.classList.remove('up');
 
-        if (item.textContent === '💣') {
-            whackPoints = Math.max(0, whackPoints - 3);
+        if (item.textContent === '🐟') {
+            whackFishCaught++;
+            score += 5;
+            playCatSoundEffect('correct');
+            triggerCorrectAnswerReaction();
+
+            if (whackFishCaught >= 20) {
+                stopWhackGame();
+                if (whackScore) whackScore.textContent = '20';
+                setTimeout(() => showWhackResultModal(true), 300);
+                return;
+            }
+        } else {
+            whackFishCaught = Math.max(0, whackFishCaught - 1);
             playCatSoundEffect('wrong');
             triggerWrongAnswerReaction();
-        } else {
-            whackPoints++;
-            playCatSoundEffect('click');
-            triggerCorrectAnswerReaction();
         }
-        if (whackScore) whackScore.textContent = whackPoints.toString();
+
+        if (whackScore) whackScore.textContent = whackFishCaught.toString();
+        localStorage.setItem('igatamou_game_score', score.toString());
+        updateScoreUI();
+    }
+
+    function showWhackResultModal(isWin) {
+        stopWhackGame();
+
+        if (isWin) {
+            score += 80;
+            localStorage.setItem('igatamou_game_score', score.toString());
+            updateScoreUI();
+
+            if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
+            if (quizResultTitle) quizResultTitle.textContent = 'ΤΕΛΕΙΑ! Πιάσατε 20 Ψαράκια! 😸🎉';
+            if (quizResultScoreText) quizResultScoreText.textContent = `${whackFishCaught} / 20 Ψαράκια`;
+            if (quizResultMessage) quizResultMessage.textContent = '«Απίστευτο! Τα κατάφερες και έπιασες 20 ψαράκια! Κέρδισες +80 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎀✨»';
+            
+            if (quizResultModal) {
+                const card = quizResultModal.querySelector('.modal-card');
+                if (card) card.className = 'modal-card quiz-result-card result-perfect';
+                quizResultModal.hidden = false;
+            }
+            playCatSoundEffect('win');
+        } else {
+            if (quizResultEmoji) quizResultEmoji.textContent = '😿';
+            if (quizResultTitle) quizResultTitle.textContent = 'Η γατούλα είναι στενοχωρημένη... 😿';
+            if (quizResultScoreText) quizResultScoreText.textContent = `${whackFishCaught} / 20 Ψαράκια`;
+            if (quizResultMessage) quizResultMessage.textContent = `«Έπιασες ${whackFishCaught} από τα 20 ψαράκια. Μη στεναχωριέσαι, πάτα "Παίξε ξανά" και θα τα καταφέρεις! 🐾»`;
+            
+            if (quizResultModal) {
+                const card = quizResultModal.querySelector('.modal-card');
+                if (card) card.className = 'modal-card quiz-result-card result-sad';
+                quizResultModal.hidden = false;
+            }
+            playCatSoundEffect('wrong');
+        }
     }
 
     if (whackStartBtn) whackStartBtn.addEventListener('click', setupWhackGame);
