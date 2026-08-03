@@ -706,12 +706,20 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawSnakeCanvas() {
         if (!snakeCanvas) return;
         const ctx = snakeCanvas.getContext('2d');
-        const size = 20;
+        const isDesktop = window.innerWidth >= 900;
+        const scale = isDesktop ? 1.5 : 1.0;
+        const dim = 300 * scale;
+        const size = 20 * scale;
+
+        if (snakeCanvas.width !== dim) {
+            snakeCanvas.width = dim;
+            snakeCanvas.height = dim;
+        }
 
         ctx.fillStyle = '#1e293b';
-        ctx.fillRect(0, 0, 300, 300);
+        ctx.fillRect(0, 0, dim, dim);
 
-        ctx.font = '16px sans-serif';
+        ctx.font = `${Math.floor(16 * scale)}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(snakeFood.icon, snakeFood.x * size + size / 2, snakeFood.y * size + size / 2);
@@ -895,10 +903,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawTetrisCanvas() {
         if (!tetrisCanvas) return;
         const ctx = tetrisCanvas.getContext('2d');
-        const size = 20;
+        const isDesktop = window.innerWidth >= 900;
+        const scale = isDesktop ? 1.5 : 1.0;
+        const canvasW = 240 * scale;
+        const canvasH = 400 * scale;
+        const size = 20 * scale;
+
+        if (tetrisCanvas.width !== canvasW) {
+            tetrisCanvas.width = canvasW;
+            tetrisCanvas.height = canvasH;
+        }
 
         ctx.fillStyle = '#1e293b';
-        ctx.fillRect(0, 0, 240, 400);
+        ctx.fillRect(0, 0, canvasW, canvasH);
 
         for (let r = 0; r < 20; r++) {
             for (let c = 0; c < 12; c++) {
@@ -1069,7 +1086,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const chosenIcon = icons[Math.floor(Math.random() * icons.length)];
         bubble.textContent = chosenIcon;
-        bubble.style.left = `${Math.floor(Math.random() * 230)}px`;
+
+        const maxLeft = (bubblesBox.clientWidth || 300) - 80;
+        bubble.style.left = `${Math.floor(Math.random() * Math.max(10, maxLeft))}px`;
 
         bubble.addEventListener('click', () => {
             if (chosenIcon === '💣') {
