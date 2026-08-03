@@ -355,177 +355,347 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.arc(540, 310, 6, 0, Math.PI * 2);
             ctx.stroke();
 
+        } else if (stencilType === 'cat_paws') {
+            // Authentic Cat Paw Prints Trail (6 paws walking diagonally)
+            function drawSingleCatPaw(cx, cy, scale, angle = 0) {
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(angle);
+
+                // Main Pad (Kidney/Heart-like smooth pad)
+                ctx.beginPath();
+                ctx.moveTo(0, 5 * scale);
+                ctx.bezierCurveTo(-25 * scale, 10 * scale, -30 * scale, -15 * scale, -12 * scale, -22 * scale);
+                ctx.bezierCurveTo(0, -12 * scale, 0, -12 * scale, 12 * scale, -22 * scale);
+                ctx.bezierCurveTo(30 * scale, -15 * scale, 25 * scale, 10 * scale, 0, 5 * scale);
+                ctx.closePath();
+                ctx.fillStyle = '#0f172a';
+                ctx.fill();
+                ctx.stroke();
+
+                // 4 Toe Pads (Arranged in an arc above the main pad)
+                const toes = [
+                    { x: -26 * scale, y: -34 * scale, rx: 7 * scale, ry: 10 * scale, rot: -0.4 },
+                    { x: -10 * scale, y: -44 * scale, rx: 8 * scale, ry: 12 * scale, rot: -0.15 },
+                    { x: 10 * scale,  y: -44 * scale, rx: 8 * scale, ry: 12 * scale, rot: 0.15 },
+                    { x: 26 * scale,  y: -34 * scale, rx: 7 * scale, ry: 10 * scale, rot: 0.4 }
+                ];
+
+                toes.forEach(t => {
+                    ctx.beginPath();
+                    ctx.ellipse(t.x, t.y, t.rx, t.ry, t.rot, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                });
+
+                ctx.restore();
+            }
+
+            // Draw a trail of 6 paw prints walking diagonally across the canvas
+            drawSingleCatPaw(180, 500, 1.2, -0.2);
+            drawSingleCatPaw(290, 410, 1.2, -0.1);
+            drawSingleCatPaw(370, 310, 1.3, -0.2);
+            drawSingleCatPaw(480, 220, 1.3, -0.15);
+            drawSingleCatPaw(570, 130, 1.2, -0.2);
+            drawSingleCatPaw(670, 60, 1.1, -0.1);
+
         } else if (stencilType === 'cat_sleeping') {
-            // Sleeping Cat
+            // Full Body Curled Up Sleeping Cat with Legs, Paws & Tail
             ctx.beginPath();
-            ctx.arc(400, 320, 140, 0, Math.PI * 2); // Body
-            ctx.arc(320, 240, 90, 0, Math.PI * 2);  // Head
-            // Sleeping Eyes (Curved lines)
-            ctx.moveTo(270, 230); ctx.arc(285, 230, 15, 0, Math.PI);
-            ctx.moveTo(330, 230); ctx.arc(345, 230, 15, 0, Math.PI);
-            // Nose & Whiskers
-            ctx.moveTo(315, 255); ctx.arc(315, 255, 6, 0, Math.PI * 2);
-            ctx.moveTo(270, 260); ctx.lineTo(200, 255);
-            ctx.moveTo(360, 260); ctx.lineTo(430, 255);
+            // Sleeping Body (Curled Oval)
+            ctx.ellipse(400, 360, 180, 130, 0, 0, Math.PI * 2);
+            // Cat Head
+            ctx.arc(280, 300, 85, 0, Math.PI * 2);
             // Ears
-            ctx.moveTo(250, 170); ctx.lineTo(230, 90); ctx.lineTo(290, 140);
-            ctx.moveTo(360, 170); ctx.lineTo(390, 90); ctx.lineTo(380, 150);
-            // Zzz Text
+            ctx.moveTo(220, 240); ctx.lineTo(190, 150); ctx.lineTo(260, 210);
+            ctx.moveTo(320, 230); ctx.lineTo(350, 150); ctx.lineTo(340, 220);
             ctx.stroke();
-            ctx.font = "bold 42px Fredoka, sans-serif";
+
+            // Sleeping Eyes (Curved arcs)
+            ctx.beginPath();
+            ctx.arc(245, 290, 14, 0, Math.PI);
+            ctx.arc(305, 290, 14, 0, Math.PI);
+            // Nose
+            ctx.moveTo(275, 315); ctx.arc(275, 315, 6, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Paws tucked under
+            ctx.beginPath();
+            ctx.arc(320, 380, 25, 0, Math.PI * 2); // Front paw
+            ctx.arc(370, 420, 30, 0, Math.PI * 2); // Back paw
+            ctx.stroke();
+
+            // Fluffy Tail wrapped around the body
+            ctx.beginPath();
+            ctx.moveTo(580, 360);
+            ctx.quadraticCurveTo(590, 480, 440, 485);
+            ctx.quadraticCurveTo(240, 490, 220, 410);
+            ctx.stroke();
+
+            // Zzz Floating
+            ctx.font = "bold 44px Fredoka, sans-serif";
             ctx.fillStyle = "#0f172a";
-            ctx.fillText("Z z z...", 500, 160);
-
-        } else if (stencilType === 'cat_crown') {
-            // Royal Cat with Crown
-            ctx.beginPath();
-            ctx.arc(400, 340, 140, 0, Math.PI * 2); // Head
-            // Ears
-            ctx.moveTo(280, 250); ctx.lineTo(250, 120); ctx.lineTo(330, 200);
-            ctx.moveTo(520, 250); ctx.lineTo(550, 120); ctx.lineTo(470, 200);
-            ctx.stroke();
-
-            // Crown on Head
-            ctx.beginPath();
-            ctx.moveTo(330, 180);
-            ctx.lineTo(320, 90);
-            ctx.lineTo(365, 130);
-            ctx.lineTo(400, 70);
-            ctx.lineTo(435, 130);
-            ctx.lineTo(480, 90);
-            ctx.lineTo(470, 180);
-            ctx.closePath();
-            ctx.stroke();
-
-            // Crown Jewels Circles
-            ctx.beginPath();
-            ctx.arc(320, 85, 8, 0, Math.PI * 2);
-            ctx.arc(400, 65, 8, 0, Math.PI * 2);
-            ctx.arc(480, 85, 8, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Face
-            ctx.beginPath();
-            ctx.arc(330, 310, 16, 0, Math.PI * 2);
-            ctx.arc(470, 310, 16, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.fillText("Z z z...", 480, 180);
 
         } else if (stencilType === 'cat_yarn') {
-            // Cat with Yarn Ball
+            // Full Body Cat Playing with Yarn Ball (Head, Body, 4 Legs, Paws, Tail)
             ctx.beginPath();
-            ctx.arc(320, 300, 120, 0, Math.PI * 2); // Head
+            // Cat Head
+            ctx.arc(260, 240, 80, 0, Math.PI * 2);
             // Ears
-            ctx.moveTo(230, 220); ctx.lineTo(200, 110); ctx.lineTo(280, 180);
-            ctx.moveTo(410, 220); ctx.lineTo(440, 110); ctx.lineTo(360, 180);
-            ctx.stroke();
-
+            ctx.moveTo(200, 180); ctx.lineTo(170, 90); ctx.lineTo(240, 160);
+            ctx.moveTo(310, 180); ctx.lineTo(340, 90); ctx.lineTo(310, 170);
             // Eyes & Nose
-            ctx.beginPath();
-            ctx.arc(280, 280, 14, 0, Math.PI * 2);
-            ctx.arc(360, 280, 14, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Yarn Ball
-            ctx.beginPath();
-            ctx.arc(580, 360, 70, 0, Math.PI * 2);
+            ctx.arc(230, 230, 12, 0, Math.PI * 2);
+            ctx.arc(290, 230, 12, 0, Math.PI * 2);
             ctx.stroke();
 
-            // Yarn Winding Lines
+            // Body
             ctx.beginPath();
-            ctx.arc(570, 360, 45, 0.5, 3.5);
-            ctx.arc(590, 350, 45, 2, 5);
-            ctx.moveTo(520, 380); ctx.quadraticCurveTo(450, 420, 380, 380);
+            ctx.ellipse(220, 360, 80, 110, 0.2, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Front Legs & Paws reaching towards Yarn
+            ctx.beginPath();
+            // Right Front Arm extended
+            ctx.moveTo(270, 320); ctx.lineTo(400, 340); ctx.arc(410, 340, 18, 0, Math.PI * 2);
+            // Left Front Arm extended
+            ctx.moveTo(260, 350); ctx.lineTo(380, 380); ctx.arc(390, 380, 18, 0, Math.PI * 2);
+            // Back Legs & Paws
+            ctx.moveTo(170, 410); ctx.lineTo(150, 490); ctx.arc(155, 500, 20, 0, Math.PI * 2);
+            ctx.moveTo(230, 430); ctx.lineTo(230, 500); ctx.arc(235, 510, 20, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Curving Wavy Tail
+            ctx.beginPath();
+            ctx.moveTo(140, 340);
+            ctx.quadraticCurveTo(60, 300, 90, 180);
+            ctx.quadraticCurveTo(110, 120, 130, 160);
+            ctx.stroke();
+
+            // Ball of Yarn
+            ctx.beginPath();
+            ctx.arc(520, 380, 65, 0, Math.PI * 2);
+            ctx.stroke();
+            // Yarn lines
+            ctx.beginPath();
+            ctx.arc(510, 380, 45, 0.5, 3.5);
+            ctx.arc(530, 370, 45, 2, 5);
+            ctx.moveTo(460, 400); ctx.quadraticCurveTo(410, 420, 390, 390);
+            ctx.stroke();
+
+        } else if (stencilType === 'cat_fish') {
+            // Full Body Cat Sitting next to Fish (Head, Body, 4 Legs, Tail)
+            ctx.beginPath();
+            // Head
+            ctx.arc(280, 220, 75, 0, Math.PI * 2);
+            // Ears
+            ctx.moveTo(225, 165); ctx.lineTo(195, 85); ctx.lineTo(265, 145);
+            ctx.moveTo(335, 165); ctx.lineTo(365, 85); ctx.lineTo(335, 155);
+            // Eyes
+            ctx.arc(250, 210, 10, 0, Math.PI * 2);
+            ctx.arc(310, 210, 10, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Body
+            ctx.beginPath();
+            ctx.ellipse(260, 360, 75, 110, 0, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Front Legs & Paws
+            ctx.beginPath();
+            ctx.moveTo(240, 350); ctx.lineTo(240, 470); ctx.arc(245, 480, 16, 0, Math.PI * 2);
+            ctx.moveTo(280, 350); ctx.lineTo(280, 470); ctx.arc(285, 480, 16, 0, Math.PI * 2);
+            // Back Leg & Paw
+            ctx.moveTo(195, 410); ctx.ellipse(195, 440, 30, 45, 0.4, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Tail curving up
+            ctx.beginPath();
+            ctx.moveTo(185, 410);
+            ctx.quadraticCurveTo(100, 360, 120, 240);
+            ctx.quadraticCurveTo(130, 180, 150, 220);
+            ctx.stroke();
+
+            // Big Fish on Plate
+            ctx.beginPath();
+            // Plate
+            ctx.ellipse(560, 470, 130, 30, 0, 0, Math.PI * 2);
+            // Fish Body & Tail
+            ctx.ellipse(550, 430, 75, 45, 0, 0, Math.PI * 2);
+            ctx.moveTo(620, 430); ctx.lineTo(690, 380); ctx.lineTo(690, 480); ctx.closePath();
+            ctx.arc(500, 420, 6, 0, Math.PI * 2); // Fish Eye
+            ctx.stroke();
+
+        } else if (stencilType === 'cat_crown') {
+            // Royal Cat with Crown (Full Body)
+            ctx.beginPath();
+            ctx.arc(400, 260, 95, 0, Math.PI * 2); // Head
+            // Ears
+            ctx.moveTo(320, 200); ctx.lineTo(290, 100); ctx.lineTo(365, 175);
+            ctx.moveTo(480, 200); ctx.lineTo(510, 100); ctx.lineTo(435, 175);
+            // Eyes
+            ctx.arc(360, 250, 12, 0, Math.PI * 2);
+            ctx.arc(440, 250, 12, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Crown
+            ctx.beginPath();
+            ctx.moveTo(350, 170); ctx.lineTo(340, 90); ctx.lineTo(375, 130); ctx.lineTo(400, 70); ctx.lineTo(425, 130); ctx.lineTo(460, 90); ctx.lineTo(450, 170); ctx.closePath();
+            ctx.stroke();
+
+            // Body & Legs
+            ctx.beginPath();
+            ctx.ellipse(400, 410, 85, 110, 0, 0, Math.PI * 2);
+            ctx.moveTo(360, 420); ctx.lineTo(360, 520); ctx.arc(365, 530, 16, 0, Math.PI * 2);
+            ctx.moveTo(440, 420); ctx.lineTo(440, 520); ctx.arc(445, 530, 16, 0, Math.PI * 2);
+            // Tail
+            ctx.moveTo(475, 450); ctx.quadraticCurveTo(590, 450, 560, 310);
             ctx.stroke();
 
         } else if (stencilType === 'cat_astro') {
-            // Astronaut Cat in Space
+            // Astronaut Cat in Space Suit (Full Body)
             ctx.beginPath();
-            ctx.arc(400, 280, 160, 0, Math.PI * 2); // Helmet
-            ctx.arc(400, 290, 110, 0, Math.PI * 2); // Cat Head inside
+            ctx.arc(400, 230, 110, 0, Math.PI * 2); // Space Helmet
+            ctx.arc(400, 235, 80, 0, Math.PI * 2);  // Cat Head inside
             // Ears inside helmet
-            ctx.moveTo(310, 210); ctx.lineTo(290, 140); ctx.lineTo(350, 180);
-            ctx.moveTo(490, 210); ctx.lineTo(510, 140); ctx.lineTo(450, 180);
+            ctx.moveTo(340, 180); ctx.lineTo(325, 130); ctx.lineTo(370, 160);
+            ctx.moveTo(460, 180); ctx.lineTo(475, 130); ctx.lineTo(430, 160);
             ctx.stroke();
 
-            // Moon & Stars
+            // Space Suit Body
             ctx.beginPath();
-            ctx.arc(150, 150, 45, 0.5, 4.5); // Crescent Moon
+            ctx.rect(320, 330, 160, 140);
+            // Space Boots (Legs)
+            ctx.rect(330, 470, 50, 50);
+            ctx.rect(420, 470, 50, 50);
+            // Space Arms
+            ctx.rect(260, 340, 60, 45); ctx.rect(480, 340, 60, 45);
+            // Space Tail
+            ctx.moveTo(480, 430); ctx.quadraticCurveTo(600, 450, 580, 330);
+            ctx.stroke();
+
+            // Moon
+            ctx.beginPath();
+            ctx.arc(140, 140, 45, 0.5, 4.5);
             ctx.stroke();
 
         } else if (stencilType === 'cat_birthday') {
-            // Birthday Cat & Cake
+            // Full Body Birthday Cat & Birthday Cake
             ctx.beginPath();
-            ctx.arc(300, 320, 120, 0, Math.PI * 2); // Head
+            ctx.arc(280, 240, 80, 0, Math.PI * 2); // Head
             // Party Hat
-            ctx.moveTo(240, 220); ctx.lineTo(300, 80); ctx.lineTo(360, 220); ctx.closePath();
+            ctx.moveTo(230, 170); ctx.lineTo(280, 60); ctx.lineTo(330, 170); ctx.closePath();
             ctx.stroke();
 
+            // Body & Legs
             ctx.beginPath();
-            ctx.arc(300, 75, 10, 0, Math.PI * 2); // Hat Pompom
-            ctx.fill();
+            ctx.ellipse(270, 380, 75, 100, 0, 0, Math.PI * 2);
+            ctx.moveTo(240, 400); ctx.lineTo(240, 500); ctx.arc(245, 510, 16, 0, Math.PI * 2);
+            ctx.moveTo(290, 400); ctx.lineTo(290, 500); ctx.arc(295, 510, 16, 0, Math.PI * 2);
+            // Tail
+            ctx.moveTo(200, 420); ctx.quadraticCurveTo(120, 400, 140, 280);
+            ctx.stroke();
 
-            // Birthday Cake
+            // Cake
             ctx.beginPath();
-            ctx.rect(500, 300, 160, 100); // Cake base
-            ctx.rect(520, 240, 120, 60);  // Layer 2
-            // Candle
-            ctx.rect(570, 190, 20, 50);
-            ctx.arc(580, 175, 8, 0, Math.PI * 2); // Flame
+            ctx.rect(480, 360, 180, 120);
+            ctx.rect(500, 290, 140, 70);
+            ctx.rect(560, 230, 20, 60); // Candle
+            ctx.arc(570, 215, 10, 0, Math.PI * 2); // Flame
             ctx.stroke();
 
         } else if (stencilType === 'cat_cool') {
-            // Cool Cat with Sunglasses
+            // Full Body Cool Cat with Sunglasses
             ctx.beginPath();
-            ctx.arc(400, 320, 150, 0, Math.PI * 2); // Head
+            ctx.arc(400, 240, 95, 0, Math.PI * 2); // Head
             // Ears
-            ctx.moveTo(280, 220); ctx.lineTo(240, 90); ctx.lineTo(340, 170);
-            ctx.moveTo(520, 220); ctx.lineTo(560, 90); ctx.lineTo(460, 170);
+            ctx.moveTo(320, 180); ctx.lineTo(290, 80); ctx.lineTo(365, 155);
+            ctx.moveTo(480, 180); ctx.lineTo(510, 80); ctx.lineTo(435, 155);
             ctx.stroke();
 
             // Sunglasses
             ctx.beginPath();
-            ctx.rect(270, 260, 110, 70);
-            ctx.rect(420, 260, 110, 70);
-            ctx.moveTo(380, 280); ctx.lineTo(420, 280);
+            ctx.rect(320, 200, 70, 50);
+            ctx.rect(410, 200, 70, 50);
+            ctx.moveTo(390, 220); ctx.lineTo(410, 220);
             ctx.fillStyle = '#0f172a';
             ctx.fill();
 
-            // Smile
+            // Body & Legs
             ctx.beginPath();
-            ctx.arc(400, 370, 25, 0, Math.PI);
+            ctx.ellipse(400, 390, 80, 110, 0, 0, Math.PI * 2);
+            ctx.moveTo(360, 420); ctx.lineTo(360, 510); ctx.arc(365, 520, 16, 0, Math.PI * 2);
+            ctx.moveTo(440, 420); ctx.lineTo(440, 510); ctx.arc(445, 520, 16, 0, Math.PI * 2);
+            // Tail
+            ctx.moveTo(475, 430); ctx.quadraticCurveTo(580, 410, 550, 290);
             ctx.stroke();
 
         } else if (stencilType === 'cat_house') {
-            // Cat House & Sun
+            // Full Body Cat Sitting in Front of Cat House
             ctx.beginPath();
             // House Roof
-            ctx.moveTo(150, 260); ctx.lineTo(320, 120); ctx.lineTo(490, 260); ctx.closePath();
+            ctx.moveTo(100, 240); ctx.lineTo(280, 100); ctx.lineTo(460, 240); ctx.closePath();
             // House Base
-            ctx.rect(180, 260, 280, 220);
+            ctx.rect(130, 240, 300, 240);
             // Doorway
-            ctx.arc(320, 480, 60, Math.PI, 0);
+            ctx.arc(280, 480, 70, Math.PI, 0);
+            ctx.stroke();
+
+            // Full Body Cat sitting in doorway
+            ctx.beginPath();
+            ctx.arc(580, 300, 70, 0, Math.PI * 2); // Cat Head
+            ctx.moveTo(530, 250); ctx.lineTo(500, 170); ctx.lineTo(560, 230);
+            ctx.moveTo(630, 250); ctx.lineTo(660, 170); ctx.lineTo(630, 230);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.ellipse(580, 420, 65, 90, 0, 0, Math.PI * 2); // Body
+            ctx.moveTo(550, 440); ctx.lineTo(550, 500); ctx.arc(555, 510, 14, 0, Math.PI * 2);
+            ctx.moveTo(610, 440); ctx.lineTo(610, 500); ctx.arc(615, 510, 14, 0, Math.PI * 2);
+            // Tail
+            ctx.moveTo(640, 440); ctx.quadraticCurveTo(730, 440, 710, 320);
             ctx.stroke();
 
             // Sun
             ctx.beginPath();
-            ctx.arc(650, 140, 50, 0, Math.PI * 2);
+            ctx.arc(680, 110, 45, 0, Math.PI * 2);
             ctx.stroke();
 
         } else if (stencilType === 'cat_hero') {
-            // Superhero Cat with Cape
+            // Full Body Superhero Cat (Head, Body, 4 Legs, Flying Cape & Tail)
             ctx.beginPath();
-            ctx.arc(400, 260, 130, 0, Math.PI * 2); // Head
+            // Head
+            ctx.arc(400, 210, 85, 0, Math.PI * 2);
             // Ears
-            ctx.moveTo(290, 180); ctx.lineTo(260, 70); ctx.lineTo(340, 140);
-            ctx.moveTo(510, 180); ctx.lineTo(540, 70); ctx.lineTo(460, 140);
-            // Hero Cape flapping
-            ctx.moveTo(290, 360); ctx.quadraticCurveTo(150, 420, 180, 540); ctx.lineTo(350, 440);
-            ctx.moveTo(510, 360); ctx.quadraticCurveTo(650, 420, 620, 540); ctx.lineTo(450, 440);
+            ctx.moveTo(330, 150); ctx.lineTo(300, 60); ctx.lineTo(370, 130);
+            ctx.moveTo(470, 150); ctx.lineTo(500, 60); ctx.lineTo(430, 130);
             ctx.stroke();
 
-            // Hero Badge Emblem on Chest
+            // Body
             ctx.beginPath();
-            ctx.arc(400, 430, 30, 0, Math.PI * 2);
+            ctx.ellipse(400, 360, 75, 100, 0, 0, Math.PI * 2);
+            // 4 Legs & Paws
+            ctx.moveTo(350, 400); ctx.lineTo(340, 500); ctx.arc(345, 510, 16, 0, Math.PI * 2);
+            ctx.moveTo(380, 400); ctx.lineTo(380, 500); ctx.arc(385, 510, 16, 0, Math.PI * 2);
+            ctx.moveTo(420, 400); ctx.lineTo(420, 500); ctx.arc(425, 510, 16, 0, Math.PI * 2);
+            ctx.moveTo(450, 400); ctx.lineTo(460, 500); ctx.arc(465, 510, 16, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Flapping Cape
+            ctx.beginPath();
+            ctx.moveTo(330, 270); ctx.quadraticCurveTo(180, 310, 160, 480); ctx.lineTo(340, 380);
+            ctx.moveTo(470, 270); ctx.quadraticCurveTo(620, 310, 640, 480); ctx.lineTo(460, 380);
+            ctx.stroke();
+
+            // Tail
+            ctx.beginPath();
+            ctx.moveTo(470, 410); ctx.quadraticCurveTo(560, 390, 540, 280);
+            ctx.stroke();
+
+            // Hero Emblem Star on Chest
+            ctx.beginPath();
+            ctx.arc(400, 340, 24, 0, Math.PI * 2);
             ctx.stroke();
         }
 
