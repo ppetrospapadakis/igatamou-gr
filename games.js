@@ -244,6 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeQuizResultBtn = document.getElementById('closeQuizResultBtn');
     const quizResultEmoji = document.getElementById('quizResultEmoji');
     const quizResultTitle = document.getElementById('quizResultTitle');
+    const quizResultScoreLabel = document.getElementById('quizResultScoreLabel');
     const quizResultScoreText = document.getElementById('quizResultScoreText');
     const quizResultMessage = document.getElementById('quizResultMessage');
     const restartQuizBtn = document.getElementById('restartQuizBtn');
@@ -649,6 +650,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (quizResultEmoji) quizResultEmoji.textContent = emoji;
         if (quizResultTitle) quizResultTitle.textContent = title;
+        if (quizResultScoreLabel) quizResultScoreLabel.textContent = 'Σωστά Απαντημένα: ';
         if (quizResultScoreText) quizResultScoreText.textContent = `${correct} / ${total}`;
         if (quizResultMessage) quizResultMessage.textContent = message;
 
@@ -792,7 +794,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
             if (quizResultTitle) quizResultTitle.textContent = 'Μπράβο! Νίκησες! 😸🎉';
-            if (quizResultScoreText) quizResultScoreText.textContent = `${memoryAttempts} / 32 Προσπάθειες`;
+            if (quizResultScoreLabel) quizResultScoreLabel.textContent = 'Προσπάθειες: ';
+            if (quizResultScoreText) quizResultScoreText.textContent = `${memoryAttempts} / 32`;
             if (quizResultMessage) quizResultMessage.textContent = `«Απίθανο! Βρήκες και τα ${totalPairs} ζευγάρια σε μόνο ${memoryAttempts} προσπάθειες! Κέρδισες +${bonus} Γατο-Πόντους! 🎀✨»`;
             
             if (quizResultModal) {
@@ -804,7 +807,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             if (quizResultEmoji) quizResultEmoji.textContent = '😿';
             if (quizResultTitle) quizResultTitle.textContent = 'Η γατούλα είναι στενοχωρημένη... 😿';
-            if (quizResultScoreText) quizResultScoreText.textContent = `32 / 32 Προσπάθειες`;
+            if (quizResultScoreLabel) quizResultScoreLabel.textContent = 'Προσπάθειες: ';
+            if (quizResultScoreText) quizResultScoreText.textContent = `32 / 32`;
             if (quizResultMessage) quizResultMessage.textContent = '«Εξαντλήθηκαν οι 32 προσπάθειες! Μη στεναχωριέσαι, κάνε άλλη μία προσπάθεια και θα τα καταφέρεις! 🐾»';
             
             if (quizResultModal) {
@@ -1970,6 +1974,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (quizResultEmoji) quizResultEmoji.textContent = '👑😸';
             if (quizResultTitle) quizResultTitle.textContent = '🎉 Νίκησες στο Σκάκι! 🥳';
+            if (quizResultScoreLabel) quizResultScoreLabel.textContent = 'Επίδοση: ';
             if (quizResultScoreText) quizResultScoreText.textContent = '🏆 +30 Γατο-Πόντοι!';
             if (quizResultMessage) quizResultMessage.textContent = '«Απίθανο! Έφαγες τον Βασιλιά 👑🐟 του υπολογιστή και κέρδισες την παρτίδα! 👑✨»';
 
@@ -1983,6 +1988,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (resultType === 'loss') {
             if (quizResultEmoji) quizResultEmoji.textContent = '😿👑';
             if (quizResultTitle) quizResultTitle.textContent = '💔 Έχασες στο Σκάκι!';
+            if (quizResultScoreLabel) quizResultScoreLabel.textContent = 'Επίδοση: ';
             if (quizResultScoreText) quizResultScoreText.textContent = '0 Πόντοι';
             if (quizResultMessage) quizResultMessage.textContent = '«Ο υπολογιστής έφαγε τον Βασιλιά σου 👑🐱! Μη στεναχωριέσαι, κάνε έναν νέο γύρο! 🐾»';
 
@@ -2000,6 +2006,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (quizResultEmoji) quizResultEmoji.textContent = '🤝🐱';
             if (quizResultTitle) quizResultTitle.textContent = '🤝 Ισοπαλία στο Σκάκι!';
+            if (quizResultScoreLabel) quizResultScoreLabel.textContent = 'Επίδοση: ';
             if (quizResultScoreText) quizResultScoreText.textContent = '🎁 +10 Γατο-Πόντοι!';
             if (quizResultMessage) quizResultMessage.textContent = '«Δεν υπάρχουν άλλες διαθέσιμες κινήσεις για να συνεχιστεί η παρτίδα! 🤝»';
 
@@ -2258,6 +2265,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
             if (quizResultTitle) quizResultTitle.textContent = 'ΤΕΛΕΙΑ! Κέρδισες τη Γατο-Πασιέντζα! 😸🎉';
+            if (quizResultScoreLabel) quizResultScoreLabel.textContent = 'Συνολικές Κινήσεις: ';
             if (quizResultScoreText) quizResultScoreText.textContent = `${solitaireMoves} Κινήσεις`;
             if (quizResultMessage) quizResultMessage.textContent = '«Απίστευτο! Ταξινόμησες όλες τις γατο-κάρτες στα 3 καλάθια! Κέρδισες +100 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎀✨»';
             
@@ -2270,7 +2278,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             if (quizResultEmoji) quizResultEmoji.textContent = '😿';
             if (quizResultTitle) quizResultTitle.textContent = 'Η γατούλα είναι στενοχωρημένη... 😿';
-            if (quizResultScoreText) quizResultScoreText.textContent = `${solitaireMoves} / ${solitaireMaxMoves} Κινήσεις`;
+            if (quizResultScoreLabel) quizResultScoreLabel.textContent = 'Συνολικές Κινήσεις: ';
+            if (quizResultScoreText) quizResultScoreText.textContent = `${solitaireMoves} / ${solitaireMaxMoves}`;
             if (quizResultMessage) quizResultMessage.textContent = '«Εξαντλήθηκαν οι κινήσεις! Μη στεναχωριέσαι, πάτα "Παίξε ξανά" και θα τα καταφέρεις! 🐾»';
             
             if (quizResultModal) {
