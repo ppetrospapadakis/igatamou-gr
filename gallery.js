@@ -1117,23 +1117,63 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     // DRAWINGS ADMIN MANAGEMENT
     // ----------------------------------------------------
-    function renderDrawingsAdminSection() {
+    async function renderDrawingsAdminSection() {
         let localDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
         renderDrawingsGrids(localDrawings);
 
         if (supabase) {
-            supabase.from('drawings').select('*').then(({ data, error }) => {
-                if (!error && data && Array.isArray(data)) {
+            try {
+                let dbDrawings = [];
+
+                // 1. Fetch from cats table (where drawings are stored)
+                const { data: catsData } = await supabase.from('cats').select('*');
+                if (catsData && Array.isArray(catsData)) {
+                    const drawingCats = catsData.filter(c => (c.id && c.id.startsWith('draw_')) || (c.bio && c.bio.includes('🎨 [DRAWING]')));
+                    drawingCats.forEach(c => {
+                        dbDrawings.push({
+                            id: c.id,
+                            name: c.name,
+                            image_data: c.image,
+                            status: c.status,
+                            likes: c.likes || 0,
+                            created_at: c.date || new Date().toISOString()
+                        });
+                    });
+                }
+
+                // 2. Fetch from drawings table fallback
+                try {
+                    const { data: rawDrawings } = await supabase.from('drawings').select('*');
+                    if (rawDrawings && Array.isArray(rawDrawings)) {
+                        rawDrawings.forEach(d => dbDrawings.push(d));
+                    }
+                } catch(e) {}
+
+                if (dbDrawings.length > 0) {
                     const drawingMap = new Map();
                     localDrawings.forEach(d => drawingMap.set(d.id, d));
-                    data.forEach(d => drawingMap.set(d.id, d));
+                    dbDrawings.forEach(dbItem => {
+                        const localItem = drawingMap.get(dbItem.id);
+                        if (localItem) {
+                            const finalStatus = (localItem.status === 'approved' || dbItem.status === 'approved') ? 'approved' : (localItem.status === 'rejected' || dbItem.status === 'rejected' ? 'rejected' : dbItem.status || localItem.status);
+                            const finalLikes = Math.max(localItem.likes || 0, dbItem.likes || 0);
+                            drawingMap.set(dbItem.id, {
+                                ...localItem,
+                                ...dbItem,
+                                status: finalStatus,
+                                likes: finalLikes
+                            });
+                        } else {
+                            drawingMap.set(dbItem.id, dbItem);
+                        }
+                    });
                     localDrawings = Array.from(drawingMap.values());
                     localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
                     renderDrawingsGrids(localDrawings);
                 }
-            }).catch(err => {
+            } catch (err) {
                 console.log('Supabase drawings admin sync notice:', err);
-            });
+            }
         }
     }
 
@@ -1236,7 +1276,25 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
 
         if (supabase) {
-            supabase.from('drawings').upsert([drawing]).then();
+            // Update in cats table (where drawings are cloud synced)
+            supabase.from('cats').upsert([{
+                id: drawing.id,
+                name: drawing.name,
+                owner: drawing.name,
+                bio: '🎨 [DRAWING]',
+                image: drawing.image_data,
+                status: drawing.status,
+                likes: drawing.likes || 0,
+                date: new Date().toLocaleDateString('el-GR')
+            }]).then();
+
+            supabase.from('cats').update({ status: drawing.status }).eq('id', drawing.id).then();
+
+            // Try drawings table fallback as well
+            try {
+                supabase.from('drawings').upsert([drawing]).then();
+                supabase.from('drawings').update({ status: drawing.status }).eq('id', drawing.id).then();
+            } catch(e) {}
         }
     }
 
@@ -1246,7 +1304,10 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
 
         if (supabase) {
-            supabase.from('drawings').delete().eq('id', id).then();
+            supabase.from('cats').delete().eq('id', id).then();
+            try {
+                supabase.from('drawings').delete().eq('id', id).then();
+            } catch(e) {}
         }
     }
 });

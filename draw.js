@@ -739,13 +739,46 @@ document.addEventListener('DOMContentLoaded', () => {
             const authorName = authorNameInput.value.trim();
             if (!authorName) return;
 
-            // Convert canvas to Data URL PNG
-            const imageDataUrl = canvas.toDataURL('image/png');
+            const submitBtn = saveDrawingForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = '⏳ Αποστολή...';
+            }
+
+            // Convert canvas to Data URL JPEG (compressed for fast loading)
+            const imageDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            const drawingId = 'draw_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+            let fileUrl = imageDataUrl;
+
+            // Upload image blob to Supabase Storage bucket 'images' if available
+            if (supabase && canvas.toBlob) {
+                try {
+                    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.85));
+                    if (blob) {
+                        const storageFileName = `${drawingId}.jpg`;
+                        const { error: uploadErr } = await supabase.storage
+                            .from('images')
+                            .upload(storageFileName, blob, {
+                                contentType: 'image/jpeg',
+                                upsert: true
+                            });
+
+                        if (!uploadErr) {
+                            const { data: urlData } = supabase.storage.from('images').getPublicUrl(storageFileName);
+                            if (urlData && urlData.publicUrl) {
+                                fileUrl = urlData.publicUrl;
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.log('Supabase storage drawing upload notice:', err);
+                }
+            }
 
             const newDrawing = {
-                id: 'draw_' + Date.now(),
+                id: drawingId,
                 name: authorName,
-                image_data: imageDataUrl,
+                image_data: fileUrl,
                 status: 'pending',
                 likes: 0,
                 created_at: new Date().toISOString()
@@ -756,14 +789,29 @@ document.addEventListener('DOMContentLoaded', () => {
             localDrawings.unshift(newDrawing);
             localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
 
-            // 2. Save to Supabase DB if available
+            // 2. Save to Supabase DB cats table (and drawings table fallback)
             if (supabase) {
+                try {
+                    await supabase.from('cats').insert([{
+                        id: newDrawing.id,
+                        name: newDrawing.name,
+                        owner: newDrawing.name,
+                        bio: '🎨 [DRAWING]',
+                        image: newDrawing.image_data,
+                        status: 'pending',
+                        likes: 0,
+                        date: new Date().toLocaleDateString('el-GR')
+                    }]);
+                } catch (dbErr) {
+                    console.log('Supabase cats drawing insert notice:', dbErr);
+                }
+
                 try {
                     await supabase.from('drawings').insert([{
                         id: newDrawing.id,
                         name: newDrawing.name,
                         image_data: newDrawing.image_data,
-                        status: newDrawing.status,
+                        status: 'pending',
                         likes: 0,
                         created_at: newDrawing.created_at
                     }]);
@@ -776,6 +824,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (saveDrawingModal) saveDrawingModal.hidden = true;
             if (successDrawingModal) successDrawingModal.hidden = false;
             saveDrawingForm.reset();
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✨ Αποστολή στο Άλμπουμ 💖';
+            }
         });
     }
 });

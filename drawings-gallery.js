@@ -16,19 +16,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const drawingsGrid = document.getElementById('drawingsGrid');
     const emptyDrawings = document.getElementById('emptyDrawings');
 
-    // Sync from Supabase DB 'drawings'
+    // Sync from Supabase DB ('cats' table drawing items + 'drawings' table fallback)
     async function syncFromSupabase() {
         let localDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
 
         if (supabase) {
             try {
-                const { data, error } = await supabase.from('drawings').select('*');
-                if (!error && data && Array.isArray(data)) {
+                let dbDrawings = [];
+
+                // 1. Fetch from cats table (where drawings with id 'draw_...' or bio '🎨 [DRAWING]' are stored)
+                const { data: catsData } = await supabase.from('cats').select('*');
+                if (catsData && Array.isArray(catsData)) {
+                    const drawingCats = catsData.filter(c => (c.id && c.id.startsWith('draw_')) || (c.bio && c.bio.includes('🎨 [DRAWING]')));
+                    drawingCats.forEach(c => {
+                        dbDrawings.push({
+                            id: c.id,
+                            name: c.name,
+                            image_data: c.image,
+                            status: c.status,
+                            likes: c.likes || 0,
+                            created_at: c.date || new Date().toISOString()
+                        });
+                    });
+                }
+
+                // 2. Fetch from drawings table fallback if available
+                try {
+                    const { data: rawDrawings } = await supabase.from('drawings').select('*');
+                    if (rawDrawings && Array.isArray(rawDrawings)) {
+                        rawDrawings.forEach(d => dbDrawings.push(d));
+                    }
+                } catch (e) {}
+
+                if (dbDrawings.length > 0) {
                     const drawingMap = new Map();
-                    // Put local first
                     localDrawings.forEach(d => drawingMap.set(d.id, d));
-                    // DB overrides/adds
-                    data.forEach(d => drawingMap.set(d.id, d));
+
+                    dbDrawings.forEach(dbItem => {
+                        const localItem = drawingMap.get(dbItem.id);
+                        if (localItem) {
+                            // Smart status merge: if either local or DB is approved, keep approved!
+                            const finalStatus = (localItem.status === 'approved' || dbItem.status === 'approved') ? 'approved' : (localItem.status === 'rejected' || dbItem.status === 'rejected' ? 'rejected' : dbItem.status || localItem.status);
+                            const finalLikes = Math.max(localItem.likes || 0, dbItem.likes || 0);
+                            drawingMap.set(dbItem.id, {
+                                ...localItem,
+                                ...dbItem,
+                                status: finalStatus,
+                                likes: finalLikes
+                            });
+                        } else {
+                            drawingMap.set(dbItem.id, dbItem);
+                        }
+                    });
 
                     localDrawings = Array.from(drawingMap.values());
                     localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
