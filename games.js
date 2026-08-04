@@ -823,13 +823,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let tttPlayerTurn = true;
     let tttGameOver = false;
 
+    let tttFirstPlayer = 'player'; // 'player', 'ai', 'random'
+
     function setupTicTacToeGame() {
         tttBoard = Array(9).fill(null);
-        tttPlayerTurn = true;
         tttGameOver = false;
 
-        if (tttStatusText) tttStatusText.textContent = `Σειρά σου: 🐱 (${currentDifficulty.toUpperCase()})`;
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Bάλε τη Γατούλα 🐱 για να νικήσεις το Ψαράκι 🐟!"`;
+        let startsFirst = tttFirstPlayer;
+        if (startsFirst === 'random') {
+            startsFirst = Math.random() < 0.5 ? 'player' : 'ai';
+        }
 
         if (!tttGrid) return;
         tttGrid.innerHTML = '';
@@ -840,6 +843,17 @@ document.addEventListener('DOMContentLoaded', () => {
             cell.dataset.index = i;
             cell.addEventListener('click', () => handleTicTacToeCellClick(i, cell));
             tttGrid.appendChild(cell);
+        }
+
+        if (startsFirst === 'ai') {
+            tttPlayerTurn = false;
+            if (tttStatusText) tttStatusText.textContent = `Σειρά της Μάγκας... 💭 (${currentDifficulty.toUpperCase()})`;
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Ξεκινάω πρώτη εγώ με το Ψαράκι 🐟!"`;
+            setTimeout(makeTicTacToeAIMove, 450);
+        } else {
+            tttPlayerTurn = true;
+            if (tttStatusText) tttStatusText.textContent = `Σειρά σου: 🐱 (${currentDifficulty.toUpperCase()})`;
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Βάλε τη Γατούλα 🐱 για να νικήσεις το Ψαράκι 🐟!"`;
         }
     }
 
@@ -886,11 +900,23 @@ document.addEventListener('DOMContentLoaded', () => {
         let aiChoice = null;
 
         if (currentDifficulty === 'easy') {
-            // Easy AI: Pure random choice
-            aiChoice = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            // Easy AI: 50% random mistake, 50% basic rule
+            const isMistake = Math.random() < 0.50;
+            if (isMistake) {
+                aiChoice = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            } else {
+                aiChoice = findWinningTicTacToeMove('🐟') || findWinningTicTacToeMove('🐱') || emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            }
         } else if (currentDifficulty === 'medium') {
-            // Medium AI: Win > Block > Center > Random
-            aiChoice = findWinningTicTacToeMove('🐟') || findWinningTicTacToeMove('🐱') || (tttBoard[4] === null ? 4 : emptyIndices[Math.floor(Math.random() * emptyIndices.length)]);
+            // Medium AI: Makes a random mistake 1 out of 10 times (10% chance)
+            const makeMistake = Math.random() < 0.10; // 10% mistake probability
+            if (makeMistake) {
+                // Random move instead of optimal win/block move
+                aiChoice = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            } else {
+                // Medium strategy: Win > Block > Center > Random
+                aiChoice = findWinningTicTacToeMove('🐟') || findWinningTicTacToeMove('🐱') || (tttBoard[4] === null ? 4 : emptyIndices[Math.floor(Math.random() * emptyIndices.length)]);
+            }
         } else {
             // Hard AI: Unbeatable Minimax Algorithm!
             const best = minimaxTicTacToe(tttBoard, 0, true);
@@ -1002,6 +1028,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (tttResetBtn) tttResetBtn.addEventListener('click', setupTicTacToeGame);
+
+    const firstMoveSelector = document.querySelector('.first-move-selector');
+    if (firstMoveSelector) {
+        firstMoveSelector.querySelectorAll('.first-move-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                firstMoveSelector.querySelectorAll('.first-move-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                tttFirstPlayer = btn.dataset.starter || 'player';
+                setupTicTacToeGame();
+            });
+        });
+    }
 
     // ----------------------------------------------------
     // 9. CAT SNAKE GAME LOGIC (SLOW LEVEL 1 + SWIPE GESTURES)

@@ -267,10 +267,25 @@
 
                         <!-- 8. Tic-Tac-Toe Arena -->
                         <div id="tictactoeArena" class="arcade-game-container" hidden>
-                            <div class="arcade-status-bar">
+                            <div class="arcade-status-bar" style="flex-wrap: wrap; gap: 10px; justify-content: center;">
                                 <span id="tttStatusText" class="arcade-status-badge">Σειρά σου: 🐱 (Μάγκας)</span>
                                 <button id="tttResetBtn" class="btn btn-arcade-reset">🔄 Νέος Γύρος</button>
                             </div>
+
+                            <!-- First Move Selector -->
+                            <div class="first-move-selector" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 14px 0 6px 0; flex-wrap: wrap;">
+                                <span style="font-weight: 700; font-size: 0.92rem; color: #475569;">🚀 Ποιος παίζει πρώτος;</span>
+                                <button class="first-move-btn active" data-starter="player">
+                                    🐱 Πρώτο το Παιδί
+                                </button>
+                                <button class="first-move-btn" data-starter="ai">
+                                    🐟 Πρώτος ο Υπολογιστής
+                                </button>
+                                <button class="first-move-btn" data-starter="random">
+                                    🎲 Τυχαία
+                                </button>
+                            </div>
+
                             <div id="tttGrid" class="tictactoe-grid">
                                 <!-- 9 cells injected dynamically -->
                             </div>

@@ -2526,6 +2526,32 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     transform: scale(1.05) !important;
 }
 
+/* FIRST MOVE SELECTOR FOR TIC-TAC-TOE */
+.first-move-btn {
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    color: var(--text-dark);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.first-move-btn:hover {
+    border-color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.first-move-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(255, 94, 126, 0.25);
+}
+
 /* 1. TIC-TAC-TOE GRID */
 .tictactoe-grid {
     display: grid;
