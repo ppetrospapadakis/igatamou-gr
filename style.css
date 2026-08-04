@@ -2772,12 +2772,15 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     100% { bottom: 340px; opacity: 0; }
 }
 
-/* 13. MINI CHESS GRID (4x4) */
+/* 13. MINI CHESS GRID (4x4 & 5x5) */
 .chess-board-grid {
     display: grid;
-    grid-template-columns: repeat(4, 70px);
-    grid-template-rows: repeat(4, 70px);
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
     gap: 0;
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 1 / 1;
     border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -2785,16 +2788,28 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     margin: 10px auto;
 }
 
+.chess-board-grid.grid-5x5 {
+    grid-template-columns: repeat(5, 1fr) !important;
+    grid-template-rows: repeat(5, 1fr) !important;
+    max-width: 340px !important;
+    aspect-ratio: 1 / 1 !important;
+}
+
 .chess-square {
-    width: 70px;
-    height: 70px;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
+    font-size: 2rem;
     cursor: pointer;
     user-select: none;
     transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.chess-board-grid.grid-5x5 .chess-square {
+    font-size: 1.6rem;
 }
 
 .chess-square.light { background: #f8fafc; }
@@ -3302,53 +3317,51 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
         box-sizing: border-box !important;
     }
 
-    /* 4. Mini Cat Chess 50% Enlarged - Locked Dimensions */
+    /* 4. Mini Cat Chess Responsive Grid */
     .chess-board-grid {
-        grid-template-columns: repeat(4, 105px) !important;
-        grid-template-rows: repeat(4, 105px) !important;
-        width: 420px !important;
-        height: 420px !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        grid-template-rows: repeat(4, 1fr) !important;
+        width: 100% !important;
+        max-width: 400px !important;
+        height: auto !important;
+        aspect-ratio: 1 / 1 !important;
         box-sizing: border-box !important;
     }
 
     .chess-square {
-        width: 105px !important;
-        height: 105px !important;
-        font-size: 3.8rem !important;
+        width: 100% !important;
+        height: 100% !important;
+        font-size: 2.6rem !important;
         line-height: 1 !important;
         box-sizing: border-box !important;
-        flex-shrink: 0 !important;
-        overflow: hidden !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
     }
 
     .chess-piece-wrapper {
-        font-size: 2.4rem !important;
-        padding: 4px 8px !important;
-        border-radius: 20px !important;
+        font-size: 1.8rem !important;
+        padding: 4px 6px !important;
+        border-radius: 18px !important;
     }
 
     .chess-board-grid.grid-5x5 {
-        grid-template-columns: repeat(5, 88px) !important;
-        grid-template-rows: repeat(5, 88px) !important;
-        width: 440px !important;
-        height: 440px !important;
+        grid-template-columns: repeat(5, 1fr) !important;
+        grid-template-rows: repeat(5, 1fr) !important;
+        width: 100% !important;
+        max-width: 400px !important;
+        height: auto !important;
+        aspect-ratio: 1 / 1 !important;
         box-sizing: border-box !important;
     }
 
     .chess-board-grid.grid-5x5 .chess-square {
-        width: 88px !important;
-        height: 88px !important;
-        font-size: 3.2rem !important;
-        line-height: 1 !important;
-        box-sizing: border-box !important;
+        font-size: 2.2rem !important;
     }
 
     .chess-board-grid.grid-5x5 .chess-piece-wrapper {
-        font-size: 2.0rem !important;
-        padding: 3px 5px !important;
+        font-size: 1.4rem !important;
+        padding: 2px 4px !important;
     }
 
     /* 5. Cat Solitaire 50% Enlarged */

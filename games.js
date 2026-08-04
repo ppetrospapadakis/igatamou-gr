@@ -1723,8 +1723,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let chessBoardSize = 4;
     let chessSelectedSq = null;
     let chessPlayerTurn = true;
+    let chessGameOver = false;
 
     function setupChessGame() {
+        chessGameOver = false;
         if (currentDifficulty === 'hard') {
             chessBoardSize = 5;
             if (chessBoard) chessBoard.classList.add('grid-5x5');
@@ -1808,7 +1810,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleChessSquareClick(r, c) {
-        if (!chessPlayerTurn) return;
+        if (!chessPlayerTurn || chessGameOver) return;
         const piece = chessGrid[r][c];
 
         if (chessSelectedSq) {
@@ -1823,11 +1825,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderChessBoard();
 
                 if (captured && captured.includes('👑')) {
+                    chessGameOver = true;
                     if (chessStatusText) chessStatusText.textContent = '🎉 Νίκησες τον Βασιλιά! 🥳';
-                    score += 25;
-                    localStorage.setItem('igatamou_game_score', score.toString());
-                    updateScoreUI();
-                    playCatSoundEffect('correct');
+                    setTimeout(() => showChessResultModal('win'), 400);
                     return;
                 }
 
@@ -1892,7 +1892,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     }
 
+    function hasPlayerChessMoves() {
+        for (let r = 0; r < chessBoardSize; r++) {
+            for (let c = 0; c < chessBoardSize; c++) {
+                if (chessGrid[r][c] && chessGrid[r][c].includes('🐱')) {
+                    for (let tr = 0; tr < chessBoardSize; tr++) {
+                        for (let tc = 0; tc < chessBoardSize; tc++) {
+                            if (isValidChessMove(r, c, tr, tc)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     function makeChessAIMove() {
+        if (chessGameOver) return;
+
         const moves = [];
         for (let r = 0; r < chessBoardSize; r++) {
             for (let c = 0; c < chessBoardSize; c++) {
@@ -1909,21 +1928,88 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!moves.length) {
+            chessGameOver = true;
             if (chessStatusText) chessStatusText.textContent = '🤝 Ισοπαλία! Δεν υπάρχουν άλλες κινήσεις!';
-            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Δεν υπάρχουν άλλες κινήσεις! Πάτα Νέος Γύρος! 🔄"`;
-            chessPlayerTurn = true;
+            setTimeout(() => showChessResultModal('draw'), 400);
             return;
         }
 
         const captureMoves = moves.filter(m => chessGrid[m.toR][m.toC] !== null);
         const m = captureMoves.length ? captureMoves[Math.floor(Math.random() * captureMoves.length)] : moves[Math.floor(Math.random() * moves.length)];
 
+        const captured = chessGrid[m.toR][m.toC];
         chessGrid[m.toR][m.toC] = chessGrid[m.fromR][m.fromC];
         chessGrid[m.fromR][m.fromC] = null;
 
+        renderChessBoard();
+
+        if (captured && captured.includes('👑')) {
+            chessGameOver = true;
+            if (chessStatusText) chessStatusText.textContent = '💔 Έχασες τον Βασιλιά σου!';
+            setTimeout(() => showChessResultModal('loss'), 400);
+            return;
+        }
+
+        if (!hasPlayerChessMoves()) {
+            chessGameOver = true;
+            if (chessStatusText) chessStatusText.textContent = '🤝 Ισοπαλία! Δεν υπάρχουν άλλες κινήσεις!';
+            setTimeout(() => showChessResultModal('draw'), 400);
+            return;
+        }
+
         chessPlayerTurn = true;
         if (chessStatusText) chessStatusText.textContent = `Σειρά σου: 🐱 (${currentDifficulty.toUpperCase()})`;
-        renderChessBoard();
+    }
+
+    function showChessResultModal(resultType) {
+        if (resultType === 'win') {
+            score += 30;
+            streak++;
+            localStorage.setItem('igatamou_game_score', score.toString());
+            updateScoreUI();
+
+            if (quizResultEmoji) quizResultEmoji.textContent = '👑😸';
+            if (quizResultTitle) quizResultTitle.textContent = '🎉 Νίκησες στο Σκάκι! 🥳';
+            if (quizResultScoreText) quizResultScoreText.textContent = '🏆 +30 Γατο-Πόντοι!';
+            if (quizResultMessage) quizResultMessage.textContent = '«Απίθανο! Έφαγες τον Βασιλιά 👑🐟 του υπολογιστή και κέρδισες την παρτίδα! 👑✨»';
+
+            if (quizResultModal) {
+                const card = quizResultModal.querySelector('.modal-card');
+                if (card) card.className = 'modal-card quiz-result-card result-perfect';
+                quizResultModal.hidden = false;
+            }
+            playCatSoundEffect('win');
+            triggerCorrectAnswerReaction();
+        } else if (resultType === 'loss') {
+            if (quizResultEmoji) quizResultEmoji.textContent = '😿👑';
+            if (quizResultTitle) quizResultTitle.textContent = '💔 Έχασες στο Σκάκι!';
+            if (quizResultScoreText) quizResultScoreText.textContent = '0 Πόντοι';
+            if (quizResultMessage) quizResultMessage.textContent = '«Ο υπολογιστής έφαγε τον Βασιλιά σου 👑🐱! Μη στεναχωριέσαι, κάνε έναν νέο γύρο! 🐾»';
+
+            if (quizResultModal) {
+                const card = quizResultModal.querySelector('.modal-card');
+                if (card) card.className = 'modal-card quiz-result-card result-sad';
+                quizResultModal.hidden = false;
+            }
+            playCatSoundEffect('wrong');
+            triggerWrongAnswerReaction();
+        } else {
+            score += 10;
+            localStorage.setItem('igatamou_game_score', score.toString());
+            updateScoreUI();
+
+            if (quizResultEmoji) quizResultEmoji.textContent = '🤝🐱';
+            if (quizResultTitle) quizResultTitle.textContent = '🤝 Ισοπαλία στο Σκάκι!';
+            if (quizResultScoreText) quizResultScoreText.textContent = '🎁 +10 Γατο-Πόντοι!';
+            if (quizResultMessage) quizResultMessage.textContent = '«Δεν υπάρχουν άλλες διαθέσιμες κινήσεις για να συνεχιστεί η παρτίδα! 🤝»';
+
+            if (quizResultModal) {
+                const card = quizResultModal.querySelector('.modal-card');
+                if (card) card.className = 'modal-card quiz-result-card';
+                quizResultModal.hidden = false;
+            }
+            playCatSoundEffect('click');
+        }
     }
 
     if (chessResetBtn) chessResetBtn.addEventListener('click', setupChessGame);
