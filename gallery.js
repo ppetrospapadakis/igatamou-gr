@@ -112,10 +112,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const okSuccessBtn = document.getElementById('okSuccessBtn');
     const closeAlbumBtn = document.getElementById('closeAlbumBtn');
 
-    const catUploadForm = document.getElementById('catUploadForm');
+    const catUploadForm = document.getElementById('catUploadForm') || document.getElementById('uploadForm');
     const catPhotoInput = document.getElementById('catPhotoInput');
-    const imagePreviewBox = document.getElementById('imagePreviewBox');
-    const previewImg = document.getElementById('previewImg');
+    const imagePreviewBox = document.getElementById('imagePreviewBox') || document.getElementById('imagePreviewContainer');
+    const previewImg = document.getElementById('previewImg') || document.getElementById('imagePreview');
     const previewCountBadge = document.getElementById('previewCountBadge');
 
     // Album Modal Elements
@@ -459,9 +459,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const owner = document.getElementById('ownerNameInput').value.trim();
             const bio = document.getElementById('catBioInput').value.trim();
 
+            // Fallback: If compressedImagesArray is empty, compress selected files on the fly!
+            if (!compressedImagesArray.length && catPhotoInput && catPhotoInput.files && catPhotoInput.files.length) {
+                selectedFilesArray = Array.from(catPhotoInput.files);
+                await new Promise((resolve) => {
+                    let processed = 0;
+                    selectedFilesArray.forEach((file, idx) => {
+                        compressImageFile(file, (base64Img) => {
+                            compressedImagesArray[idx] = base64Img;
+                            processed++;
+                            if (processed === selectedFilesArray.length) resolve();
+                        });
+                    });
+                });
+            }
+
             if (!name || !owner || !compressedImagesArray.length) {
                 alert('Παρακαλώ συμπλήρωσε όλα τα υποχρεωτικά πεδία και διάλεξε τουλάχιστον μία φωτογραφία!');
                 return;
+            }
+
+            const submitBtn = catUploadForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = '⏳ Αποστολή... Παρακαλώ περιμένετε!';
             }
 
             const catId = 'cat_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
@@ -539,6 +560,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (imagePreviewBox) imagePreviewBox.hidden = true;
             if (uploadModal) uploadModal.hidden = true;
             if (successModal) successModal.hidden = false;
+
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✨ Αποστολή για Έγκριση 🐾';
+            }
         });
     }
 

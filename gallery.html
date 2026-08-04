@@ -125,7 +125,7 @@
                 <h2>📸 Ανέβαστε τη Γατούλα σου!</h2>
                 <p>Συμπλήρωσε τα στοιχεία & διάλεξε μια όμορφη φωτογραφία!</p>
 
-                <form id="uploadForm" class="upload-form">
+                <form id="catUploadForm" class="upload-form">
                     <div class="form-group">
                         <label for="catNameInput">Όνομα Γατούλας: *</label>
                         <input type="text" id="catNameInput" placeholder="π.χ. Μάγκας, Μούργος, Σίμπα..." required class="input-field">
@@ -143,13 +143,14 @@
 
                     <div class="form-group">
                         <label for="catPhotoInput">Επιλογή Φωτογραφίας: *</label>
-                        <input type="file" id="catPhotoInput" accept="image/*" required class="file-input-field">
-                        <small class="form-help">Μπορείς να ανεβάσεις οποιαδήποτε εικόνα της γατούλας σου!</small>
+                        <input type="file" id="catPhotoInput" accept="image/*" required class="file-input-field" multiple>
+                        <small class="form-help">Μπορείς να ανεβάσεις μία ή περισσότερες φωτογραφίες της γατούλας σου!</small>
                     </div>
 
-                    <div id="imagePreviewContainer" class="image-preview-container" hidden>
+                    <div id="imagePreviewBox" class="image-preview-container" hidden>
                         <p>Προεπισκόπηση:</p>
-                        <img id="imagePreview" src="" alt="Προεπισκόπηση γατούλας" class="image-preview-img">
+                        <img id="previewImg" src="" alt="Προεπισκόπηση γατούλας" class="image-preview-img">
+                        <small id="previewCountBadge" class="form-help" hidden></small>
                     </div>
 
                     <button type="submit" id="submitCatBtn" class="btn btn-submit-upload">
