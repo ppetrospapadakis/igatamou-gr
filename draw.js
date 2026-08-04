@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentColor = '#ff5e7e';
     let isRainbow = false;
     let rainbowHue = 0;
-    let currentSize = 8;
+    let currentSize = 4;
     let currentTool = 'brush'; // 'brush', 'bucket', 'eraser'
     let undoStack = [];
     const MAX_UNDO = 15;
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
             sizeBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            currentSize = parseInt(btn.getAttribute('data-size')) || 8;
+            currentSize = parseInt(btn.getAttribute('data-size')) || 4;
         });
     });
 
