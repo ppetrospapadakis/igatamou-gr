@@ -414,9 +414,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function compressImageFile(file, callback) {
+    async function compressImageFile(file, callback) {
+        let processFile = file;
+
+        if (file && (file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif') || (file.type && file.type.includes('heic')))) {
+            if (typeof heic2any !== 'undefined') {
+                try {
+                    const convertedBlob = await heic2any({
+                        blob: file,
+                        toType: 'image/jpeg',
+                        quality: 0.82
+                    });
+                    processFile = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+                } catch (heicErr) {
+                    console.log('HEIC conversion notice:', heicErr);
+                }
+            }
+        }
+
         const reader = new FileReader();
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(processFile);
         reader.onload = (event) => {
             const img = new Image();
             img.src = event.target.result;
@@ -444,8 +461,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.78);
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.80);
                 callback(compressedBase64);
+            };
+            img.onerror = () => {
+                callback(event.target.result);
             };
         };
     }
