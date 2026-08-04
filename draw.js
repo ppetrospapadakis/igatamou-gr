@@ -276,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (stencilType === 'blank') return;
 
         ctx.save();
+        ctx.translate((canvas.width - 800) / 2, (canvas.height - 600) / 2);
         ctx.strokeStyle = '#0f172a';
         ctx.lineWidth = 5;
         ctx.lineCap = 'round';
