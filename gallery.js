@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderPublicGallery() {
-        const cats = getCatsData();
+        const cats = getCatsData().filter(c => !(c.id && c.id.startsWith('draw_')) && !(c.bio && c.bio.includes('🎨 [DRAWING]')));
         const likedCatIds = getLikedCatIds();
         const approvedCats = cats.filter(c => c.status === 'approved');
 
@@ -825,7 +825,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderAdminDashboard() {
-        const cats = getCatsData();
+        const cats = getCatsData().filter(c => !(c.id && c.id.startsWith('draw_')) && !(c.bio && c.bio.includes('🎨 [DRAWING]')));
         const pendingCats = cats.filter(c => c.status === 'pending');
         const approvedCats = cats.filter(c => c.status === 'approved');
 
@@ -974,7 +974,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openGroupModal(sourceCat) {
         currentGroupSourceCatId = sourceCat.id;
-        const cats = getCatsData();
+        const cats = getCatsData().filter(c => !(c.id && c.id.startsWith('draw_')) && !(c.bio && c.bio.includes('🎨 [DRAWING]')));
         const otherCats = cats.filter(c => c.id !== sourceCat.id);
 
         if (groupSourceCatName) {
