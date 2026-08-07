@@ -471,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
             quizRoundCorrect = 0;
             quizRoundWrong = 0;
             if (currentDifficulty === 'easy') remainingHints = 5;
-            else if (currentDifficulty === 'medium') remainingHints = 2;
+            else if (currentDifficulty === 'medium') remainingHints = 3;
             else if (currentDifficulty === 'hard') remainingHints = 1;
 
             if (quizCorrectCount) quizCorrectCount.textContent = '0';
@@ -511,58 +511,62 @@ document.addEventListener('DOMContentLoaded', () => {
         if (questionText) questionText.textContent = q.q;
         if (visualHelper) {
             visualHelper.innerHTML = '';
-            if (q.helper) {
-                const hintBtn = document.createElement('button');
-                hintBtn.className = 'btn-hint-toggle';
-                hintBtn.type = 'button';
+            
+            const hintBtn = document.createElement('button');
+            hintBtn.className = 'btn-hint-toggle';
+            hintBtn.type = 'button';
 
-                const hintBox = document.createElement('div');
-                hintBox.className = 'hint-text-box';
-                hintBox.hidden = true;
-                hintBox.style.display = 'none';
-                hintBox.textContent = q.helper;
+            const hintBox = document.createElement('div');
+            hintBox.className = 'hint-text-box';
+            hintBox.hidden = true;
+            hintBox.style.display = 'none';
 
-                const updateBtnText = () => {
-                    if (remainingHints <= 0) {
-                        hintBtn.innerHTML = `💡 Βοήθεια (0 απομένουν)`;
-                        hintBtn.disabled = true;
-                        hintBtn.style.opacity = '0.5';
-                        hintBtn.style.cursor = 'not-allowed';
-                    } else {
-                        hintBtn.innerHTML = `💡 Βοήθεια (Απομένουν: ${remainingHints})`;
-                        hintBtn.disabled = false;
-                        hintBtn.style.opacity = '1';
-                        hintBtn.style.cursor = 'pointer';
-                    }
-                };
+            const updateBtnText = () => {
+                if (remainingHints <= 0) {
+                    hintBtn.innerHTML = `💡 Βοήθεια (0 μένουν)`;
+                    hintBtn.disabled = true;
+                    hintBtn.style.opacity = '0.55';
+                    hintBtn.style.cursor = 'not-allowed';
+                } else {
+                    hintBtn.innerHTML = `💡 Βοήθεια (${remainingHints} μένουν)`;
+                    hintBtn.disabled = false;
+                    hintBtn.style.opacity = '1';
+                    hintBtn.style.cursor = 'pointer';
+                }
+            };
 
+            updateBtnText();
+
+            hintBtn.addEventListener('click', () => {
+                if (remainingHints <= 0) return;
+                remainingHints--;
                 updateBtnText();
-                let isRevealedForThisQuestion = false;
 
-                hintBtn.addEventListener('click', () => {
-                    if (!isRevealedForThisQuestion) {
-                        if (remainingHints <= 0) return;
-                        remainingHints--;
-                        isRevealedForThisQuestion = true;
-                        hintBox.hidden = false;
-                        hintBox.style.display = 'inline-block';
-                        hintBtn.innerHTML = `💡 Απόκρυψη (Απομένουν: ${remainingHints})`;
-                        playCatSoundEffect('click');
-                    } else {
-                        hintBox.hidden = !hintBox.hidden;
-                        if (hintBox.hidden) {
-                            hintBox.style.display = 'none';
-                            updateBtnText();
-                        } else {
-                            hintBox.style.display = 'inline-block';
-                            hintBtn.innerHTML = `💡 Απόκρυψη (Απομένουν: ${remainingHints})`;
+                // Highlight correct option button directly in green
+                if (optionsGrid) {
+                    const allBtns = optionsGrid.querySelectorAll('.quiz-option-btn');
+                    allBtns.forEach(btn => {
+                        if (btn.textContent.trim() === q.a.trim()) {
+                            btn.classList.add('correct');
                         }
-                    }
-                });
+                    });
+                }
 
-                visualHelper.appendChild(hintBtn);
-                visualHelper.appendChild(hintBox);
-            }
+                // Show correct answer banner in helper box
+                hintBox.hidden = false;
+                hintBox.style.display = 'inline-block';
+                hintBox.innerHTML = `💡 Η σωστή απάντηση είναι: <strong>${q.a}</strong>`;
+
+                // Disable hint button for this current question
+                hintBtn.disabled = true;
+                hintBtn.style.opacity = '0.7';
+
+                playCatSoundEffect('click');
+            });
+
+            visualHelper.appendChild(hintBtn);
+            visualHelper.appendChild(document.createElement('br'));
+            visualHelper.appendChild(hintBox);
         }
 
         if (optionsGrid) {
