@@ -2489,10 +2489,11 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 
 .arcade-status-bar {
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    max-width: 340px;
+    max-width: 420px;
     margin-bottom: 16px;
     gap: 10px;
 }
@@ -2506,6 +2507,11 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     padding: 8px 16px;
     border-radius: var(--radius-full);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    white-space: nowrap;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .btn-arcade-reset {
@@ -2520,6 +2526,8 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     cursor: pointer !important;
     box-shadow: 0 4px 12px rgba(255, 94, 126, 0.3) !important;
     transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
 }
 
 .btn-arcade-reset:hover {
