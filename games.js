@@ -2087,6 +2087,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let solitaireSelected = null;
     let solitaireMoves = 0;
     let solitaireMaxMoves = 25;
+    let solitaireReshuffles = 5;
+    const SOLITAIRE_MAX_RESHUFFLES = 5;
 
     function setupSolitaireGame() {
         let maxVal = 3;
@@ -2095,6 +2097,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentDifficulty === 'hard') { maxVal = 7; solitaireMaxMoves = 45; }
 
         solitaireMoves = 0;
+        solitaireReshuffles = SOLITAIRE_MAX_RESHUFFLES;
         const solitaireScore = document.getElementById('solitaireScore');
         if (solitaireScore) solitaireScore.textContent = `0 / ${solitaireMaxMoves}`;
 
@@ -2194,8 +2197,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 `).join('')}
             </div>
 
-            <button id="reshuffleSolitaireBtn" class="btn btn-back-menu" style="margin-top: 12px; font-weight: bold;">
-                🔀 Ανακάτεμα Καρτών
+            <button id="reshuffleSolitaireBtn" class="btn btn-back-menu solitaire-reshuffle-btn${solitaireReshuffles === 0 ? ' reshuffle-exhausted' : ''}" style="margin-top: 12px; font-weight: bold;" ${solitaireReshuffles === 0 ? 'disabled' : ''}>
+                🔀 Ανακάτεμα (${solitaireReshuffles}/${SOLITAIRE_MAX_RESHUFFLES} μένουν)
             </button>
         `;
 
@@ -2203,6 +2206,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const reshuffleBtn = solitaireBoard.querySelector('#reshuffleSolitaireBtn');
         if (reshuffleBtn) {
             reshuffleBtn.addEventListener('click', () => {
+                if (solitaireReshuffles <= 0) return;
+                solitaireReshuffles--;
                 const remainingCards = [];
                 solitaireColumns.forEach(col => {
                     remainingCards.push(...col);
