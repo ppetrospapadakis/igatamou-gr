@@ -1515,24 +1515,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleWhackClick(hole, item) {
         if (!hole.classList.contains('up')) return;
+        // Prevent double-clicks during feedback pause
+        if (hole.classList.contains('hit-correct') || hole.classList.contains('hit-wrong')) return;
+
         hole.classList.remove('up');
 
+        const PAUSE_MS = 1000; // 1 second pause + highlight
+
         if (item.textContent === '🐟') {
+            // --- Correct: caught a fish ---
             whackFishCaught++;
             score += 5;
             playCatSoundEffect('correct');
             triggerCorrectAnswerReaction();
 
+            // Green highlight + pause
+            hole.classList.add('hit-correct');
+            if (whackLoop) { clearInterval(whackLoop); whackLoop = null; }
+
             if (whackFishCaught >= 20) {
-                stopWhackGame();
+                // Won the game — no need to resume
                 if (whackScore) whackScore.textContent = '20';
-                setTimeout(() => showWhackResultModal(true), 300);
-                return;
+                setTimeout(() => {
+                    hole.classList.remove('hit-correct');
+                    showWhackResultModal(true);
+                }, PAUSE_MS);
+            } else {
+                // Resume after 1 second
+                setTimeout(() => {
+                    hole.classList.remove('hit-correct');
+                    if (!whackLoop && currentCategory === 'whack') {
+                        let popInterval = 450;
+                        if (currentDifficulty === 'medium') popInterval = 750;
+                        if (currentDifficulty === 'easy') popInterval = 1200;
+                        whackLoop = setInterval(popRandomWhackItem, popInterval);
+                    }
+                }, PAUSE_MS);
             }
         } else {
+            // --- Wrong: hit an obstacle ---
             whackFishCaught = Math.max(0, whackFishCaught - 1);
             playCatSoundEffect('wrong');
             triggerWrongAnswerReaction();
+
+            // Red highlight + pause
+            hole.classList.add('hit-wrong');
+            if (whackLoop) { clearInterval(whackLoop); whackLoop = null; }
+
+            setTimeout(() => {
+                hole.classList.remove('hit-wrong');
+                if (!whackLoop && currentCategory === 'whack') {
+                    let popInterval = 450;
+                    if (currentDifficulty === 'medium') popInterval = 750;
+                    if (currentDifficulty === 'easy') popInterval = 1200;
+                    whackLoop = setInterval(popRandomWhackItem, popInterval);
+                }
+            }, PAUSE_MS);
         }
 
         if (whackScore) whackScore.textContent = whackFishCaught.toString();
