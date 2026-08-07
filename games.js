@@ -569,6 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
             optionsGrid.innerHTML = '';
             // Randomize/Shuffle Options order for every question!
             const shuffledOpts = [...q.opts].sort(() => Math.random() - 0.5);
+            optionsGrid.className = `options-grid opts-${shuffledOpts.length}`;
             shuffledOpts.forEach(optText => {
                 const btn = document.createElement('button');
                 btn.className = 'quiz-option-btn';

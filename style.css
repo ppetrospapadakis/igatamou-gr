@@ -1154,11 +1154,25 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 /* Options Grid */
 .options-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 15px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.option-btn {
+.options-grid.opts-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+
+.options-grid.opts-3 {
+    grid-template-columns: repeat(3, 1fr) !important;
+}
+
+.options-grid.opts-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+}
+
+.option-btn, .quiz-option-btn {
     background: #ffffff;
     border: 3px solid #e2e8f0;
     border-radius: 20px;
@@ -1170,11 +1184,17 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.03);
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
-.option-btn:hover {
+.option-btn:hover, .quiz-option-btn:hover {
     border-color: var(--secondary);
-    transform: translateY(-3px) scale(1.03);
+    transform: translateY(-3px) scale(1.02);
     background: #f0f7ff;
 }
 
@@ -2273,11 +2293,7 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
         font-size: 1.35rem !important;
     }
 
-    .options-grid {
-        grid-template-columns: 1fr !important;
-    }
-
-    .option-btn {
+    .option-btn, .quiz-option-btn {
         padding: 14px 16px !important;
         font-size: 1.1rem !important;
     }
