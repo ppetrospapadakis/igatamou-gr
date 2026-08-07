@@ -321,6 +321,18 @@ document.addEventListener('DOMContentLoaded', () => {
         showCategoryMenu();
     });
 
+    // Helper: set restart button label based on game type
+    const QUIZ_CATEGORIES = ['math', 'spelling', 'english', 'riddles', 'nature', 'geography'];
+    function setRestartBtnLabel() {
+        const btn = quizResultModal ? quizResultModal.querySelector('#restartQuizBtn') : null;
+        if (!btn) return;
+        if (QUIZ_CATEGORIES.includes(currentCategory)) {
+            btn.textContent = '🔄 Νέος Γύρος (20 Ερωτήσεις)!';
+        } else {
+            btn.textContent = '🔄 Νέο Παιχνίδι!';
+        }
+    }
+
     // Difficulty Bar Buttons
     if (difficultyBar) {
         difficultyBar.querySelectorAll('.diff-btn').forEach(btn => {
@@ -659,6 +671,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (card) {
                 card.className = `modal-card quiz-result-card ${themeClass}`;
             }
+            setRestartBtnLabel();
             quizResultModal.hidden = false;
         }
 
@@ -668,7 +681,7 @@ document.addEventListener('DOMContentLoaded', () => {
         playCatSoundEffect(correct >= 15 ? 'win' : (correct >= 10 ? 'click' : 'wrong'));
 
         if (questionNumber) questionNumber.textContent = '🎉 Μπράβο!';
-        if (questionText) questionText.textContent = `Ολοκλήρωσες τις 20 ερωτήσεις! Σωστά: ${correct}/20`;
+        if (questionText) questionText.textContent = `Ολοκλήρωσες τον γύρο! Σωστά: ${correct}/20`;
         if (visualHelper) visualHelper.textContent = '✨ Πάτα παρακάτω για νέο γύρο!';
         if (optionsGrid) optionsGrid.innerHTML = '';
 
@@ -676,7 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
         replayBtn.className = 'quiz-option-btn';
         replayBtn.style.background = 'var(--primary)';
         replayBtn.style.color = 'white';
-        replayBtn.textContent = '🔄 Παίξε Ξανά (20 Νέες Ερωτήσεις)!';
+        replayBtn.textContent = '🔄 Νέος Γύρος (20 Ερωτήσεις)!';
         replayBtn.addEventListener('click', () => startCategoryGame(currentCategory));
 
         const menuBtn = document.createElement('button');
@@ -801,6 +814,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
                 if (card) card.className = 'modal-card quiz-result-card result-perfect';
+                setRestartBtnLabel();
                 quizResultModal.hidden = false;
             }
             playCatSoundEffect('win');
@@ -814,6 +828,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
                 if (card) card.className = 'modal-card quiz-result-card result-sad';
+                setRestartBtnLabel();
                 quizResultModal.hidden = false;
             }
             playCatSoundEffect('wrong');
@@ -1541,6 +1556,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
                 if (card) card.className = 'modal-card quiz-result-card result-perfect';
+                setRestartBtnLabel();
                 quizResultModal.hidden = false;
             }
             playCatSoundEffect('win');
@@ -1553,6 +1569,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
                 if (card) card.className = 'modal-card quiz-result-card result-sad';
+                setRestartBtnLabel();
                 quizResultModal.hidden = false;
             }
             playCatSoundEffect('wrong');
@@ -1700,6 +1717,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
                 if (card) card.className = 'modal-card quiz-result-card result-perfect';
+                setRestartBtnLabel();
                 quizResultModal.hidden = false;
             }
             playCatSoundEffect('win');
@@ -1712,6 +1730,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
                 if (card) card.className = 'modal-card quiz-result-card result-sad';
+                setRestartBtnLabel();
                 quizResultModal.hidden = false;
             }
             playCatSoundEffect('wrong');
@@ -1981,6 +2000,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
                 if (card) card.className = 'modal-card quiz-result-card result-perfect';
+                setRestartBtnLabel();
                 quizResultModal.hidden = false;
             }
             playCatSoundEffect('win');
@@ -1994,6 +2014,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
                 if (card) card.className = 'modal-card quiz-result-card result-sad';
+                setRestartBtnLabel();
                 quizResultModal.hidden = false;
             }
             playCatSoundEffect('wrong');
@@ -2011,6 +2032,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
                 if (card) card.className = 'modal-card quiz-result-card';
+                setRestartBtnLabel();
                 quizResultModal.hidden = false;
             }
             playCatSoundEffect('click');
@@ -2270,6 +2292,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
                 if (card) card.className = 'modal-card quiz-result-card result-perfect';
+                setRestartBtnLabel();
                 quizResultModal.hidden = false;
             }
             playCatSoundEffect('win');
@@ -2282,6 +2305,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
                 if (card) card.className = 'modal-card quiz-result-card result-sad';
+                setRestartBtnLabel();
                 quizResultModal.hidden = false;
             }
             playCatSoundEffect('wrong');
