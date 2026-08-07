@@ -1418,6 +1418,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let whackFishSpawned = 0;
     let whackOtherSpawned = 0;
 
+
+
     function setupWhackGame() {
         stopWhackGame();
         whackFishCaught = 0;
@@ -1620,19 +1622,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // 12. BUBBLE POP GAME
     // ----------------------------------------------------
     let bubblesLoop = null;
-    let bubblesPopped = 0;
-    let bubblesGoodSpawned = 0;
-    let bubblesBombsSpawned = 0;
+    let bubblesPopped = 0;       // good balloons caught by player
+    let bubblesGoodSpawned = 0; // good balloons spawned so far
+    let bubblesGoodPassed = 0;  // good balloons that floated away (missed)
+    const BUBBLES_TOTAL_GOOD = 50;
 
     function setupBubblesGame() {
         stopBubblesGame();
         bubblesPopped = 0;
         bubblesGoodSpawned = 0;
-        bubblesBombsSpawned = 0;
-        if (bubblesScore) bubblesScore.textContent = '0';
+        bubblesGoodPassed = 0;
+        if (bubblesScore) bubblesScore.textContent = `0 / ${BUBBLES_TOTAL_GOOD}`;
 
         if (questionNumber) questionNumber.textContent = `🎈 Γατο-Μπαλόνια (${currentDifficulty.toUpperCase()})`;
-        if (questionText) questionText.textContent = '🎯 Σκάσε 50 καλά μπαλόνια για να κερδίσεις!';
+        if (questionText) questionText.textContent = `🎯 Περνούν συνολικά ${BUBBLES_TOTAL_GOOD} μπαλόνια — σκάσε όσα μπορείς!`;
         if (visualHelper) {
             visualHelper.innerHTML = `
                 <div class="bubbles-instructions">
@@ -1642,12 +1645,12 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Σκάσε 50 μπαλόνια & απέφυγε τις βόμβες 💣!"`;
+        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Περνούν ${BUBBLES_TOTAL_GOOD} μπαλόνια — σκάσε όσα μπορείς και απόφευγε τις βόμβες 💣!"`;
 
         if (!bubblesBox) return;
         bubblesBox.innerHTML = '';
 
-        let spawnRate = 600; // Medium (current speed)
+        let spawnRate = 600;
         if (currentDifficulty === 'easy') spawnRate = 850;
         if (currentDifficulty === 'hard') spawnRate = 380;
 
@@ -1661,27 +1664,26 @@ document.addEventListener('DOMContentLoaded', () => {
     function spawnBubble() {
         if (!bubblesBox) return;
 
-        // Check total spawn limits (100 good, 100 bombs max)
-        if (bubblesGoodSpawned >= 100 && bubblesBombsSpawned >= 100) {
+        // Stop spawning good balloons after BUBBLES_TOTAL_GOOD
+        const goodRemaining = BUBBLES_TOTAL_GOOD - bubblesGoodSpawned;
+        const shouldBeBomb = goodRemaining <= 0 || Math.random() < 0.45;
+        const isBomb = shouldBeBomb;
+
+        // Once all 50 good balloons are spawned, stop the interval
+        if (goodRemaining <= 0) {
             stopBubblesGame();
-            if (bubblesBox.children.length === 0 && bubblesPopped < 50) {
-                showBubblesResultModal(false);
-            }
+            // Wait for any remaining bubbles to clear, then show result
+            const waitForClear = setInterval(() => {
+                if (!bubblesBox || bubblesBox.children.length === 0) {
+                    clearInterval(waitForClear);
+                    const isWin = bubblesPopped >= BUBBLES_TOTAL_GOOD;
+                    showBubblesResultModal(isWin);
+                }
+            }, 300);
             return;
         }
 
-        // Determine if good bubble or bomb
-        let isBomb = false;
-        if (bubblesGoodSpawned >= 100) {
-            isBomb = true;
-        } else if (bubblesBombsSpawned >= 100) {
-            isBomb = false;
-        } else {
-            isBomb = Math.random() < 0.45; // ~45% bombs, 55% good
-        }
-
-        if (isBomb) bubblesBombsSpawned++;
-        else bubblesGoodSpawned++;
+        if (!isBomb) bubblesGoodSpawned++;
 
         const bubble = document.createElement('div');
         bubble.className = 'floating-bubble';
@@ -1690,14 +1692,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const chosenIcon = isBomb ? '💣' : goodIcons[Math.floor(Math.random() * goodIcons.length)];
         bubble.textContent = chosenIcon;
 
-        if (isBomb) {
-            bubble.classList.add('bomb-bubble');
-        }
+        if (isBomb) bubble.classList.add('bomb-bubble');
 
-        // Speed per difficulty level ("η τωρινή ταχύτητα ας είναι το μεσαίο επίπεδο")
-        let floatSec = 3.8; // Medium
-        if (currentDifficulty === 'easy') floatSec = 5.5; // Easy (slower)
-        if (currentDifficulty === 'hard') floatSec = 2.2; // Hard (faster)
+        let floatSec = 3.8;
+        if (currentDifficulty === 'easy') floatSec = 5.5;
+        if (currentDifficulty === 'hard') floatSec = 2.2;
 
         bubble.style.animation = `floatUp ${floatSec}s linear forwards`;
 
@@ -1713,27 +1712,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 bubblesPopped++;
                 score += 4;
                 playCatSoundEffect('correct');
-
-                if (bubblesPopped >= 50) {
-                    stopBubblesGame();
-                    if (bubblesScore) bubblesScore.textContent = '50';
-                    setTimeout(() => showBubblesResultModal(true), 300);
-                    bubble.remove();
-                    return;
-                }
+                triggerCorrectAnswerReaction();
             }
 
-            if (bubblesScore) bubblesScore.textContent = bubblesPopped.toString();
+            if (bubblesScore) bubblesScore.textContent = `${bubblesPopped} / ${BUBBLES_TOTAL_GOOD}`;
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
             bubble.remove();
+
+            // Check: all 50 good spawned AND no more bubbles on screen
+            if (bubblesGoodSpawned >= BUBBLES_TOTAL_GOOD && !bubblesLoop && bubblesBox.children.length === 0) {
+                const isWin = bubblesPopped >= BUBBLES_TOTAL_GOOD;
+                setTimeout(() => showBubblesResultModal(isWin), 300);
+            }
         });
 
         bubblesBox.appendChild(bubble);
+
+        // When a good balloon floats away without being clicked
         setTimeout(() => {
-            if (bubble.parentNode) bubble.remove();
-            if (bubblesGoodSpawned >= 100 && bubblesBombsSpawned >= 100 && bubblesBox.children.length === 0 && bubblesPopped < 50) {
-                showBubblesResultModal(false);
+            if (bubble.parentNode) {
+                if (!isBomb) bubblesGoodPassed++;
+                bubble.remove();
+                // Check if all 50 good balloons have been processed
+                if (bubblesGoodSpawned >= BUBBLES_TOTAL_GOOD && !bubblesLoop && bubblesBox.children.length === 0) {
+                    const isWin = bubblesPopped >= BUBBLES_TOTAL_GOOD;
+                    showBubblesResultModal(isWin);
+                }
             }
         }, floatSec * 1000 + 100);
     }
@@ -1742,15 +1747,17 @@ document.addEventListener('DOMContentLoaded', () => {
         stopBubblesGame();
         if (bubblesBox) bubblesBox.innerHTML = '';
 
+        const caught = Math.max(0, bubblesPopped);
+
         if (isWin) {
             score += 100;
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
 
             if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
-            if (quizResultTitle) quizResultTitle.textContent = 'ΤΕΛΕΙΑ! Σκάσατε 50 Μπαλόνια! 😸🎉';
-            if (quizResultScoreText) quizResultScoreText.textContent = `${bubblesPopped} / 50 Μπαλόνια`;
-            if (quizResultMessage) quizResultMessage.textContent = '«Απίστευτο! Τα κατάφερες και έσκασες 50 γατο-μπαλόνια! Κέρδισες +100 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎀✨»';
+            if (quizResultTitle) quizResultTitle.textContent = 'ΤΕΛΕΙΑ! Σκάσες όλα τα Μπαλόνια! 😸🎉';
+            if (quizResultScoreText) quizResultScoreText.textContent = `${caught} / ${BUBBLES_TOTAL_GOOD} Μπαλόνια`;
+            if (quizResultMessage) quizResultMessage.textContent = '«Απίστευτο! Τα κατάφερες και έσκασες όλα τα 50 γατο-μπαλόνια! Κέρδισες +100 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎀✨»';
             
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
@@ -1761,9 +1768,9 @@ document.addEventListener('DOMContentLoaded', () => {
             playCatSoundEffect('win');
         } else {
             if (quizResultEmoji) quizResultEmoji.textContent = '😿';
-            if (quizResultTitle) quizResultTitle.textContent = 'Η γατούλα είναι στενοχωρημένη... 😿';
-            if (quizResultScoreText) quizResultScoreText.textContent = `${bubblesPopped} / 50 Μπαλόνια`;
-            if (quizResultMessage) quizResultMessage.textContent = `«Έσκασες ${bubblesPopped} από τα 50 μπαλόνια. Μη στεναχωριέσαι, πάτα "Παίξε ξανά" και θα τα καταφέρεις! 🐾»`;
+            if (quizResultTitle) quizResultTitle.textContent = `Έπιασες ${caught} από τα 50 μπαλόνια! 🎈`;
+            if (quizResultScoreText) quizResultScoreText.textContent = `${caught} / ${BUBBLES_TOTAL_GOOD} Μπαλόνια`;
+            if (quizResultMessage) quizResultMessage.textContent = `«Έπιασες ${caught} από τα 50 μπαλόνια που πέρασαν. Μη στεναχωριέσαι, πάτα "Παίξε ξανά" και θα τα καταφέρεις! 🐾»`;
             
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
