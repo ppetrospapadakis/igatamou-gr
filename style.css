@@ -34,7 +34,7 @@ body {
     color: var(--text-dark);
     line-height: 1.6;
     min-height: 100vh;
-    overflow-x: hidden;
+    overflow-x: clip;
     position: relative;
 }
 
@@ -86,29 +86,30 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     min-height: 100vh;
 }
 
-/* Header Navigation Bar (2-Row Layout) */
+/* Header Navigation Bar (2-Row Sticky Layout) */
 .header {
+    position: sticky;
+    top: 0;
+    z-index: 10000;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     margin-bottom: 25px;
     width: 100%;
+    padding-top: 8px;
 }
 
 /* Row 1: Logo (Left) + Designer Badge (Right) - STICKY AT TOP */
 .header-row-1 {
-    position: sticky;
-    top: 10px;
-    z-index: 10000;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 12px 24px;
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-radius: var(--radius-lg);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
     border: 2px solid rgba(255, 255, 255, 0.95);
     transition: all 0.25s ease;
 }
@@ -2157,14 +2158,15 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 
     /* Header Mobile Rules */
     .header {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10000 !important;
         gap: 8px !important;
         margin-bottom: 15px !important;
+        padding-top: 4px !important;
     }
 
     .header-row-1 {
-        position: sticky !important;
-        top: 4px !important;
-        z-index: 10000 !important;
         padding: 8px 12px !important;
         border-radius: 18px !important;
         gap: 6px !important;
