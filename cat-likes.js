@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 2. PLAY ACTION: COLORFUL SOFT BALL (🟣)
+    // 2. PLAY ACTION: TENNIS BALL (🎾)
     // ----------------------------------------------------
     const btnActionPlay = document.getElementById('btnActionPlay');
     const imgPlay = document.getElementById('imgPlay');
@@ -131,19 +131,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnActionPlay) {
         btnActionPlay.addEventListener('click', () => {
             playCatSound('meow');
-            animateFlyingItem('🟣', btnActionPlay, imgPlay, () => {
+            animateFlyingItem('🎾', btnActionPlay, imgPlay, () => {
                 if (speechPlay) {
-                    speechPlay.textContent = '«Γιούπι! Τέλειο μαλακό μπαλάκι για παιχνίδι! 🐱🟣»';
+                    speechPlay.textContent = '«Γιούπι! Τέλειο μπαλάκι τένις για παιχνίδι! 🐱🎾»';
                     speechPlay.classList.add('speech-highlight');
                     setTimeout(() => speechPlay.classList.remove('speech-highlight'), 2500);
                 }
-                spawnParticles(imgPlay, ['🟣', '🟡', '⭐', '✨', '🐾']);
+                spawnParticles(imgPlay, ['🎾', '⭐', '✨', '🐾']);
             });
         });
     }
 
     // ----------------------------------------------------
-    // 3. SLEEP ACTION: PILLOW (🛌)
+    // 3. SLEEP ACTION: SOFT PILLOW (☁️)
     // ----------------------------------------------------
     const btnActionSleep = document.getElementById('btnActionSleep');
     const imgSleep = document.getElementById('imgSleep');
@@ -152,13 +152,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnActionSleep) {
         btnActionSleep.addEventListener('click', () => {
             playCatSound('purr');
-            animateFlyingItem('🛌', btnActionSleep, imgSleep, () => {
+            animateFlyingItem('☁️', btnActionSleep, imgSleep, () => {
                 if (speechSleep) {
-                    speechSleep.textContent = '«Zzz... 😴 Τόσο μαλακά & ζεστά! 🛌💤»';
+                    speechSleep.textContent = '«Zzz... 😴 Τόσο μαλακά & ζεστά! ☁️💤»';
                     speechSleep.classList.add('speech-highlight');
                     setTimeout(() => speechSleep.classList.remove('speech-highlight'), 2500);
                 }
-                spawnParticles(imgSleep, ['💤', '🛌', '☁️', '✨']);
+                spawnParticles(imgSleep, ['💤', '☁️', '✨']);
             });
         });
     }
