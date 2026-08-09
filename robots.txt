@@ -6,6 +6,7 @@ Allow: /games.html
 Allow: /gallery.html
 Allow: /draw.html
 Allow: /drawings-gallery.html
+Allow: /cat-likes.html
 Allow: /llms.txt
 
 # AI Search Crawlers

@@ -26,7 +26,13 @@
   </url>
   <url>
     <loc>https://www.igatamou.gr/drawings-gallery.html</loc>
-    <lastmod>2026-08-03</lastmod>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.igatamou.gr/cat-likes.html</loc>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
