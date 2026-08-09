@@ -86,21 +86,21 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     min-height: 100vh;
 }
 
-/* Header Navigation Bar (2-Row Sticky Layout) */
+/* Header Navigation Bar (2-Row Layout: Row 1 Sticky) */
 .header {
-    position: sticky;
-    top: 0;
-    z-index: 10000;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 25px;
     width: 100%;
-    padding-top: 8px;
+    position: relative;
 }
 
-/* Row 1: Logo (Left) + Designer Badge (Right) - STICKY AT TOP */
+/* Row 1: Logo (Left) + Designer Badge (Right) - STICKY AT TOP ONLY */
 .header-row-1 {
+    position: sticky;
+    top: 8px;
+    z-index: 10000;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -2158,36 +2158,31 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 
     /* Header Mobile Rules */
     .header {
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 10000 !important;
+        position: relative !important;
         gap: 8px !important;
         margin-bottom: 15px !important;
-        padding-top: 4px !important;
+        padding-top: 0 !important;
     }
 
     .header-row-1 {
-        padding: 8px 12px !important;
-        border-radius: 18px !important;
-        gap: 6px !important;
+        position: sticky !important;
+        top: 4px !important;
+        z-index: 10000 !important;
+        padding: 8px 16px !important;
+        border-radius: 20px !important;
+        justify-content: center !important;
     }
 
     .logo-avatar-img {
-        height: 40px !important;
+        height: 52px !important;
     }
 
     .logo-text {
-        font-size: 1.35rem !important;
+        font-size: 1.7rem !important;
     }
 
     .designer-badge {
-        padding: 4px 10px !important;
-        font-size: 0.76rem !important;
-        border-width: 1.5px !important;
-    }
-
-    .badge-icon {
-        font-size: 0.95rem !important;
+        display: none !important;
     }
 
     .header-row-2 {
