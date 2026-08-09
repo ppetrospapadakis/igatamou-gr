@@ -2205,6 +2205,13 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
         justify-content: center !important;
     }
 
+    /* Drawing Studio Canvas Mobile Height Fix */
+    .canvas-wrapper {
+        height: 600px !important;
+        min-height: 600px !important;
+        aspect-ratio: auto !important;
+    }
+
     /* Hero & Card Padding */
     .card-hero, .category-menu-card, .game-arena-card, .gallery-main-card {
         padding: 24px 16px !important;
