@@ -66,37 +66,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 p.style.setProperty('--tx', `${randomTx}px`);
                 document.body.appendChild(p);
                 setTimeout(() => p.remove(), 1250);
-            }, i * 110);
+            }, i * 120);
         }
     }
 
-    // Helper: Spawn Floating Flying Item from Button to Cat Target Image
-    function animateFlyingItem(itemEmoji, fromBtn, toImg, animationClass = 'overlay-ball-fly', delayTargetAnimMs = 500) {
+    // Helper: Spawn Floating Flying Item from Button to Cat Target Image (SLOW FLIGHT ~2.0s)
+    function animateFlyingItem(itemEmoji, fromBtn, toImg, onReachCallback) {
         const start = getElementCenter(fromBtn);
         const target = getElementCenter(toImg);
 
         const flyingEl = document.createElement('div');
-        flyingEl.className = `screen-overlay-item ${animationClass}`;
+        flyingEl.className = 'cat-likes-item-fly';
         flyingEl.textContent = itemEmoji;
         flyingEl.style.left = `${start.x}px`;
         flyingEl.style.top = `${start.y}px`;
+        flyingEl.style.setProperty('--startX', `${start.x}px`);
+        flyingEl.style.setProperty('--startY', `${start.y}px`);
         flyingEl.style.setProperty('--targetX', `${target.x}px`);
         flyingEl.style.setProperty('--targetY', `${target.y}px`);
         document.body.appendChild(flyingEl);
 
+        // When item reaches the cat photo (after ~1.7s)
         setTimeout(() => {
             if (toImg) {
                 toImg.classList.remove('happy-jump');
                 void toImg.offsetWidth;
                 toImg.classList.add('happy-jump');
             }
-        }, delayTargetAnimMs);
+            if (onReachCallback) onReachCallback();
+        }, 1700);
 
-        setTimeout(() => flyingEl.remove(), 1500);
+        setTimeout(() => flyingEl.remove(), 2200);
     }
 
     // ----------------------------------------------------
-    // 1. FOOD ACTION: SPAGHETTI (🍝)
+    // 1. FOOD ACTION: SPAGHETTI (🍜)
     // ----------------------------------------------------
     const btnActionFood = document.getElementById('btnActionFood');
     const imgFood = document.getElementById('imgFood');
@@ -105,22 +109,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnActionFood) {
         btnActionFood.addEventListener('click', () => {
             playCatSound('meow');
-            animateFlyingItem('🍝', btnActionFood, imgFood, 'overlay-fish-swim', 550);
-
-            setTimeout(() => {
+            animateFlyingItem('🍜', btnActionFood, imgFood, () => {
                 playCatSound('purr');
                 if (speechFood) {
-                    speechFood.textContent = '«Μιαμ μιαμ! Λαχταριστά σπαγγέτι! 😻🍝»';
+                    speechFood.textContent = '«Μιαμ μιαμ! Λαχταριστά σπαγγέτι! 😻🍜»';
                     speechFood.classList.add('speech-highlight');
-                    setTimeout(() => speechFood.classList.remove('speech-highlight'), 2000);
+                    setTimeout(() => speechFood.classList.remove('speech-highlight'), 2500);
                 }
-                spawnParticles(imgFood, ['🍝', '😋', '💖', '✨']);
-            }, 600);
+                spawnParticles(imgFood, ['🍜', '😋', '💖', '✨']);
+            });
         });
     }
 
     // ----------------------------------------------------
-    // 2. PLAY ACTION: SOFT BALL (🎾)
+    // 2. PLAY ACTION: COLORFUL SOFT BALL (🟣)
     // ----------------------------------------------------
     const btnActionPlay = document.getElementById('btnActionPlay');
     const imgPlay = document.getElementById('imgPlay');
@@ -129,21 +131,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnActionPlay) {
         btnActionPlay.addEventListener('click', () => {
             playCatSound('meow');
-            animateFlyingItem('🎾', btnActionPlay, imgPlay, 'overlay-ball-fly', 500);
-
-            setTimeout(() => {
+            animateFlyingItem('🟣', btnActionPlay, imgPlay, () => {
                 if (speechPlay) {
-                    speechPlay.textContent = '«Γιούπι! Τέλειο μαλακό μπαλάκι για παιχνίδι! 🐱🎾»';
+                    speechPlay.textContent = '«Γιούπι! Τέλειο μαλακό μπαλάκι για παιχνίδι! 🐱🟣»';
                     speechPlay.classList.add('speech-highlight');
-                    setTimeout(() => speechPlay.classList.remove('speech-highlight'), 2000);
+                    setTimeout(() => speechPlay.classList.remove('speech-highlight'), 2500);
                 }
-                spawnParticles(imgPlay, ['🎾', '⭐', '✨', '🐾']);
-            }, 550);
+                spawnParticles(imgPlay, ['🟣', '🟡', '⭐', '✨', '🐾']);
+            });
         });
     }
 
     // ----------------------------------------------------
-    // 3. SLEEP ACTION: BOX & PILLOW (📦🛌)
+    // 3. SLEEP ACTION: PILLOW (🛌)
     // ----------------------------------------------------
     const btnActionSleep = document.getElementById('btnActionSleep');
     const imgSleep = document.getElementById('imgSleep');
@@ -152,16 +152,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnActionSleep) {
         btnActionSleep.addEventListener('click', () => {
             playCatSound('purr');
-            animateFlyingItem('📦', btnActionSleep, imgSleep, 'overlay-yarn-roll', 600);
-
-            setTimeout(() => {
+            animateFlyingItem('🛌', btnActionSleep, imgSleep, () => {
                 if (speechSleep) {
                     speechSleep.textContent = '«Zzz... 😴 Τόσο μαλακά & ζεστά! 🛌💤»';
                     speechSleep.classList.add('speech-highlight');
-                    setTimeout(() => speechSleep.classList.remove('speech-highlight'), 2000);
+                    setTimeout(() => speechSleep.classList.remove('speech-highlight'), 2500);
                 }
                 spawnParticles(imgSleep, ['💤', '🛌', '☁️', '✨']);
-            }, 650);
+            });
         });
     }
 
@@ -175,17 +173,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnActionPetting) {
         btnActionPetting.addEventListener('click', () => {
             playCatSound('meow');
-            animateFlyingItem('🫳', btnActionPetting, imgPetting, 'overlay-hand-stroke', 450);
-
-            setTimeout(() => {
+            animateFlyingItem('🫳', btnActionPetting, imgPetting, () => {
                 playCatSound('purr');
                 if (speechPetting) {
                     speechPetting.textContent = '«Purrrrr... 🎶 Τα καλύτερα χάδια στο σαγονάκι! 💖»';
                     speechPetting.classList.add('speech-highlight');
-                    setTimeout(() => speechPetting.classList.remove('speech-highlight'), 2000);
+                    setTimeout(() => speechPetting.classList.remove('speech-highlight'), 2500);
                 }
                 spawnParticles(imgPetting, ['💖', '🌸', '✨', '🐾']);
-            }, 500);
+            });
         });
     }
 });
