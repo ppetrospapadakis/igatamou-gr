@@ -86,88 +86,38 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     min-height: 100vh;
 }
 
-/* Header Navigation Bar */
+/* Header Navigation Bar (2-Row Layout) */
 .header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+/* Row 1: Logo (Left) + Designer Badge (Right) - STICKY AT TOP */
+.header-row-1 {
+    position: sticky;
+    top: 10px;
+    z-index: 10000;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 18px 28px;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(12px);
+    padding: 12px 24px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-radius: var(--radius-lg);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04);
-    margin-bottom: 30px;
-    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    transition: all 0.25s ease;
 }
 
-.header-nav-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.nav-gallery-btn {
-    background: linear-gradient(135deg, #06d6a0 0%, #00b4d8 100%);
-    color: white;
-    font-family: 'Fredoka', cursive, sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    padding: 8px 18px;
-    border-radius: var(--radius-full);
-    text-decoration: none;
-    box-shadow: 0 6px 18px rgba(6, 214, 160, 0.3);
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.nav-gallery-btn:hover {
-    transform: translateY(-2px) scale(1.04);
-    box-shadow: 0 10px 22px rgba(6, 214, 160, 0.4);
-}
-
-.nav-games-btn {
-    background: linear-gradient(135deg, #ff5e7e 0%, #9d4edd 100%);
-    color: white;
-    font-family: 'Fredoka', cursive, sans-serif;
-    font-weight: 700;
-    font-size: 1rem;
-    padding: 8px 18px;
-    border-radius: var(--radius-full);
-    text-decoration: none;
-    box-shadow: 0 6px 18px rgba(255, 94, 126, 0.3);
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.nav-games-btn:hover {
-    transform: translateY(-2px) scale(1.04);
-    box-shadow: 0 10px 22px rgba(255, 94, 126, 0.4);
-}
-
-.back-home-btn {
-    background: #ffffff;
-    border: 2px solid #e2e8f0;
-    color: var(--text-dark);
-    font-weight: 700;
-    padding: 8px 20px;
-    border-radius: var(--radius-full);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-    transition: all 0.2s ease;
-}
-
-.back-home-btn:hover {
-    background: #fff0f3;
-    border-color: var(--primary);
-    transform: translateX(-3px);
-}
-
+/* Logo Styling - Enlarged */
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     text-decoration: none;
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -177,10 +127,10 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 }
 
 .logo-avatar-img {
-    height: 48px;
+    height: 58px;
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.15));
     transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -188,26 +138,18 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     transform: scale(1.1) rotate(-4deg);
 }
 
-.logo-icon {
-    font-size: 2.2rem;
-    animation: bounce 2s infinite ease-in-out;
-}
-
-@keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-}
-
 .logo-text {
-    font-size: 1.8rem;
-    font-weight: 700;
+    font-size: 2.1rem;
+    font-weight: 800;
     color: var(--primary);
+    letter-spacing: -0.5px;
 }
 
 .logo-text .highlight {
     color: var(--text-dark);
 }
 
+/* Designer Badge */
 .designer-badge {
     background: linear-gradient(135deg, #fff0f5, #ffe5ec);
     padding: 8px 18px;
@@ -216,16 +158,82 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.92rem;
-    box-shadow: 0 4px 12px rgba(255, 94, 126, 0.1);
+    font-size: 0.95rem;
+    box-shadow: 0 4px 12px rgba(255, 94, 126, 0.12);
+    white-space: nowrap;
 }
 
 .badge-icon {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
 }
 
 .badge-text strong {
     color: var(--primary);
+}
+
+/* Row 2: Navigation Bar with 4 Buttons */
+.header-row-2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--radius-full);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+}
+
+/* Subpage Navigation Buttons */
+.nav-gallery-btn,
+.nav-games-btn,
+.nav-draw-btn,
+.nav-likes-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-weight: 700;
+    font-size: 1.02rem;
+    padding: 9px 20px;
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+}
+
+.nav-gallery-btn {
+    background: linear-gradient(135deg, #06d6a0 0%, #00b4d8 100%);
+    color: white;
+    box-shadow: 0 6px 18px rgba(6, 214, 160, 0.3);
+}
+
+.nav-games-btn {
+    background: linear-gradient(135deg, #ff5e7e 0%, #9d4edd 100%);
+    color: white;
+    box-shadow: 0 6px 18px rgba(255, 94, 126, 0.3);
+}
+
+.nav-draw-btn {
+    background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%);
+    color: white;
+    box-shadow: 0 6px 18px rgba(251, 133, 0, 0.3);
+}
+
+.nav-likes-btn {
+    background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+    color: white;
+    box-shadow: 0 6px 18px rgba(168, 85, 247, 0.3);
+}
+
+.nav-gallery-btn:hover,
+.nav-games-btn:hover,
+.nav-draw-btn:hover,
+.nav-likes-btn:hover {
+    transform: translateY(-2px) scale(1.04);
 }
 
 /* Hero Section (Homepage) */
@@ -2149,46 +2157,55 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 
     /* Header Mobile Rules */
     .header {
-        flex-direction: column !important;
-        align-items: center !important;
-        gap: 14px !important;
-        padding: 16px 14px !important;
-        border-radius: 24px !important;
-        margin-bottom: 20px !important;
+        gap: 8px !important;
+        margin-bottom: 15px !important;
     }
 
-    .logo {
-        justify-content: center !important;
+    .header-row-1 {
+        position: sticky !important;
+        top: 4px !important;
+        z-index: 10000 !important;
+        padding: 8px 12px !important;
+        border-radius: 18px !important;
+        gap: 6px !important;
+    }
+
+    .logo-avatar-img {
+        height: 40px !important;
     }
 
     .logo-text {
-        font-size: 1.55rem !important;
-    }
-
-    .logo-icon {
-        font-size: 1.8rem !important;
-    }
-
-    .header-nav-right {
-        justify-content: center !important;
-        width: 100% !important;
-        gap: 8px !important;
-        flex-wrap: wrap !important;
-    }
-
-    .nav-gallery-btn, .nav-games-btn {
-        font-size: 0.88rem !important;
-        padding: 8px 14px !important;
-        flex: 1 1 auto !important;
-        text-align: center !important;
-        justify-content: center !important;
+        font-size: 1.35rem !important;
     }
 
     .designer-badge {
+        padding: 4px 10px !important;
+        font-size: 0.76rem !important;
+        border-width: 1.5px !important;
+    }
+
+    .badge-icon {
+        font-size: 0.95rem !important;
+    }
+
+    .header-row-2 {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        padding: 8px !important;
+        border-radius: 20px !important;
+    }
+
+    .nav-gallery-btn,
+    .nav-games-btn,
+    .nav-draw-btn,
+    .nav-likes-btn {
+        font-size: 0.85rem !important;
+        padding: 8px 6px !important;
         width: 100% !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
         justify-content: center !important;
-        padding: 6px 12px !important;
-        font-size: 0.82rem !important;
     }
 
     /* Hero & Card Padding */
