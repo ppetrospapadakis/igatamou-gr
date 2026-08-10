@@ -4407,6 +4407,36 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
         opacity: 0;
         transform: translate(calc(var(--targetX) - var(--startX)), calc(var(--targetY) - var(--startY))) scale(0.2) rotate(360deg);
     }
+/* SHOW ALL ("ΕΜΦΑΝΙΣΗ ΟΛΩΝ") BUTTON STYLES FOR GALLERY & DRAWINGS */
+.show-more-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 35px 0 20px 0;
+    width: 100%;
+}
+
+.btn-show-all {
+    background: linear-gradient(135deg, var(--primary) 0%, #9d4edd 100%);
+    color: #ffffff;
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 14px 32px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(255, 94, 126, 0.35);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-show-all:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 12px 30px rgba(255, 94, 126, 0.45);
+    background: linear-gradient(135deg, #ff3b68 0%, #8a2be2 100%);
 }
 
 

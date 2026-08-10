@@ -80,9 +80,14 @@ document.addEventListener('DOMContentLoaded', () => {
         renderGallery(localDrawings);
     }
 
+    let showAllDrawings = false;
+
     function renderGallery(allDrawings) {
         if (!drawingsGrid) return;
         drawingsGrid.innerHTML = '';
+
+        const existingShowMore = document.getElementById('drawingsShowMoreWrapper');
+        if (existingShowMore) existingShowMore.remove();
 
         const approvedDrawings = allDrawings.filter(d => d.status === 'approved');
 
@@ -93,7 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (emptyDrawings) emptyDrawings.hidden = true;
 
-        approvedDrawings.forEach(drawing => {
+        const visibleDrawings = showAllDrawings ? approvedDrawings : approvedDrawings.slice(0, 10);
+
+        visibleDrawings.forEach(drawing => {
             const card = document.createElement('div');
             card.className = 'drawing-card';
 
@@ -134,6 +141,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
             drawingsGrid.appendChild(card);
         });
+
+        // Show "Εμφάνιση όλων" button if there are more than 10 drawings and not all are shown yet
+        if (!showAllDrawings && approvedDrawings.length > 10) {
+            const showMoreWrapper = document.createElement('div');
+            showMoreWrapper.id = 'drawingsShowMoreWrapper';
+            showMoreWrapper.className = 'show-more-wrapper';
+            showMoreWrapper.innerHTML = `
+                <button id="showAllDrawingsBtn" class="btn-show-all">
+                    🎨 Εμφάνιση όλων (${approvedDrawings.length} Ζωγραφιές) ✨
+                </button>
+            `;
+            drawingsGrid.parentNode.insertBefore(showMoreWrapper, drawingsGrid.nextSibling);
+
+            const showAllBtn = document.getElementById('showAllDrawingsBtn');
+            if (showAllBtn) {
+                showAllBtn.addEventListener('click', () => {
+                    showAllDrawings = true;
+                    renderGallery(allDrawings);
+                });
+            }
+        }
     }
 
     function escapeHtml(str) {

@@ -133,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentAlbumCatId = null;
     let currentAlbumPhotos = [];
     let currentAlbumIndex = 0;
+    let showAllCats = false;
 
     if (galleryGrid) {
         renderPublicGallery();
@@ -146,6 +147,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!galleryGrid) return;
         galleryGrid.innerHTML = '';
 
+        const existingShowMore = document.getElementById('catsShowMoreWrapper');
+        if (existingShowMore) existingShowMore.remove();
+
         if (approvedCats.length === 0) {
             if (emptyGallery) emptyGallery.hidden = false;
             return;
@@ -153,7 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (emptyGallery) emptyGallery.hidden = true;
 
-        approvedCats.forEach(cat => {
+        const visibleCats = showAllCats ? approvedCats : approvedCats.slice(0, 10);
+
+        visibleCats.forEach(cat => {
             const isLiked = likedCatIds.includes(cat.id);
             const photoList = cat.gallery && cat.gallery.length ? cat.gallery : [cat.image];
 
@@ -196,6 +202,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
             galleryGrid.appendChild(card);
         });
+
+        // Show "Εμφάνιση όλων" button if there are more than 10 cats and not all are shown yet
+        if (!showAllCats && approvedCats.length > 10) {
+            const showMoreWrapper = document.createElement('div');
+            showMoreWrapper.id = 'catsShowMoreWrapper';
+            showMoreWrapper.className = 'show-more-wrapper';
+            showMoreWrapper.innerHTML = `
+                <button id="showAllCatsBtn" class="btn-show-all">
+                    🐾 Εμφάνιση όλων (${approvedCats.length} Φωτογραφίες) ✨
+                </button>
+            `;
+            galleryGrid.parentNode.insertBefore(showMoreWrapper, galleryGrid.nextSibling);
+
+            const showAllBtn = document.getElementById('showAllCatsBtn');
+            if (showAllBtn) {
+                showAllBtn.addEventListener('click', () => {
+                    showAllCats = true;
+                    renderPublicGallery();
+                });
+            }
+        }
     }
 
     // INTERACTIVE PHOTO ALBUM MODAL LOGIC (WITH ADMIN SINGLE-PHOTO DELETE)
