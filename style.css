@@ -2165,12 +2165,14 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 /* ---------------------------------------------------- */
 /* TABLET & NARROW DESKTOP NAVBAR BREAKPOINT (UNDER 1180px) */
 /* Forces 2x2 Grid (2 Top, 2 Bottom) instead of 3 Top & 1 Bottom */
+/* TABLET & NARROW DESKTOP NAVBAR BREAKPOINT (UNDER 1180px) */
+/* Forces 2x2 Grid (2 Top, 2 Bottom) with large clear font on Tablets & iPads */
 @media (max-width: 1180px) {
     .header-row-2 {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
         grid-auto-rows: 50px !important;
-        gap: 10px 8px !important;
+        gap: 10px 12px !important;
         padding: 0 !important;
         background: transparent !important;
         backdrop-filter: none !important;
@@ -2178,7 +2180,7 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
         box-shadow: none !important;
         border: none !important;
         width: 100% !important;
-        max-width: 680px !important;
+        max-width: 760px !important;
         margin: 0 auto !important;
         box-sizing: border-box !important;
     }
@@ -2187,8 +2189,8 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     .nav-games-btn,
     .nav-draw-btn,
     .nav-likes-btn {
-        font-size: 0.88rem !important;
-        padding: 0 10px !important;
+        font-size: 0.98rem !important;
+        padding: 0 12px !important;
         width: 100% !important;
         min-width: 0 !important;
         height: 50px !important;
@@ -2197,8 +2199,8 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
         box-sizing: border-box !important;
         text-align: center !important;
         justify-content: center !important;
-        white-space: normal !important;
-        line-height: 1.15 !important;
+        white-space: nowrap !important;
+        line-height: 1 !important;
         border-radius: 20px !important;
         letter-spacing: -0.1px !important;
         display: flex !important;
@@ -2247,7 +2249,10 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     .designer-badge {
         display: none !important;
     }
+}
 
+/* SMARTPHONES / MOBILE PHONES (UNDER 600px) */
+@media (max-width: 600px) {
     .header-row-2 {
         gap: 8px 6px !important;
         max-width: 100% !important;
@@ -2258,11 +2263,13 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     .nav-games-btn,
     .nav-draw-btn,
     .nav-likes-btn {
-        font-size: 0.78rem !important;
+        font-size: 0.80rem !important;
         padding: 0 4px !important;
         height: 50px !important;
         min-height: 50px !important;
         max-height: 50px !important;
+        white-space: normal !important;
+        line-height: 1.15 !important;
         border-radius: 18px !important;
         letter-spacing: -0.2px !important;
     }
