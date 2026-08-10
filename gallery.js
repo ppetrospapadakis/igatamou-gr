@@ -1168,13 +1168,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
 
-                // 2. Fetch from drawings table fallback
-                try {
-                    const res = await supabase.from('drawings').select('*');
-                    if (res && !res.error && res.data && Array.isArray(res.data)) {
-                        res.data.forEach(d => dbDrawings.push(d));
-                    }
-                } catch(e) {}
+
 
                 if (dbDrawings.length > 0) {
                     const drawingMap = new Map();
@@ -1317,14 +1311,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             supabase.from('cats').update({ status: drawing.status }).eq('id', drawing.id).then();
 
-            // Try drawings table fallback as well
-            try {
-                supabase.from('drawings').upsert([drawing]).then();
-                supabase.from('drawings').update({ status: drawing.status }).eq('id', drawing.id).then();
-            } catch(e) {}
-        }
-    }
-
     function deleteLocalAndDbDrawing(id) {
         let localDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
         localDrawings = localDrawings.filter(d => d.id !== id);
@@ -1332,9 +1318,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (supabase) {
             supabase.from('cats').delete().eq('id', id).then();
-            try {
-                supabase.from('drawings').delete().eq('id', id).then();
-            } catch(e) {}
         }
     }
 });

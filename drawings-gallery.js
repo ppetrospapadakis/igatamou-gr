@@ -40,13 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
 
-                // 2. Fetch from drawings table fallback if available
-                try {
-                    const res = await supabase.from('drawings').select('*');
-                    if (res && !res.error && res.data && Array.isArray(res.data)) {
-                        res.data.forEach(d => dbDrawings.push(d));
-                    }
-                } catch (e) {}
+
 
                 if (dbDrawings.length > 0) {
                     const drawingMap = new Map();

@@ -806,18 +806,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log('Supabase cats drawing insert notice:', dbErr);
                 }
 
-                try {
-                    await supabase.from('drawings').insert([{
-                        id: newDrawing.id,
-                        name: newDrawing.name,
-                        image_data: newDrawing.image_data,
-                        status: 'pending',
-                        likes: 0,
-                        created_at: newDrawing.created_at
-                    }]);
-                } catch (dbErr) {
-                    console.log('Supabase drawings insert notice:', dbErr);
-                }
+
             }
 
             // Hide save modal & show success modal
