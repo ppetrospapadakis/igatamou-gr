@@ -42,9 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // 2. Fetch from drawings table fallback if available
                 try {
-                    const { data: rawDrawings } = await supabase.from('drawings').select('*');
-                    if (rawDrawings && Array.isArray(rawDrawings)) {
-                        rawDrawings.forEach(d => dbDrawings.push(d));
+                    const res = await supabase.from('drawings').select('*');
+                    if (res && !res.error && res.data && Array.isArray(res.data)) {
+                        res.data.forEach(d => dbDrawings.push(d));
                     }
                 } catch (e) {}
 
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Update Supabase DB
                 if (supabase) {
-                    supabase.from('drawings').update({ likes: drawing.likes }).eq('id', drawing.id).then();
+                    supabase.from('cats').update({ likes: drawing.likes }).eq('id', drawing.id).then().catch(() => {});
                 }
             });
 
@@ -147,13 +147,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const showMoreWrapper = document.createElement('div');
             showMoreWrapper.id = 'drawingsShowMoreWrapper';
             showMoreWrapper.className = 'show-more-wrapper';
-            showMoreWrapper.style.gridColumn = '1 / -1';
             showMoreWrapper.innerHTML = `
                 <button id="showAllDrawingsBtn" class="btn-show-all">
                     🎨 Εμφάνιση όλων (${approvedDrawings.length} Ζωγραφιές) ✨
                 </button>
             `;
-            drawingsGrid.appendChild(showMoreWrapper);
+            drawingsGrid.parentNode.insertBefore(showMoreWrapper, drawingsGrid.nextSibling);
 
             const showAllBtn = document.getElementById('showAllDrawingsBtn');
             if (showAllBtn) {

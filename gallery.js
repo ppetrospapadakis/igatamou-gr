@@ -208,13 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const showMoreWrapper = document.createElement('div');
             showMoreWrapper.id = 'catsShowMoreWrapper';
             showMoreWrapper.className = 'show-more-wrapper';
-            showMoreWrapper.style.gridColumn = '1 / -1';
             showMoreWrapper.innerHTML = `
                 <button id="showAllCatsBtn" class="btn-show-all">
                     🐾 Εμφάνιση όλων (${approvedCats.length} Φωτογραφίες) ✨
                 </button>
             `;
-            galleryGrid.appendChild(showMoreWrapper);
+            galleryGrid.parentNode.insertBefore(showMoreWrapper, galleryGrid.nextSibling);
 
             const showAllBtn = document.getElementById('showAllCatsBtn');
             if (showAllBtn) {
@@ -1171,9 +1170,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // 2. Fetch from drawings table fallback
                 try {
-                    const { data: rawDrawings } = await supabase.from('drawings').select('*');
-                    if (rawDrawings && Array.isArray(rawDrawings)) {
-                        rawDrawings.forEach(d => dbDrawings.push(d));
+                    const res = await supabase.from('drawings').select('*');
+                    if (res && !res.error && res.data && Array.isArray(res.data)) {
+                        res.data.forEach(d => dbDrawings.push(d));
                     }
                 } catch(e) {}
 
