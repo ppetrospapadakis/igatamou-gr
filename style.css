@@ -2160,6 +2160,48 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 }
 
 /* ---------------------------------------------------- */
+/* TABLET & NARROW DESKTOP NAVBAR BREAKPOINT (UNDER 1180px) */
+/* Forces 2x2 Grid (2 Top, 2 Bottom) instead of 3 Top & 1 Bottom */
+@media (max-width: 1180px) {
+    .header-row-2 {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        grid-auto-rows: 1fr !important;
+        gap: 10px 8px !important;
+        padding: 0 !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        width: 100% !important;
+        max-width: 680px !important;
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
+    }
+
+    .nav-gallery-btn,
+    .nav-games-btn,
+    .nav-draw-btn,
+    .nav-likes-btn {
+        font-size: 0.88rem !important;
+        padding: 8px 10px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 52px !important;
+        height: 100% !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+        justify-content: center !important;
+        white-space: normal !important;
+        line-height: 1.2 !important;
+        border-radius: 20px !important;
+        letter-spacing: -0.1px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+}
+
 /* MOBILE RESPONSIVE REDESIGN (SMARTPHONES & TABLETS)  */
 /* ---------------------------------------------------- */
 
@@ -2203,18 +2245,8 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     }
 
     .header-row-2 {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        grid-auto-rows: 1fr !important;
         gap: 8px 6px !important;
-        padding: 0 !important;
-        background: transparent !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        box-shadow: none !important;
-        border: none !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
+        max-width: 100% !important;
     }
 
     .nav-gallery-btn,
@@ -2223,19 +2255,8 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     .nav-likes-btn {
         font-size: 0.78rem !important;
         padding: 6px 4px !important;
-        width: 100% !important;
-        min-width: 0 !important;
-        min-height: 52px !important;
-        height: 100% !important;
-        box-sizing: border-box !important;
-        text-align: center !important;
-        justify-content: center !important;
-        white-space: normal !important;
-        line-height: 1.2 !important;
         border-radius: 18px !important;
         letter-spacing: -0.2px !important;
-        display: flex !important;
-        align-items: center !important;
     }
 
     /* Drawing Studio Canvas Mobile Height Fix */
