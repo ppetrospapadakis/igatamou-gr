@@ -141,8 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const showMoreWrapper = document.createElement('div');
             showMoreWrapper.id = 'drawingsShowMoreWrapper';
             showMoreWrapper.className = 'show-more-wrapper';
+            showMoreWrapper.style.cssText = 'display: flex !important; justify-content: center !important; align-items: center !important; text-align: center !important; margin: 40px auto 25px auto !important; width: 100% !important; clear: both !important; grid-column: 1 / -1 !important;';
             showMoreWrapper.innerHTML = `
-                <button id="showAllDrawingsBtn" class="btn-show-all">
+                <button id="showAllDrawingsBtn" class="btn-show-all" style="background: linear-gradient(135deg, #ff5e7e 0%, #a855f7 50%, #00b4d8 100%) !important; color: #ffffff !important; font-family: 'Fredoka', cursive, sans-serif !important; font-weight: 700 !important; font-size: 1.25rem !important; padding: 16px 40px !important; border-radius: 50px !important; border: 3px solid #ffffff !important; cursor: pointer !important; box-shadow: 0 10px 30px rgba(168, 85, 247, 0.45) !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 12px !important; margin: 0 auto !important;">
                     🎨 Εμφάνιση όλων (${approvedDrawings.length} Ζωγραφιές) ✨
                 </button>
             `;
