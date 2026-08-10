@@ -1311,6 +1311,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }]).then();
 
             supabase.from('cats').update({ status: drawing.status }).eq('id', drawing.id).then();
+        }
+    }
 
     function deleteLocalAndDbDrawing(id) {
         let localDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
