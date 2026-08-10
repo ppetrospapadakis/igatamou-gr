@@ -147,12 +147,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const showMoreWrapper = document.createElement('div');
             showMoreWrapper.id = 'drawingsShowMoreWrapper';
             showMoreWrapper.className = 'show-more-wrapper';
+            showMoreWrapper.style.gridColumn = '1 / -1';
             showMoreWrapper.innerHTML = `
                 <button id="showAllDrawingsBtn" class="btn-show-all">
                     🎨 Εμφάνιση όλων (${approvedDrawings.length} Ζωγραφιές) ✨
                 </button>
             `;
-            drawingsGrid.parentNode.insertBefore(showMoreWrapper, drawingsGrid.nextSibling);
+            drawingsGrid.appendChild(showMoreWrapper);
 
             const showAllBtn = document.getElementById('showAllDrawingsBtn');
             if (showAllBtn) {

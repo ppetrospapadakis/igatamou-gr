@@ -208,12 +208,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const showMoreWrapper = document.createElement('div');
             showMoreWrapper.id = 'catsShowMoreWrapper';
             showMoreWrapper.className = 'show-more-wrapper';
+            showMoreWrapper.style.gridColumn = '1 / -1';
             showMoreWrapper.innerHTML = `
                 <button id="showAllCatsBtn" class="btn-show-all">
                     🐾 Εμφάνιση όλων (${approvedCats.length} Φωτογραφίες) ✨
                 </button>
             `;
-            galleryGrid.parentNode.insertBefore(showMoreWrapper, galleryGrid.nextSibling);
+            galleryGrid.appendChild(showMoreWrapper);
 
             const showAllBtn = document.getElementById('showAllCatsBtn');
             if (showAllBtn) {
