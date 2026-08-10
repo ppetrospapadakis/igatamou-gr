@@ -180,43 +180,53 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     color: var(--text-dark) !important;
 }
 
-/* Designer Badge - Fixed Desktop Dimensions & Positioning */
+/* Designer Badge - Fixed Desktop Dimensions, Font & Positioning */
 .designer-badge {
+    font-family: 'Outfit', 'Fredoka', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     background: linear-gradient(135deg, #fff0f5, #ffe5ec) !important;
-    padding: 0 18px !important;
+    padding: 0 16px !important;
     height: 42px !important;
     min-height: 42px !important;
     max-height: 42px !important;
+    width: 252px !important;
+    min-width: 252px !important;
+    max-width: 252px !important;
     border-radius: 50px !important;
     border: 2px dashed var(--primary) !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 8px !important;
-    font-size: 0.95rem !important;
+    font-size: 0.94rem !important;
     line-height: 1 !important;
+    letter-spacing: -0.1px !important;
     box-shadow: 0 4px 12px rgba(255, 94, 126, 0.12) !important;
     white-space: nowrap !important;
     box-sizing: border-box !important;
     flex-shrink: 0 !important;
     margin: 0 !important;
+    overflow: hidden !important;
 }
 
 .badge-icon {
-    font-size: 1.25rem !important;
+    font-size: 1.2rem !important;
     line-height: 1 !important;
     display: inline-flex !important;
     align-items: center !important;
 }
 
 .badge-text {
-    font-size: 0.95rem !important;
+    font-family: 'Outfit', 'Fredoka', sans-serif !important;
+    font-size: 0.94rem !important;
     line-height: 1 !important;
     display: inline-flex !important;
     align-items: center !important;
 }
 
 .badge-text strong {
+    font-family: 'Outfit', 'Fredoka', sans-serif !important;
+    font-size: 0.94rem !important;
+    font-weight: 700 !important;
     color: var(--primary) !important;
 }
 
