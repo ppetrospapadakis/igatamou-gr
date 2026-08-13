@@ -98,7 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'drawing-card';
 
-            const formattedDate = drawing.created_at ? new Date(drawing.created_at).toLocaleDateString('el-GR') : 'Σήμερα';
+            const formattedDate = (() => {
+                if (!drawing.created_at) return 'Σήμερα';
+                // Normalize: handle "2026-08-11" (date-only) by appending T00:00:00 so all browsers parse it correctly
+                const raw = String(drawing.created_at).trim();
+                const normalized = /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw + 'T00:00:00' : raw;
+                const d = new Date(normalized);
+                return isNaN(d.getTime()) ? 'Σήμερα' : d.toLocaleDateString('el-GR');
+            })();
             const likesCount = drawing.likes || 0;
 
             card.innerHTML = `
