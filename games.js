@@ -260,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const snakeCanvas = document.getElementById('snakeCanvas');
     const snakeScore = document.getElementById('snakeScore');
     const snakeStartBtn = document.getElementById('snakeStartBtn');
+    const snakePauseBtn = document.getElementById('snakePauseBtn');
     const dpadUp = document.getElementById('dpadUp');
     const dpadLeft = document.getElementById('dpadLeft');
     const dpadDown = document.getElementById('dpadDown');
@@ -269,6 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tetrisCanvas = document.getElementById('tetrisCanvas');
     const tetrisLines = document.getElementById('tetrisLines');
     const tetrisStartBtn = document.getElementById('tetrisStartBtn');
+    const tetrisPauseBtn = document.getElementById('tetrisPauseBtn');
     const tetrisLeft = document.getElementById('tetrisLeft');
     const tetrisRotate = document.getElementById('tetrisRotate');
     const tetrisRight = document.getElementById('tetrisRight');
@@ -278,11 +280,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const whackGrid = document.getElementById('whackGrid');
     const whackScore = document.getElementById('whackScore');
     const whackStartBtn = document.getElementById('whackStartBtn');
+    const whackPauseBtn = document.getElementById('whackPauseBtn');
 
     const bubblesArena = document.getElementById('bubblesArena');
     const bubblesBox = document.getElementById('bubblesBox');
     const bubblesScore = document.getElementById('bubblesScore');
     const bubblesStartBtn = document.getElementById('bubblesStartBtn');
+    const bubblesPauseBtn = document.getElementById('bubblesPauseBtn');
 
     const chessArena = document.getElementById('chessArena');
     const chessBoard = document.getElementById('chessBoard');
@@ -1228,10 +1232,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let snakePoints = 0;
     const foodIcons = ['🐟', '🥛', '🍗', '🧶', '🎀'];
 
+    let isSnakePaused = false;
+    let isSnakeRunning = false;
+
     function setupSnakeGame(autoStart = false) {
         stopSnakeGame();
         snakePoints = 0;
+        isSnakePaused = false;
         if (snakeScore) snakeScore.textContent = '0';
+        if (snakePauseBtn) {
+            snakePauseBtn.textContent = '⏸️ Παύση';
+            snakePauseBtn.classList.remove('is-paused');
+        }
 
         let speedMs = 240;
         if (currentDifficulty === 'medium') speedMs = 160;
@@ -1259,6 +1271,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const overlay = document.getElementById('snakeStartOverlay');
         if (!autoStart) {
+            isSnakeRunning = false;
             if (overlay) {
                 overlay.hidden = false;
                 overlay.classList.remove('is-hidden');
@@ -1270,10 +1283,50 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (btn) btn.textContent = '▶️ Έναρξη';
             }
         } else {
+            isSnakeRunning = true;
             if (overlay) {
                 overlay.hidden = true;
                 overlay.classList.add('is-hidden');
             }
+            snakeInterval = setInterval(updateSnakeGame, speedMs);
+        }
+    }
+
+    function toggleSnakePause() {
+        if (!isSnakeRunning && !isSnakePaused) {
+            setupSnakeGame(true);
+            return;
+        }
+        isSnakePaused = !isSnakePaused;
+        const overlay = document.getElementById('snakeStartOverlay');
+        if (isSnakePaused) {
+            if (snakeInterval) { clearInterval(snakeInterval); snakeInterval = null; }
+            if (snakePauseBtn) {
+                snakePauseBtn.textContent = '▶️ Συνέχεια';
+                snakePauseBtn.classList.add('is-paused');
+            }
+            if (overlay) {
+                overlay.hidden = false;
+                overlay.classList.remove('is-hidden');
+                const title = overlay.querySelector('.start-overlay-title');
+                const desc = overlay.querySelector('.start-overlay-desc');
+                const btn = overlay.querySelector('.btn-overlay-start');
+                if (title) title.textContent = '⏸️ Σε Παύση';
+                if (desc) desc.textContent = 'Το φιδάκι ξεκουράζεται! Πάτα συνέχεια όποτε είσαι έτοιμος.';
+                if (btn) btn.textContent = '▶️ Συνέχεια';
+            }
+        } else {
+            if (snakePauseBtn) {
+                snakePauseBtn.textContent = '⏸️ Παύση';
+                snakePauseBtn.classList.remove('is-paused');
+            }
+            if (overlay) {
+                overlay.hidden = true;
+                overlay.classList.add('is-hidden');
+            }
+            let speedMs = 240;
+            if (currentDifficulty === 'medium') speedMs = 160;
+            if (currentDifficulty === 'hard') speedMs = 100;
             snakeInterval = setInterval(updateSnakeGame, speedMs);
         }
     }
@@ -1283,6 +1336,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(snakeInterval);
             snakeInterval = null;
         }
+        isSnakeRunning = false;
     }
 
     function spawnSnakeFood() {
@@ -1294,7 +1348,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateSnakeGame() {
-        if (!snakeCanvas) return;
+        if (!snakeCanvas || isSnakePaused) return;
         const head = { ...snake[0] };
 
         if (snakeDir === 'RIGHT') head.x++;
@@ -1306,6 +1360,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (head.x < 0 || head.x >= 15 || head.y < 0 || head.y >= 15 || hitObstacle || snake.some(s => s.x === head.x && s.y === head.y)) {
             stopSnakeGame();
+            isSnakePaused = false;
             if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Ουπς! 💥 Έκανες ${snakePoints} λιχουδιές!"`;
             triggerWrongAnswerReaction();
 
@@ -1403,6 +1458,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('keydown', (e) => {
         if (currentCategory === 'snake') {
+            if (e.key === ' ' || e.key.toLowerCase() === 'p') {
+                e.preventDefault();
+                toggleSnakePause();
+                return;
+            }
             if ((e.key === 'ArrowUp' || e.key === 'w') && snakeDir !== 'DOWN') snakeDir = 'UP';
             if ((e.key === 'ArrowDown' || e.key === 's') && snakeDir !== 'UP') snakeDir = 'DOWN';
             if ((e.key === 'ArrowLeft' || e.key === 'a') && snakeDir !== 'RIGHT') snakeDir = 'LEFT';
@@ -1415,7 +1475,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dpadLeft) dpadLeft.addEventListener('click', () => { if (snakeDir !== 'RIGHT') snakeDir = 'LEFT'; });
     if (dpadRight) dpadRight.addEventListener('click', () => { if (snakeDir !== 'LEFT') snakeDir = 'RIGHT'; });
     const snakeOverlayStartBtn = document.getElementById('snakeOverlayStartBtn');
-    if (snakeOverlayStartBtn) snakeOverlayStartBtn.addEventListener('click', () => setupSnakeGame(true));
+    if (snakeOverlayStartBtn) {
+        snakeOverlayStartBtn.addEventListener('click', () => {
+            if (isSnakePaused) {
+                toggleSnakePause();
+            } else {
+                setupSnakeGame(true);
+            }
+        });
+    }
+    if (snakePauseBtn) snakePauseBtn.addEventListener('click', toggleSnakePause);
     if (snakeStartBtn) snakeStartBtn.addEventListener('click', () => setupSnakeGame(true));
 
     // ----------------------------------------------------
@@ -1425,6 +1494,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let tetrisGrid = Array(20).fill(null).map(() => Array(12).fill(0));
     let tetrisLinesCleared = 0;
     let currentPiece = null;
+    let isTetrisPaused = false;
+    let isTetrisRunning = false;
 
     const tetrisPieces = [
         { shape: [[1, 1, 1, 1]], color: '#ff5e7e', icon: '🧶' },
@@ -1439,7 +1510,12 @@ document.addEventListener('DOMContentLoaded', () => {
         tetrisGrid = Array(20).fill(null).map(() => Array(12).fill(0));
         tetrisLinesCleared = 0;
         currentPiece = null;
+        isTetrisPaused = false;
         if (tetrisLines) tetrisLines.textContent = '0';
+        if (tetrisPauseBtn) {
+            tetrisPauseBtn.textContent = '⏸️ Παύση';
+            tetrisPauseBtn.classList.remove('is-paused');
+        }
 
         let dropSpeed = 550;
         if (currentDifficulty === 'medium') dropSpeed = 380;
@@ -1451,6 +1527,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const overlay = document.getElementById('tetrisStartOverlay');
         if (!autoStart) {
+            isTetrisRunning = false;
             if (overlay) {
                 overlay.hidden = false;
                 overlay.classList.remove('is-hidden');
@@ -1462,6 +1539,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (btn) btn.textContent = '▶️ Έναρξη';
             }
         } else {
+            isTetrisRunning = true;
             if (overlay) {
                 overlay.hidden = true;
                 overlay.classList.add('is-hidden');
@@ -1471,11 +1549,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function toggleTetrisPause() {
+        if (!isTetrisRunning && !isTetrisPaused) {
+            setupTetrisGame(true);
+            return;
+        }
+        isTetrisPaused = !isTetrisPaused;
+        const overlay = document.getElementById('tetrisStartOverlay');
+        if (isTetrisPaused) {
+            if (tetrisInterval) { clearInterval(tetrisInterval); tetrisInterval = null; }
+            if (tetrisPauseBtn) {
+                tetrisPauseBtn.textContent = '▶️ Συνέχεια';
+                tetrisPauseBtn.classList.add('is-paused');
+            }
+            if (overlay) {
+                overlay.hidden = false;
+                overlay.classList.remove('is-hidden');
+                const title = overlay.querySelector('.start-overlay-title');
+                const desc = overlay.querySelector('.start-overlay-desc');
+                const btn = overlay.querySelector('.btn-overlay-start');
+                if (title) title.textContent = '⏸️ Σε Παύση';
+                if (desc) desc.textContent = 'Το τέτρις σταμάτησε. Πάτα συνέχεια όποτε θέλεις!';
+                if (btn) btn.textContent = '▶️ Συνέχεια';
+            }
+        } else {
+            if (tetrisPauseBtn) {
+                tetrisPauseBtn.textContent = '⏸️ Παύση';
+                tetrisPauseBtn.classList.remove('is-paused');
+            }
+            if (overlay) {
+                overlay.hidden = true;
+                overlay.classList.add('is-hidden');
+            }
+            let dropSpeed = 550;
+            if (currentDifficulty === 'medium') dropSpeed = 380;
+            if (currentDifficulty === 'hard') dropSpeed = 220;
+            tetrisInterval = setInterval(updateTetrisGame, dropSpeed);
+        }
+    }
+
     function stopTetrisGame() {
         if (tetrisInterval) {
             clearInterval(tetrisInterval);
             tetrisInterval = null;
         }
+        isTetrisRunning = false;
     }
 
     function spawnTetrisPiece() {
@@ -1489,6 +1607,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (checkTetrisCollision(0, 0)) {
             stopTetrisGame();
+            isTetrisPaused = false;
             if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Game Over! 💥 Έκανες ${tetrisLinesCleared} γραμμές!"`;
             triggerWrongAnswerReaction();
 
@@ -1507,7 +1626,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateTetrisGame() {
-        if (!currentPiece) return;
+        if (!currentPiece || isTetrisPaused) return;
 
         if (!checkTetrisCollision(0, 1)) {
             currentPiece.y++;
@@ -1519,7 +1638,8 @@ document.addEventListener('DOMContentLoaded', () => {
         drawTetrisCanvas();
     }
 
-    function checkTetrisCollision(offsetX, offsetY, shape = currentPiece.shape) {
+    function checkTetrisCollision(offsetX, offsetY, shape = currentPiece ? currentPiece.shape : null) {
+        if (!currentPiece || !shape) return false;
         for (let r = 0; r < shape.length; r++) {
             for (let c = 0; c < shape[r].length; c++) {
                 if (shape[r][c]) {
@@ -1610,7 +1730,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function rotateTetrisPiece() {
-        if (!currentPiece) return;
+        if (!currentPiece || isTetrisPaused) return;
         const shape = currentPiece.shape;
         const newShape = shape[0].map((_, index) => shape.map(row => row[index]).reverse());
         if (!checkTetrisCollision(0, 0, newShape)) {
@@ -1620,20 +1740,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.addEventListener('keydown', (e) => {
-        if (currentCategory === 'tetris' && currentPiece) {
-            if (e.key === 'ArrowLeft' && !checkTetrisCollision(-1, 0)) { currentPiece.x--; drawTetrisCanvas(); }
-            if (e.key === 'ArrowRight' && !checkTetrisCollision(1, 0)) { currentPiece.x++; drawTetrisCanvas(); }
-            if (e.key === 'ArrowDown') { updateTetrisGame(); }
-            if (e.key === 'ArrowUp') { rotateTetrisPiece(); }
+        if (currentCategory === 'tetris') {
+            if (e.key === ' ' || e.key.toLowerCase() === 'p') {
+                e.preventDefault();
+                toggleTetrisPause();
+                return;
+            }
+            if (!isTetrisPaused && currentPiece) {
+                if (e.key === 'ArrowLeft' && !checkTetrisCollision(-1, 0)) { currentPiece.x--; drawTetrisCanvas(); }
+                if (e.key === 'ArrowRight' && !checkTetrisCollision(1, 0)) { currentPiece.x++; drawTetrisCanvas(); }
+                if (e.key === 'ArrowDown') { updateTetrisGame(); }
+                if (e.key === 'ArrowUp') { rotateTetrisPiece(); }
+            }
         }
     });
 
-    if (tetrisLeft) tetrisLeft.addEventListener('click', () => { if (currentPiece && !checkTetrisCollision(-1, 0)) { currentPiece.x--; drawTetrisCanvas(); } });
-    if (tetrisRight) tetrisRight.addEventListener('click', () => { if (currentPiece && !checkTetrisCollision(1, 0)) { currentPiece.x++; drawTetrisCanvas(); } });
+    if (tetrisLeft) tetrisLeft.addEventListener('click', () => { if (!isTetrisPaused && currentPiece && !checkTetrisCollision(-1, 0)) { currentPiece.x--; drawTetrisCanvas(); } });
+    if (tetrisRight) tetrisRight.addEventListener('click', () => { if (!isTetrisPaused && currentPiece && !checkTetrisCollision(1, 0)) { currentPiece.x++; drawTetrisCanvas(); } });
     if (tetrisRotate) tetrisRotate.addEventListener('click', rotateTetrisPiece);
-    if (tetrisDown) tetrisDown.addEventListener('click', updateTetrisGame);
+    if (tetrisDown) tetrisDown.addEventListener('click', () => { if (!isTetrisPaused) updateTetrisGame(); });
     const tetrisOverlayStartBtn = document.getElementById('tetrisOverlayStartBtn');
-    if (tetrisOverlayStartBtn) tetrisOverlayStartBtn.addEventListener('click', () => setupTetrisGame(true));
+    if (tetrisOverlayStartBtn) {
+        tetrisOverlayStartBtn.addEventListener('click', () => {
+            if (isTetrisPaused) {
+                toggleTetrisPause();
+            } else {
+                setupTetrisGame(true);
+            }
+        });
+    }
+    if (tetrisPauseBtn) tetrisPauseBtn.addEventListener('click', toggleTetrisPause);
     if (tetrisStartBtn) tetrisStartBtn.addEventListener('click', () => setupTetrisGame(true));
 
     // ----------------------------------------------------
@@ -1643,13 +1779,20 @@ document.addEventListener('DOMContentLoaded', () => {
     let whackFishCaught = 0;
     let whackFishSpawned = 0;
     let whackOtherSpawned = 0;
+    let isWhackPaused = false;
+    let isWhackRunning = false;
 
     function setupWhackGame(autoStart = false) {
         stopWhackGame();
         whackFishCaught = 0;
         whackFishSpawned = 0;
         whackOtherSpawned = 0;
+        isWhackPaused = false;
         if (whackScore) whackScore.textContent = '0';
+        if (whackPauseBtn) {
+            whackPauseBtn.textContent = '⏸️ Παύση';
+            whackPauseBtn.classList.remove('is-paused');
+        }
 
         if (questionNumber) questionNumber.textContent = `🔨🐟 Πιάσε το Ψαράκι! (${currentDifficulty.toUpperCase()})`;
         if (questionText) questionText.textContent = '🎯 Πιάσε 20 ψαράκια για να κερδίσεις!';
@@ -1658,211 +1801,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="whack-instructions">
                      💡 <strong>Οδηγίες:</strong> Πάτα τα ψαράκια 🐟 (+1 πόντος)! 
                     <span style="color:#d63031; font-weight:bold;">Προσοχή:</span> Μην αγγίζεις τα άλλα αντικείμενα (💣, 🦔, 💩, 👟) γιατί σου αφαιρούν 1 πόντο!
-                </div>
-            `;
-        }
-
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Πιάσε 20 ψαράκια 🐟!"`;
-
-        if (whackGrid) {
-            whackGrid.innerHTML = '';
-            for (let i = 0; i < 9; i++) {
-                const hole = document.createElement('div');
-                hole.className = 'whack-hole';
-                const item = document.createElement('div');
-                item.className = 'whack-item';
-                item.textContent = '🐟';
-                item.addEventListener('click', () => handleWhackClick(hole, item));
-                hole.appendChild(item);
-                whackGrid.appendChild(hole);
-            }
-        }
-
-        const overlay = document.getElementById('whackStartOverlay');
-        if (!autoStart) {
-            if (overlay) {
-                overlay.hidden = false;
-                overlay.classList.remove('is-hidden');
-            }
-        } else {
-            if (overlay) {
-                overlay.hidden = true;
-                overlay.classList.add('is-hidden');
-            }
-            let popInterval = 450; // Hard (current speed)
-            if (currentDifficulty === 'medium') popInterval = 750;
-            if (currentDifficulty === 'easy') popInterval = 1200;
-
-            whackLoop = setInterval(popRandomWhackItem, popInterval);
-        }
-    }
-
-    function stopWhackGame() {
-        if (whackLoop) { clearInterval(whackLoop); whackLoop = null; }
-    }
-
-    function popRandomWhackItem() {
-        if (!whackGrid) return;
-
-        // Total spawn limits (50 fish max, 100 other items max)
-        if (whackFishSpawned >= 50 && whackOtherSpawned >= 100) {
-            stopWhackGame();
-            if (whackFishCaught < 20) {
-                showWhackResultModal(false);
-            }
-            return;
-        }
-
-        // Determine if fish or other obstacle
-        let isFish = false;
-        if (whackFishSpawned >= 50) {
-            isFish = false;
-        } else if (whackOtherSpawned >= 100) {
-            isFish = true;
-        } else {
-            isFish = Math.random() < 0.35; // ~35% fish, 65% other items
-        }
-
-        if (isFish) whackFishSpawned++;
-        else whackOtherSpawned++;
-
-        const holes = Array.from(whackGrid.children);
-        holes.forEach(h => h.classList.remove('up'));
-
-        const randomHole = holes[Math.floor(Math.random() * holes.length)];
-        const item = randomHole.querySelector('.whack-item');
-
-        const otherIcons = ['💣', '🦔', '💩', '👟', '📦', '💣'];
-        const chosenIcon = isFish ? '🐟' : otherIcons[Math.floor(Math.random() * otherIcons.length)];
-
-        if (item) item.textContent = chosenIcon;
-
-        let upDuration = 550; // Hard
-        if (currentDifficulty === 'medium') upDuration = 900;
-        if (currentDifficulty === 'easy') upDuration = 1400;
-
-        randomHole.classList.add('up');
-        setTimeout(() => {
-            randomHole.classList.remove('up');
-            if (whackFishSpawned >= 50 && whackOtherSpawned >= 100 && whackFishCaught < 20) {
-                const activeUp = holes.some(h => h.classList.contains('up'));
-                if (!activeUp) showWhackResultModal(false);
-            }
-        }, upDuration);
-    }
-
-    function handleWhackClick(hole, item) {
-        if (!hole.classList.contains('up')) return;
-        // Prevent double-clicks during feedback pause
-        if (hole.classList.contains('hit-correct') || hole.classList.contains('hit-wrong')) return;
-
-        hole.classList.remove('up');
-
-        const PAUSE_MS = 1000; // 1 second pause + highlight
-
-        if (item.textContent === '🐟') {
-            // --- Correct: caught a fish ---
-            whackFishCaught++;
-            score += 5;
-            playCatSoundEffect('correct');
-            triggerCorrectAnswerReaction();
-
-            // Green highlight + pause
-            hole.classList.add('hit-correct');
-            if (whackLoop) { clearInterval(whackLoop); whackLoop = null; }
-
-            if (whackFishCaught >= 20) {
-                // Won the game — no need to resume
-                if (whackScore) whackScore.textContent = '20';
-                setTimeout(() => {
-                    hole.classList.remove('hit-correct');
-                    showWhackResultModal(true);
-                }, PAUSE_MS);
-            } else {
-                // Resume after 1 second
-                setTimeout(() => {
-                    hole.classList.remove('hit-correct');
-                    if (!whackLoop && currentCategory === 'whack') {
-                        let popInterval = 450;
-                        if (currentDifficulty === 'medium') popInterval = 750;
-                        if (currentDifficulty === 'easy') popInterval = 1200;
-                        whackLoop = setInterval(popRandomWhackItem, popInterval);
-                    }
-                }, PAUSE_MS);
-            }
-        } else {
-            // --- Wrong: hit an obstacle ---
-            whackFishCaught = Math.max(0, whackFishCaught - 1);
-            playCatSoundEffect('wrong');
-            triggerWrongAnswerReaction();
-
-            // Red highlight + pause
-            hole.classList.add('hit-wrong');
-            if (whackLoop) { clearInterval(whackLoop); whackLoop = null; }
-
-            setTimeout(() => {
-                hole.classList.remove('hit-wrong');
-                if (!whackLoop && currentCategory === 'whack') {
-                    let popInterval = 450;
-                    if (currentDifficulty === 'medium') popInterval = 750;
-                    if (currentDifficulty === 'easy') popInterval = 1200;
-                    whackLoop = setInterval(popRandomWhackItem, popInterval);
-                }
-            }, PAUSE_MS);
-        }
-
-        if (whackScore) whackScore.textContent = whackFishCaught.toString();
-        localStorage.setItem('igatamou_game_score', score.toString());
-        updateScoreUI();
-    }
-
-    function showWhackResultModal(isWin) {
-        stopWhackGame();
-
-        if (isWin) {
-            score += 80;
-            localStorage.setItem('igatamou_game_score', score.toString());
-            updateScoreUI();
-
-            if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
-            if (quizResultTitle) quizResultTitle.textContent = 'ΤΕΛΕΙΑ! Πιάσατε 20 Ψαράκια! 😸🎉';
-            if (quizResultScoreText) quizResultScoreText.textContent = `${whackFishCaught} / 20 Ψαράκια`;
-            if (quizResultMessage) quizResultMessage.textContent = '«Απίστευτο! Τα κατάφερες και έπιασες 20 ψαράκια! Κέρδισες +80 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎀✨»';
-            
-            if (quizResultModal) {
-                const card = quizResultModal.querySelector('.modal-card');
-                if (card) card.className = 'modal-card quiz-result-card result-perfect';
-                setRestartBtnLabel();
-                quizResultModal.hidden = false;
-            }
-            playCatSoundEffect('win');
-        } else {
-            if (quizResultEmoji) quizResultEmoji.textContent = '😿';
-            if (quizResultTitle) quizResultTitle.textContent = 'Η γατούλα είναι στενοχωρημένη... 😿';
-            if (quizResultScoreText) quizResultScoreText.textContent = `${whackFishCaught} / 20 Ψαράκια`;
-            if (quizResultMessage) quizResultMessage.textContent = `«Έπιασες ${whackFishCaught} από τα 20 ψαράκια. Μη στεναχωριέσαι, πάτα "Παίξε ξανά" και θα τα καταφέρεις! 🐾»`;
-            
-            if (quizResultModal) {
-                const card = quizResultModal.querySelector('.modal-card');
-                if (card) card.className = 'modal-card quiz-result-card result-sad';
-                setRestartBtnLabel();
-                quizResultModal.hidden = false;
-            }
-            playCatSoundEffect('wrong');
-        }
-    }
-
-    const whackOverlayStartBtn = document.getElementById('whackOverlayStartBtn');
-    if (whackOverlayStartBtn) whackOverlayStartBtn.addEventListener('click', () => setupWhackGame(true));
-    if (whackStartBtn) whackStartBtn.addEventListener('click', () => setupWhackGame(true));
-
-    // ----------------------------------------------------
+                // ----------------------------------------------------
     // 12. BUBBLE POP GAME
     // ----------------------------------------------------
     let bubblesLoop = null;
     let bubblesPopped = 0;       // good balloons caught by player
     let bubblesGoodSpawned = 0; // good balloons spawned so far
     let bubblesGoodPassed = 0;  // good balloons that floated away (missed)
+    let isBubblesPaused = false;
+    let isBubblesRunning = false;
     const BUBBLES_TOTAL_GOOD = 50;
 
     function setupBubblesGame(autoStart = false) {
@@ -1870,7 +1817,13 @@ document.addEventListener('DOMContentLoaded', () => {
         bubblesPopped = 0;
         bubblesGoodSpawned = 0;
         bubblesGoodPassed = 0;
+        isBubblesPaused = false;
         if (bubblesScore) bubblesScore.textContent = `0 / ${BUBBLES_TOTAL_GOOD}`;
+        if (bubblesBox) bubblesBox.classList.remove('is-paused');
+        if (bubblesPauseBtn) {
+            bubblesPauseBtn.textContent = '⏸️ Παύση';
+            bubblesPauseBtn.classList.remove('is-paused');
+        }
 
         if (questionNumber) questionNumber.textContent = `🎈 Γατο-Μπαλόνια (${currentDifficulty.toUpperCase()})`;
         if (questionText) questionText.textContent = `🎯 Περνούν συνολικά ${BUBBLES_TOTAL_GOOD} μπαλόνια — σκάσε όσα μπορείς!`;
@@ -1891,11 +1844,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const overlay = document.getElementById('bubblesStartOverlay');
         if (!autoStart) {
+            isBubblesRunning = false;
             if (overlay) {
                 overlay.hidden = false;
                 overlay.classList.remove('is-hidden');
+                const title = overlay.querySelector('.start-overlay-title');
+                const desc = overlay.querySelector('.start-overlay-desc');
+                const btn = overlay.querySelector('.btn-overlay-start');
+                if (title) title.textContent = 'Γατο-Μπαλόνια';
+                if (desc) desc.textContent = 'Σκάσε τα καλά μπαλόνια και απόφευγε τις βόμβες!';
+                if (btn) btn.textContent = '▶️ Έναρξη';
             }
         } else {
+            isBubblesRunning = true;
             if (overlay) {
                 overlay.hidden = true;
                 overlay.classList.add('is-hidden');
@@ -1908,12 +1869,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function toggleBubblesPause() {
+        if (!isBubblesRunning && !isBubblesPaused) {
+            setupBubblesGame(true);
+            return;
+        }
+        isBubblesPaused = !isBubblesPaused;
+        const overlay = document.getElementById('bubblesStartOverlay');
+        if (isBubblesPaused) {
+            if (bubblesLoop) { clearInterval(bubblesLoop); bubblesLoop = null; }
+            if (bubblesBox) bubblesBox.classList.add('is-paused');
+            if (bubblesPauseBtn) {
+                bubblesPauseBtn.textContent = '▶️ Συνέχεια';
+                bubblesPauseBtn.classList.add('is-paused');
+            }
+            if (overlay) {
+                overlay.hidden = false;
+                overlay.classList.remove('is-hidden');
+                const title = overlay.querySelector('.start-overlay-title');
+                const desc = overlay.querySelector('.start-overlay-desc');
+                const btn = overlay.querySelector('.btn-overlay-start');
+                if (title) title.textContent = '⏸️ Σε Παύση';
+                if (desc) desc.textContent = 'Τα μπαλόνια πάγωσαν! Πάτα συνέχεια για να συνεχίσεις.';
+                if (btn) btn.textContent = '▶️ Συνέχεια';
+            }
+        } else {
+            if (bubblesBox) bubblesBox.classList.remove('is-paused');
+            if (bubblesPauseBtn) {
+                bubblesPauseBtn.textContent = '⏸️ Παύση';
+                bubblesPauseBtn.classList.remove('is-paused');
+            }
+            if (overlay) {
+                overlay.hidden = true;
+                overlay.classList.add('is-hidden');
+            }
+            let spawnRate = 600;
+            if (currentDifficulty === 'easy') spawnRate = 850;
+            if (currentDifficulty === 'hard') spawnRate = 380;
+            bubblesLoop = setInterval(spawnBubble, spawnRate);
+        }
+    }
+
     function stopBubblesGame() {
         if (bubblesLoop) { clearInterval(bubblesLoop); bubblesLoop = null; }
+        isBubblesRunning = false;
     }
 
     function spawnBubble() {
-        if (!bubblesBox) return;
+        if (!bubblesBox || isBubblesPaused) return;
 
         // Stop spawning good balloons after BUBBLES_TOTAL_GOOD
         const goodRemaining = BUBBLES_TOTAL_GOOD - bubblesGoodSpawned;
@@ -1955,6 +1958,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bubble.style.left = `${Math.floor(Math.random() * Math.max(10, maxLeft))}px`;
 
         bubble.addEventListener('click', () => {
+            if (isBubblesPaused) return;
             if (chosenIcon === '💣') {
                 bubblesPopped = Math.max(0, bubblesPopped - 1);
                 playCatSoundEffect('wrong');
@@ -1996,6 +2000,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showBubblesResultModal(isWin) {
         stopBubblesGame();
+        isBubblesPaused = false;
         if (bubblesBox) bubblesBox.innerHTML = '';
 
         const caught = Math.max(0, bubblesPopped);
@@ -2008,7 +2013,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
             if (quizResultTitle) quizResultTitle.textContent = 'ΤΕΛΕΙΑ! Σκάσες όλα τα Μπαλόνια! 😸🎉';
             if (quizResultScoreText) quizResultScoreText.textContent = `${caught} / ${BUBBLES_TOTAL_GOOD} Μπαλόνια`;
-            if (quizResultMessage) quizResultMessage.textContent = '«Απίστευτο! Τα κατάφερες και έσκασες όλα τα 50 γατο-μπαλόνια! Κέρδισες +100 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎀✨»';
+            if (quizResultMessage) quizResultMessage.textContent = '«Απίστευτο! Τα κατάφερες και έσκασες όλα τα 50 γατο-μπαλόνια! Κέρδισες +100 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎈✨»';
             
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
@@ -2034,7 +2039,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const bubblesOverlayStartBtn = document.getElementById('bubblesOverlayStartBtn');
-    if (bubblesOverlayStartBtn) bubblesOverlayStartBtn.addEventListener('click', () => setupBubblesGame(true));
+    if (bubblesOverlayStartBtn) {
+        bubblesOverlayStartBtn.addEventListener('click', () => {
+            if (isBubblesPaused) {
+                toggleBubblesPause();
+            } else {
+                setupBubblesGame(true);
+            }
+        });
+    }
+    if (bubblesPauseBtn) bubblesPauseBtn.addEventListener('click', toggleBubblesPause);
     if (bubblesStartBtn) bubblesStartBtn.addEventListener('click', () => setupBubblesGame(true));
 
     // ----------------------------------------------------

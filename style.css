@@ -1182,7 +1182,9 @@ body.arena-fullscreen-active {
     }
 
     .game-arena-card.is-fullscreen .btn-arcade-reset,
-    .game-arena-card:fullscreen .btn-arcade-reset {
+    .game-arena-card:fullscreen .btn-arcade-reset,
+    .game-arena-card.is-fullscreen .btn-arcade-pause,
+    .game-arena-card:fullscreen .btn-arcade-pause {
         font-size: 1.05rem !important;
         padding: 8px 20px !important;
     }
@@ -3196,6 +3198,36 @@ body.arena-fullscreen-active {
 
 .btn-arcade-reset:hover {
     transform: scale(1.05) !important;
+}
+
+.btn-arcade-pause {
+    background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%) !important;
+    color: white !important;
+    font-family: 'Fredoka', cursive, sans-serif !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    padding: 8px 16px !important;
+    border-radius: var(--radius-full) !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3) !important;
+    transition: all 0.2s ease !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+}
+
+.btn-arcade-pause:hover {
+    transform: scale(1.05) !important;
+}
+
+.btn-arcade-pause.is-paused {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%) !important;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45) !important;
+}
+
+.bubbles-box.is-paused .floating-bubble {
+    animation-play-state: paused !important;
+    pointer-events: none !important;
 }
 
 /* FIRST MOVE SELECTOR FOR TIC-TAC-TOE */

@@ -51,7 +51,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="style.css?v=22">
+    <link rel="stylesheet" href="style.css?v=23">
 </head>
 <body class="games-page-body">
 
@@ -315,7 +315,8 @@
                         <div id="snakeArena" class="arcade-game-container" hidden>
                             <div class="arcade-status-bar">
                                 <span class="arcade-status-badge">🐟 Λιχουδιές: <strong id="snakeScore">0</strong></span>
-                                <button id="snakeStartBtn" class="btn btn-arcade-reset">▶️ Έναρξη / Επανεκκίνηση</button>
+                                <button id="snakePauseBtn" class="btn btn-arcade-pause">⏸️ Παύση</button>
+                                <button id="snakeStartBtn" class="btn btn-arcade-reset">🔄 Νέο Παιχνίδι</button>
                             </div>
                             <div class="canvas-wrapper" style="position: relative;">
                                 <canvas id="snakeCanvas" width="300" height="300"></canvas>
@@ -343,7 +344,8 @@
                         <div id="tetrisArena" class="arcade-game-container" hidden>
                             <div class="arcade-status-bar">
                                 <span class="arcade-status-badge">🧱 Γραμμές: <strong id="tetrisLines">0</strong></span>
-                                <button id="tetrisStartBtn" class="btn btn-arcade-reset">▶️ Έναρξη / Επανεκκίνηση</button>
+                                <button id="tetrisPauseBtn" class="btn btn-arcade-pause">⏸️ Παύση</button>
+                                <button id="tetrisStartBtn" class="btn btn-arcade-reset">🔄 Νέο Παιχνίδι</button>
                             </div>
                             <div class="canvas-wrapper" style="position: relative;">
                                 <canvas id="tetrisCanvas" width="240" height="400"></canvas>
@@ -368,7 +370,8 @@
                         <div id="whackArena" class="arcade-game-container" hidden>
                             <div class="arcade-status-bar">
                                 <span class="arcade-status-badge">🐟 Πιάστηκαν: <strong id="whackScore">0</strong> / 20</span>
-                                <button id="whackStartBtn" class="btn btn-arcade-reset">▶️ Έναρξη / Επανεκκίνηση</button>
+                                <button id="whackPauseBtn" class="btn btn-arcade-pause">⏸️ Παύση</button>
+                                <button id="whackStartBtn" class="btn btn-arcade-reset">🔄 Νέο Παιχνίδι</button>
                             </div>
                             <div class="whack-board-wrapper" style="position: relative; width: 100%; display: flex; justify-content: center;">
                                 <div id="whackGrid" class="whack-grid">
@@ -388,7 +391,8 @@
                         <div id="bubblesArena" class="arcade-game-container" hidden>
                             <div class="arcade-status-bar">
                                 <span class="arcade-status-badge">🎈 Σπασμένα: <strong id="bubblesScore">0</strong> / 50</span>
-                                <button id="bubblesStartBtn" class="btn btn-arcade-reset">▶️ Έναρξη / Επανεκκίνηση</button>
+                                <button id="bubblesPauseBtn" class="btn btn-arcade-pause">⏸️ Παύση</button>
+                                <button id="bubblesStartBtn" class="btn btn-arcade-reset">🔄 Νέο Παιχνίδι</button>
                             </div>
                             <div class="bubbles-board-wrapper" style="position: relative; width: 100%; display: flex; justify-content: center;">
                                 <div id="bubblesBox" class="bubbles-box">
@@ -531,7 +535,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="app.js?v=22"></script>
-    <script src="games.js?v=22"></script>
+    <script src="app.js?v=23"></script>
+    <script src="games.js?v=23"></script>
 </body>
 </html>
