@@ -74,14 +74,20 @@ document.addEventListener('DOMContentLoaded', () => {
         renderGallery(localDrawings);
     }
 
-    let showAllDrawings = false;
+    // Infinite scroll state
+    let drawingsPageSize = 10;
+    let drawingsRenderedCount = 0;
+    let drawingsAllItems = [];
+    let drawingsObserver = null;
 
     function renderGallery(allDrawings) {
         if (!drawingsGrid) return;
         drawingsGrid.innerHTML = '';
 
-        const existingShowMore = document.getElementById('drawingsShowMoreWrapper');
-        if (existingShowMore) existingShowMore.remove();
+        // Clean up any old sentinel/observer
+        const oldSentinel = document.getElementById('drawingsSentinel');
+        if (oldSentinel) oldSentinel.remove();
+        if (drawingsObserver) { drawingsObserver.disconnect(); drawingsObserver = null; }
 
         const approvedDrawings = allDrawings.filter(d => d.status === 'approved');
 
@@ -89,18 +95,44 @@ document.addEventListener('DOMContentLoaded', () => {
             if (emptyDrawings) emptyDrawings.hidden = false;
             return;
         }
-
         if (emptyDrawings) emptyDrawings.hidden = true;
 
-        const visibleDrawings = showAllDrawings ? approvedDrawings : approvedDrawings.slice(0, 10);
+        drawingsAllItems = approvedDrawings;
+        drawingsRenderedCount = 0;
 
-        visibleDrawings.forEach(drawing => {
+        // Render first batch
+        appendDrawingCards();
+
+        // If more items remain, observe a sentinel for infinite scroll
+        if (drawingsRenderedCount < drawingsAllItems.length) {
+            const sentinel = document.createElement('div');
+            sentinel.id = 'drawingsSentinel';
+            sentinel.style.cssText = 'height:1px;grid-column:1/-1;';
+            drawingsGrid.parentNode.insertBefore(sentinel, drawingsGrid.nextSibling);
+
+            drawingsObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    appendDrawingCards();
+                    if (drawingsRenderedCount >= drawingsAllItems.length) {
+                        drawingsObserver.disconnect();
+                        drawingsObserver = null;
+                        sentinel.remove();
+                    }
+                }
+            }, { rootMargin: '200px' });
+
+            drawingsObserver.observe(sentinel);
+        }
+    }
+
+    function appendDrawingCards() {
+        const batch = drawingsAllItems.slice(drawingsRenderedCount, drawingsRenderedCount + drawingsPageSize);
+        batch.forEach(drawing => {
             const card = document.createElement('div');
             card.className = 'drawing-card';
 
             const formattedDate = (() => {
                 if (!drawing.created_at) return 'Σήμερα';
-                // Normalize: handle "2026-08-11" (date-only) by appending T00:00:00 so all browsers parse it correctly
                 const raw = String(drawing.created_at).trim();
                 const normalized = /^\d{4}-\d{2}-\d{2}$/.test(raw) ? raw + 'T00:00:00' : raw;
                 const d = new Date(normalized);
@@ -110,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             card.innerHTML = `
                 <div class="drawing-img-wrapper">
-                    <img src="${drawing.image_data}" alt="Ζωγραφιά από ${drawing.name}" class="drawing-img" loading="lazy">
+                    <img src="${drawing.image_data}" alt="Ζωγραφιά από ${drawing.name}" class="drawing-img" loading="lazy" decoding="async">
                 </div>
                 <div class="drawing-card-body">
                     <div class="drawing-author">🎨 Από τον/την: <strong>${escapeHtml(drawing.name)}</strong></div>
@@ -126,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 drawing.likes = (drawing.likes || 0) + 1;
                 card.querySelector('.like-count').textContent = drawing.likes;
 
-                // Update localStorage
                 const currentDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
                 const target = currentDrawings.find(d => d.id === drawing.id);
                 if (target) {
@@ -134,7 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('igatamou_drawings', JSON.stringify(currentDrawings));
                 }
 
-                // Update Supabase DB
                 if (supabase) {
                     supabase.from('cats').update({ likes: drawing.likes }).eq('id', drawing.id).then().catch(() => {});
                 }
@@ -142,28 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             drawingsGrid.appendChild(card);
         });
-
-        // Show "Εμφάνιση όλων" button if there are more than 10 drawings and not all are shown yet
-        if (!showAllDrawings && approvedDrawings.length > 10) {
-            const showMoreWrapper = document.createElement('div');
-            showMoreWrapper.id = 'drawingsShowMoreWrapper';
-            showMoreWrapper.className = 'show-more-wrapper';
-            showMoreWrapper.style.cssText = 'display: flex !important; justify-content: center !important; align-items: center !important; text-align: center !important; margin: 40px auto 25px auto !important; width: 100% !important; clear: both !important; grid-column: 1 / -1 !important;';
-            showMoreWrapper.innerHTML = `
-                <button id="showAllDrawingsBtn" class="btn-show-all" style="background: linear-gradient(135deg, #ff5e7e 0%, #a855f7 50%, #00b4d8 100%) !important; color: #ffffff !important; font-family: 'Fredoka', cursive, sans-serif !important; font-weight: 700 !important; font-size: 1.25rem !important; padding: 16px 40px !important; border-radius: 50px !important; border: 3px solid #ffffff !important; cursor: pointer !important; box-shadow: 0 10px 30px rgba(168, 85, 247, 0.45) !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 12px !important; margin: 0 auto !important;">
-                    🎨 Εμφάνιση όλων (${approvedDrawings.length} Ζωγραφιές) ✨
-                </button>
-            `;
-            drawingsGrid.parentNode.insertBefore(showMoreWrapper, drawingsGrid.nextSibling);
-
-            const showAllBtn = document.getElementById('showAllDrawingsBtn');
-            if (showAllBtn) {
-                showAllBtn.addEventListener('click', () => {
-                    showAllDrawings = true;
-                    renderGallery(allDrawings);
-                });
-            }
-        }
+        drawingsRenderedCount += batch.length;
     }
 
     function escapeHtml(str) {

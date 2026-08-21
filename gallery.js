@@ -139,6 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPublicGallery();
     }
 
+    // Infinite scroll state for cats gallery
+    let catsPageSize = 10;
+    let catsRenderedCount = 0;
+    let catsAllItems = [];
+    let catsObserver = null;
+
     function renderPublicGallery() {
         const cats = getCatsData().filter(c => !(c.id && c.id.startsWith('draw_')) && !(c.bio && c.bio.includes('🎨 [DRAWING]')));
         const likedCatIds = getLikedCatIds();
@@ -147,19 +153,48 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!galleryGrid) return;
         galleryGrid.innerHTML = '';
 
-        const existingShowMore = document.getElementById('catsShowMoreWrapper');
-        if (existingShowMore) existingShowMore.remove();
+        // Clean up any old sentinel/observer
+        const oldSentinel = document.getElementById('catsSentinel');
+        if (oldSentinel) oldSentinel.remove();
+        if (catsObserver) { catsObserver.disconnect(); catsObserver = null; }
 
         if (approvedCats.length === 0) {
             if (emptyGallery) emptyGallery.hidden = false;
             return;
         }
-
         if (emptyGallery) emptyGallery.hidden = true;
 
-        const visibleCats = showAllCats ? approvedCats : approvedCats.slice(0, 10);
+        catsAllItems = approvedCats;
+        catsRenderedCount = 0;
 
-        visibleCats.forEach(cat => {
+        // Render first batch
+        appendCatCards(likedCatIds);
+
+        // If there are more items, set up IntersectionObserver on a sentinel
+        if (catsRenderedCount < catsAllItems.length) {
+            const sentinel = document.createElement('div');
+            sentinel.id = 'catsSentinel';
+            sentinel.style.cssText = 'height:1px;grid-column:1/-1;';
+            galleryGrid.parentNode.insertBefore(sentinel, galleryGrid.nextSibling);
+
+            catsObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    appendCatCards(getLikedCatIds());
+                    if (catsRenderedCount >= catsAllItems.length) {
+                        catsObserver.disconnect();
+                        catsObserver = null;
+                        sentinel.remove();
+                    }
+                }
+            }, { rootMargin: '200px' });
+
+            catsObserver.observe(sentinel);
+        }
+    }
+
+    function appendCatCards(likedCatIds) {
+        const batch = catsAllItems.slice(catsRenderedCount, catsRenderedCount + catsPageSize);
+        batch.forEach(cat => {
             const isLiked = likedCatIds.includes(cat.id);
             const photoList = cat.gallery && cat.gallery.length ? cat.gallery : [cat.image];
 
@@ -209,32 +244,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     imgEl.classList.add('loaded');
                 } else {
                     imgEl.addEventListener('load', () => imgEl.classList.add('loaded'));
-                    imgEl.addEventListener('error', () => imgEl.classList.add('loaded')); // show even on error
+                    imgEl.addEventListener('error', () => imgEl.classList.add('loaded'));
                 }
             }
         });
-
-        // Show "Εμφάνιση όλων" button if there are more than 10 cats and not all are shown yet
-        if (!showAllCats && approvedCats.length > 10) {
-            const showMoreWrapper = document.createElement('div');
-            showMoreWrapper.id = 'catsShowMoreWrapper';
-            showMoreWrapper.className = 'show-more-wrapper';
-            showMoreWrapper.style.cssText = 'display: flex !important; justify-content: center !important; align-items: center !important; text-align: center !important; margin: 40px auto 25px auto !important; width: 100% !important; clear: both !important; grid-column: 1 / -1 !important;';
-            showMoreWrapper.innerHTML = `
-                <button id="showAllCatsBtn" class="btn-show-all" style="background: linear-gradient(135deg, #ff5e7e 0%, #a855f7 50%, #00b4d8 100%) !important; color: #ffffff !important; font-family: 'Fredoka', cursive, sans-serif !important; font-weight: 700 !important; font-size: 1.25rem !important; padding: 16px 40px !important; border-radius: 50px !important; border: 3px solid #ffffff !important; cursor: pointer !important; box-shadow: 0 10px 30px rgba(168, 85, 247, 0.45) !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 12px !important; margin: 0 auto !important;">
-                    🐾 Εμφάνιση όλων (${approvedCats.length} Φωτογραφίες) ✨
-                </button>
-            `;
-            galleryGrid.parentNode.insertBefore(showMoreWrapper, galleryGrid.nextSibling);
-
-            const showAllBtn = document.getElementById('showAllCatsBtn');
-            if (showAllBtn) {
-                showAllBtn.addEventListener('click', () => {
-                    showAllCats = true;
-                    renderPublicGallery();
-                });
-            }
-        }
+        catsRenderedCount += batch.length;
     }
 
     // INTERACTIVE PHOTO ALBUM MODAL LOGIC (WITH ADMIN SINGLE-PHOTO DELETE)
