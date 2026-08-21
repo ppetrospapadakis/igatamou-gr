@@ -62,17 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Returns an optimized thumbnail URL for gallery cards.
-    // For Supabase Storage URLs: uses the built-in Transform API (server-side resize, no files changed).
-    // For base64 data URLs: returns as-is (already compressed by canvas).
-    function thumbUrl(src, width = 400, quality = 65) {
-        if (!src) return src;
-        // Supabase Storage URL pattern: .../storage/v1/object/public/...
-        if (src.includes('/storage/v1/object/public/')) {
-            return src.replace('/storage/v1/object/public/', '/storage/v1/render/v1/public/')
-                + `?width=${width}&quality=${quality}&resize=cover`;
-        }
-        return src; // base64 or other — unchanged
+    // thumbUrl: reserved for future image optimizations.
+    // Supabase Image Transform API requires a paid plan — disabled for now.
+    function thumbUrl(src) {
+        return src || '';
     }
 
     // One-time background migration: re-compress any oversized base64 images already in localStorage.
