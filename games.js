@@ -1312,8 +1312,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawSnakeCanvas() {
         if (!snakeCanvas) return;
         const ctx = snakeCanvas.getContext('2d');
+        const isFullscreen = isFullscreenActive() && window.innerWidth >= 720;
         const isDesktop = window.innerWidth >= 900;
-        const scale = isDesktop ? 1.5 : 1.0;
+        const scale = isFullscreen ? 1.85 : (isDesktop ? 1.5 : 1.0);
         const dim = 300 * scale;
         const size = 20 * scale;
 
@@ -1507,8 +1508,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawTetrisCanvas() {
         if (!tetrisCanvas) return;
         const ctx = tetrisCanvas.getContext('2d');
+        const isFullscreen = isFullscreenActive() && window.innerWidth >= 720;
         const isDesktop = window.innerWidth >= 900;
-        const scale = isDesktop ? 1.5 : 1.0;
+        const scale = isFullscreen ? 1.65 : (isDesktop ? 1.5 : 1.0);
         const canvasW = 240 * scale;
         const canvasH = 400 * scale;
         const size = 20 * scale;
