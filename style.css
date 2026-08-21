@@ -3550,8 +3550,8 @@ body.arena-fullscreen-active {
 /* 12. BUBBLES BOX */
 .bubbles-box {
     position: relative;
-    width: 300px;
-    height: 320px;
+    width: min(600px, 90vw);
+    height: min(520px, 70vh);
     background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%);
     border-radius: 24px;
     overflow: hidden;
@@ -4119,10 +4119,10 @@ body.arena-fullscreen-active {
         bottom: 18px !important;
     }
 
-    /* 3. Bubbles Box 50% Enlarged - Locked Dimensions */
+    /* 3. Bubbles Box - desktop is handled by default min() sizing */
     .bubbles-box {
-        width: 450px !important;
-        height: 480px !important;
+        width: min(650px, 90vw) !important;
+        height: min(560px, 72vh) !important;
         border-radius: 32px !important;
         flex-shrink: 0 !important;
         box-sizing: border-box !important;

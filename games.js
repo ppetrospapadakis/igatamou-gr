@@ -1370,9 +1370,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (snakeDir === 'UP') head.y--;
         if (snakeDir === 'DOWN') head.y++;
 
+
+        // Self-collision: exclude the last segment (tail), which will move away this step
+        // This prevents false game-over when head moves where the tail was
+        const snakeBody = snake.slice(0, snake.length - 1);
         const hitObstacle = snakeObstacles.some(o => o.x === head.x && o.y === head.y);
 
-        if (head.x < 0 || head.x >= 15 || head.y < 0 || head.y >= 15 || hitObstacle || snake.some(s => s.x === head.x && s.y === head.y)) {
+        if (head.x < 0 || head.x >= 15 || head.y < 0 || head.y >= 15 || hitObstacle || snakeBody.some(s => s.x === head.x && s.y === head.y)) {
             stopSnakeGame();
             isSnakePaused = false;
             if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Ουπς! 💥 Έκανες ${snakePoints} λιχουδιές!"`;
@@ -1391,6 +1395,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return;
         }
+
 
         snake.unshift(head);
 
@@ -2247,7 +2252,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 triggerCorrectAnswerReaction();
             }
 
-            if (bubblesScore) bubblesScore.textContent = `${bubblesPopped} / ${BUBBLES_TOTAL_GOOD}`;
+            if (bubblesScore) bubblesScore.textContent = `${bubblesPopped} / ${bubblesGoodSpawned}`;
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
             bubble.remove();
