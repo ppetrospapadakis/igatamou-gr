@@ -1132,15 +1132,23 @@ body.arena-fullscreen-active {
     }
 }
 
-/* In fullscreen on desktop (≥720px): expand arcade game containers so they take full advantage of the large screen */
+/* In fullscreen: ensure hidden elements are strictly hidden */
+.game-arena-card.is-fullscreen [hidden],
+.game-arena-card:fullscreen [hidden],
+.game-arena-card.is-fullscreen .arcade-game-container[hidden],
+.game-arena-card:fullscreen .arcade-game-container[hidden] {
+    display: none !important;
+}
+
+/* In fullscreen on desktop (≥720px): expand actual game board/field to take maximum width and height */
 @media (min-width: 720px) {
     .game-arena-card.is-fullscreen .arena-content-grid,
     .game-arena-card:fullscreen .arena-content-grid {
         grid-template-columns: 1fr 260px !important;
-        max-width: 1300px !important;
+        max-width: 1400px !important;
         width: 100% !important;
         margin: 0 auto !important;
-        padding: 20px 30px 40px !important;
+        padding: 16px 24px 32px !important;
     }
 
     .game-arena-card.is-fullscreen .quiz-column,
@@ -1151,156 +1159,166 @@ body.arena-fullscreen-active {
         align-items: center !important;
     }
 
-    .game-arena-card.is-fullscreen .arcade-game-container,
-    .game-arena-card:fullscreen .arcade-game-container {
+    .game-arena-card.is-fullscreen .arcade-game-container:not([hidden]),
+    .game-arena-card:fullscreen .arcade-game-container:not([hidden]) {
         width: 100% !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
+        justify-content: center !important;
     }
 
     /* 1. Status bar */
     .game-arena-card.is-fullscreen .arcade-status-bar,
     .game-arena-card:fullscreen .arcade-status-bar {
-        max-width: 650px !important;
-        margin-bottom: 22px !important;
+        max-width: 700px !important;
+        margin-bottom: 16px !important;
     }
 
     .game-arena-card.is-fullscreen .arcade-status-badge,
     .game-arena-card:fullscreen .arcade-status-badge {
-        font-size: 1.2rem !important;
-        padding: 10px 22px !important;
+        font-size: 1.15rem !important;
+        padding: 8px 20px !important;
     }
 
     .game-arena-card.is-fullscreen .btn-arcade-reset,
     .game-arena-card:fullscreen .btn-arcade-reset {
-        font-size: 1.08rem !important;
-        padding: 10px 22px !important;
+        font-size: 1.05rem !important;
+        padding: 8px 20px !important;
     }
 
-    /* 2. Tic-Tac-Toe */
+    /* 2. Tic-Tac-Toe Game Board */
     .game-arena-card.is-fullscreen .tictactoe-grid,
     .game-arena-card:fullscreen .tictactoe-grid {
-        grid-template-columns: repeat(3, 145px) !important;
-        grid-template-rows: repeat(3, 145px) !important;
-        gap: 18px !important;
-        margin: 20px auto !important;
+        grid-template-columns: repeat(3, min(22vh, 175px)) !important;
+        grid-template-rows: repeat(3, min(22vh, 175px)) !important;
+        gap: 16px !important;
+        margin: 10px auto !important;
     }
 
     .game-arena-card.is-fullscreen .ttt-cell,
     .game-arena-card:fullscreen .ttt-cell {
-        width: 145px !important;
-        height: 145px !important;
-        font-size: 5rem !important;
-        border-radius: 28px !important;
+        width: 100% !important;
+        height: 100% !important;
+        font-size: min(12vh, 5.5rem) !important;
+        border-radius: 26px !important;
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12) !important;
-    }
-
-    .game-arena-card.is-fullscreen .first-move-selector,
-    .game-arena-card:fullscreen .first-move-selector {
-        margin: 18px 0 12px 0 !important;
-        gap: 12px !important;
-    }
-
-    .game-arena-card.is-fullscreen .first-move-btn,
-    .game-arena-card:fullscreen .first-move-btn {
-        padding: 10px 22px !important;
-        font-size: 1rem !important;
-        border-radius: 24px !important;
     }
 
     /* 3. Snake & Tetris Canvas wrapper */
     .game-arena-card.is-fullscreen .canvas-wrapper,
     .game-arena-card:fullscreen .canvas-wrapper {
-        border-radius: 32px !important;
-        padding: 16px !important;
-        border-width: 6px !important;
+        border-radius: 28px !important;
+        padding: 12px !important;
+        border-width: 5px !important;
         box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35) !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
 
-    /* 4. Whack-a-Fish */
+    .game-arena-card.is-fullscreen #snakeCanvas,
+    .game-arena-card:fullscreen #snakeCanvas {
+        width: min(65vh, 600px) !important;
+        height: min(65vh, 600px) !important;
+        max-width: 100% !important;
+    }
+
+    .game-arena-card.is-fullscreen #tetrisCanvas,
+    .game-arena-card:fullscreen #tetrisCanvas {
+        height: min(68vh, 650px) !important;
+        width: auto !important;
+        max-width: 100% !important;
+    }
+
+    /* 4. Whack-a-Fish Game Board */
     .game-arena-card.is-fullscreen .whack-grid,
     .game-arena-card:fullscreen .whack-grid {
-        grid-template-columns: repeat(3, 145px) !important;
-        grid-template-rows: repeat(3, 145px) !important;
-        gap: 22px !important;
-        margin: 20px auto !important;
+        grid-template-columns: repeat(3, min(22vh, 175px)) !important;
+        grid-template-rows: repeat(3, min(22vh, 175px)) !important;
+        gap: 18px !important;
+        margin: 10px auto !important;
     }
 
     .game-arena-card.is-fullscreen .whack-hole,
     .game-arena-card:fullscreen .whack-hole {
-        width: 145px !important;
-        height: 145px !important;
-        border-width: 6px !important;
+        width: 100% !important;
+        height: 100% !important;
+        border-width: 5px !important;
     }
 
     .game-arena-card.is-fullscreen .whack-item,
     .game-arena-card:fullscreen .whack-item {
-        font-size: 4.8rem !important;
+        font-size: min(11vh, 5.2rem) !important;
         bottom: -90px !important;
     }
 
     .game-arena-card.is-fullscreen .whack-hole.up .whack-item,
     .game-arena-card:fullscreen .whack-hole.up .whack-item {
-        bottom: 20px !important;
+        bottom: 18px !important;
     }
 
     /* 5. Bubbles Box */
     .game-arena-card.is-fullscreen .bubbles-box,
     .game-arena-card:fullscreen .bubbles-box {
-        width: 620px !important;
-        height: 480px !important;
-        border-radius: 32px !important;
-        border-width: 6px !important;
+        width: min(85vw, 750px) !important;
+        height: min(62vh, 520px) !important;
+        border-radius: 28px !important;
+        border-width: 5px !important;
         box-shadow: 0 16px 40px rgba(56, 189, 248, 0.3) !important;
     }
 
     .game-arena-card.is-fullscreen .floating-bubble,
     .game-arena-card:fullscreen .floating-bubble {
-        width: 78px !important;
-        height: 78px !important;
-        font-size: 2.7rem !important;
+        width: 80px !important;
+        height: 80px !important;
+        font-size: 2.8rem !important;
         border-width: 3px !important;
     }
 
-    /* 6. Mini Cat Chess */
+    /* 6. Mini Cat Chess Game Board */
     .game-arena-card.is-fullscreen .chess-board-grid,
     .game-arena-card:fullscreen .chess-board-grid {
-        max-width: 520px !important;
+        width: min(65vh, 580px) !important;
+        height: min(65vh, 580px) !important;
+        max-width: none !important;
         border-radius: 24px !important;
-        border-width: 6px !important;
+        border-width: 5px !important;
         box-shadow: 0 16px 45px rgba(0, 0, 0, 0.22) !important;
-        margin: 16px auto !important;
+        margin: 10px auto !important;
     }
 
     .game-arena-card.is-fullscreen .chess-board-grid.grid-5x5,
     .game-arena-card:fullscreen .chess-board-grid.grid-5x5 {
-        max-width: 560px !important;
+        width: min(68vh, 620px) !important;
+        height: min(68vh, 620px) !important;
+        max-width: none !important;
     }
 
     .game-arena-card.is-fullscreen .chess-square,
     .game-arena-card:fullscreen .chess-square {
-        font-size: 3rem !important;
+        font-size: min(9vh, 3.2rem) !important;
     }
 
     .game-arena-card.is-fullscreen .chess-board-grid.grid-5x5 .chess-square,
     .game-arena-card:fullscreen .chess-board-grid.grid-5x5 .chess-square {
-        font-size: 2.4rem !important;
+        font-size: min(7.5vh, 2.6rem) !important;
     }
 
     .game-arena-card.is-fullscreen .chess-piece-wrapper,
     .game-arena-card:fullscreen .chess-piece-wrapper {
-        font-size: 2.8rem !important;
+        font-size: min(8vh, 3rem) !important;
         padding: 6px 12px !important;
         border-radius: 20px !important;
     }
 
-    /* 7. Cat Solitaire */
+    /* 7. Cat Solitaire Game Board */
     .game-arena-card.is-fullscreen .solitaire-board-wrapper,
     .game-arena-card:fullscreen .solitaire-board-wrapper {
-        max-width: 620px !important;
-        gap: 24px !important;
-        margin: 16px auto !important;
+        width: min(88vw, 750px) !important;
+        max-width: none !important;
+        gap: 20px !important;
+        margin: 10px auto !important;
     }
 
     .game-arena-card.is-fullscreen .solitaire-foundations-row,
@@ -1310,8 +1328,8 @@ body.arena-fullscreen-active {
 
     .game-arena-card.is-fullscreen .solitaire-foundation-basket,
     .game-arena-card:fullscreen .solitaire-foundation-basket {
-        height: 150px !important;
-        border-radius: 24px !important;
+        height: 140px !important;
+        border-radius: 22px !important;
         border-width: 4px !important;
         font-size: 1.8rem !important;
     }
@@ -1329,14 +1347,14 @@ body.arena-fullscreen-active {
     .game-arena-card.is-fullscreen .solitaire-column-stack,
     .game-arena-card:fullscreen .solitaire-column-stack {
         min-height: 280px !important;
-        border-radius: 24px !important;
+        border-radius: 22px !important;
         border-width: 4px !important;
     }
 
     .game-arena-card.is-fullscreen .solitaire-card-item,
     .game-arena-card:fullscreen .solitaire-card-item {
-        height: 145px !important;
-        border-radius: 22px !important;
+        height: 140px !important;
+        border-radius: 20px !important;
         border-width: 3px !important;
     }
 
@@ -1350,25 +1368,26 @@ body.arena-fullscreen-active {
         font-size: 1.15rem !important;
     }
 
-    /* 8. Memory Game */
+    /* 8. Memory Game Board */
     .game-arena-card.is-fullscreen .memory-board,
     .game-arena-card:fullscreen .memory-board {
-        max-width: 820px !important;
-        gap: 20px !important;
-        margin: 16px auto !important;
+        width: min(90vw, 850px) !important;
+        max-width: none !important;
+        gap: 18px !important;
+        margin: 10px auto !important;
     }
 
     .game-arena-card.is-fullscreen .memory-card-tile,
     .game-arena-card:fullscreen .memory-card-tile {
-        height: 165px !important;
+        height: min(18vh, 160px) !important;
     }
 
     .game-arena-card.is-fullscreen .memory-card-front,
     .game-arena-card.is-fullscreen .memory-card-back,
     .game-arena-card:fullscreen .memory-card-front,
     .game-arena-card:fullscreen .memory-card-back {
-        font-size: 3.6rem !important;
-        border-radius: 26px !important;
+        font-size: min(9vh, 3.4rem) !important;
+        border-radius: 24px !important;
     }
 }
 
