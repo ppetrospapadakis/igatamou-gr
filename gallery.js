@@ -133,17 +133,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentAlbumCatId = null;
     let currentAlbumPhotos = [];
     let currentAlbumIndex = 0;
-    let showAllCats = false;
 
-    if (galleryGrid) {
-        renderPublicGallery();
-    }
-
-    // Infinite scroll state for cats gallery
+    // Infinite scroll state for cats gallery (must be declared before renderPublicGallery is called)
     let catsPageSize = 10;
     let catsRenderedCount = 0;
     let catsAllItems = [];
     let catsObserver = null;
+
+    if (galleryGrid) {
+        renderPublicGallery();
+    }
 
     function renderPublicGallery() {
         const cats = getCatsData().filter(c => !(c.id && c.id.startsWith('draw_')) && !(c.bio && c.bio.includes('🎨 [DRAWING]')));
