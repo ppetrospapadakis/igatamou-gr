@@ -135,7 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentAlbumIndex = 0;
 
     // Infinite scroll state for cats gallery (must be declared before renderPublicGallery is called)
-    let catsPageSize = 10;
+    // Initial batch: 3 on mobile, 6 on desktop — subsequent batches always 6
+    const catsInitialSize = window.innerWidth < 600 ? 3 : 6;
+    let catsPageSize = 6;
     let catsRenderedCount = 0;
     let catsAllItems = [];
     let catsObserver = null;
@@ -166,8 +168,8 @@ document.addEventListener('DOMContentLoaded', () => {
         catsAllItems = approvedCats;
         catsRenderedCount = 0;
 
-        // Render first batch
-        appendCatCards(likedCatIds);
+        // Render first batch (smaller on mobile for faster initial paint)
+        appendCatCards(likedCatIds, catsInitialSize);
 
         // If there are more items, set up IntersectionObserver on a sentinel
         if (catsRenderedCount < catsAllItems.length) {
@@ -178,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             catsObserver = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting) {
-                    appendCatCards(getLikedCatIds());
+                    appendCatCards(getLikedCatIds(), catsPageSize);
                     if (catsRenderedCount >= catsAllItems.length) {
                         catsObserver.disconnect();
                         catsObserver = null;
@@ -191,8 +193,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function appendCatCards(likedCatIds) {
-        const batch = catsAllItems.slice(catsRenderedCount, catsRenderedCount + catsPageSize);
+    function appendCatCards(likedCatIds, batchSize = catsPageSize) {
+        const batch = catsAllItems.slice(catsRenderedCount, catsRenderedCount + batchSize);
         batch.forEach(cat => {
             const isLiked = likedCatIds.includes(cat.id);
             const photoList = cat.gallery && cat.gallery.length ? cat.gallery : [cat.image];
