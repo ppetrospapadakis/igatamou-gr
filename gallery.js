@@ -62,10 +62,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // thumbUrl: reserved for future image optimizations.
-    // Supabase Image Transform API requires a paid plan — disabled for now.
+    // ---- Client-side Thumbnail Cache ----
+    // Compresses gallery card images (400px / 65% quality) and stores them in localStorage.
+    // First load: shows original URL. After compression: shows tiny cached version on next visit.
+    const THUMB_CACHE_KEY = 'igatamou_thumb_cache_v1';
+
+    function getThumbCache() {
+        try { return JSON.parse(localStorage.getItem(THUMB_CACHE_KEY) || '{}'); } catch(e) { return {}; }
+    }
+    function saveThumbCache(cache) {
+        try { localStorage.setItem(THUMB_CACHE_KEY, JSON.stringify(cache)); } catch(e) {
+            // localStorage full — clear oldest 20 entries and try again
+            try {
+                const entries = Object.entries(cache);
+                const trimmed = Object.fromEntries(entries.slice(-Math.max(entries.length - 20, 1)));
+                localStorage.setItem(THUMB_CACHE_KEY, JSON.stringify(trimmed));
+            } catch(e2) {}
+        }
+    }
+
+    // Returns the cached thumbnail if available, otherwise the original src.
+    // Kicks off background compression+caching for uncached URLs.
     function thumbUrl(src) {
-        return src || '';
+        if (!src) return '';
+        const cache = getThumbCache();
+        if (cache[src]) return cache[src]; // instant — already cached
+
+        // Not cached: start background compress after a short delay so it doesn't compete with initial render
+        setTimeout(() => compressAndCacheThumb(src), 1500);
+        return src; // use original for now
+    }
+
+    function compressAndCacheThumb(src) {
+        if (!src || src.startsWith('data:image')) return; // base64 already small — skip
+        const cache = getThumbCache();
+        if (cache[src]) return; // already cached by another call
+
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            try {
+                const MAX = 400;
+                let w = img.naturalWidth, h = img.naturalHeight;
+                if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; } }
+                else       { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; } }
+                const canvas = document.createElement('canvas');
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                const compressed = canvas.toDataURL('image/jpeg', 0.65);
+                // Only cache if the compressed version is actually smaller
+                if (compressed.length < src.length || !src.startsWith('data:')) {
+                    const c = getThumbCache();
+                    c[src] = compressed;
+                    saveThumbCache(c);
+                    // Update any visible img elements still showing the original
+                    document.querySelectorAll(`.cat-card-img[data-original="${CSS.escape ? CSS.escape(src) : src}"]`).forEach(el => {
+                        el.src = compressed;
+                    });
+                }
+            } catch(e) {} // CORS or canvas error — silently ignore
+        };
+        img.onerror = () => {}; // ignore failures
+        img.src = src;
     }
 
     // One-time background migration: re-compress any oversized base64 images already in localStorage.
@@ -268,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.className = 'cat-gallery-card';
             card.innerHTML = `
                 <div class="cat-card-img-wrapper">
-                    <img src="${thumbUrl(cat.image)}" alt="${cat.name}" class="cat-card-img" loading="lazy" decoding="async" width="300" height="220">
+                    <img src="${thumbUrl(cat.image)}" data-original="${cat.image}" alt="${cat.name}" class="cat-card-img" loading="lazy" decoding="async" width="300" height="220">
                     <span class="cat-card-ribbon">🎀</span>
                 </div>
                 <div class="cat-card-body">
