@@ -313,17 +313,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateFullscreenButtonUI() {
         const active = isFullscreenActive();
-        document.querySelectorAll('.btn-toggle-fullscreen').forEach(btn => {
-            if (active) {
-                btn.classList.add('active-fullscreen');
-                btn.innerHTML = `<span class="fs-icon">↙️</span><span class="fs-text">Έξοδος από Πλήρη Οθόνη</span>`;
-                btn.title = "Έξοδος από Πλήρη Οθόνη";
-            } else {
-                btn.classList.remove('active-fullscreen');
-                btn.innerHTML = `<span class="fs-icon">⛶</span><span class="fs-text">Πλήρης Οθόνη</span>`;
-                btn.title = "Εναλλαγή Πλήρους Οθόνης";
-            }
-        });
+        const btn = toggleFullscreenBtn;
+        if (!btn) return;
+        if (active) {
+            btn.classList.add('active-fullscreen');
+            btn.innerHTML = `<span class="fs-icon">↙️</span><span class="fs-text">Έξοδος από Πλήρη Οθόνη</span>`;
+            btn.title = "Έξοδος από Πλήρη Οθόνη";
+        } else {
+            btn.classList.remove('active-fullscreen');
+            btn.innerHTML = `<span class="fs-icon">⛶</span><span class="fs-text">Πλήρης Οθόνη</span>`;
+            btn.title = "Εναλλαγή Πλήρους Οθόνης";
+        }
     }
 
     function enterFullscreen() {
@@ -378,9 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    document.querySelectorAll('.btn-toggle-fullscreen').forEach(btn => {
-        btn.addEventListener('click', toggleGameFullscreen);
-    });
+    if (toggleFullscreenBtn) toggleFullscreenBtn.addEventListener('click', toggleGameFullscreen);
 
     const handleFullscreenChange = () => {
         const nativeActive = Boolean(

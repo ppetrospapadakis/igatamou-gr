@@ -1020,23 +1020,14 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     border: 3px solid #ffffff;
 }
 
-/* Fullscreen Control Bar & Button */
-.fullscreen-bar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 2px dashed #f1f5f9;
-}
-
+/* Fullscreen Single Header Button */
 .btn-fullscreen {
     background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
     color: #ffffff;
     border: 2px solid #818cf8;
-    padding: 10px 24px;
+    padding: 8px 20px;
     border-radius: var(--radius-full);
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     cursor: pointer;
     display: inline-flex;
@@ -1068,7 +1059,7 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
 }
 
 .btn-fullscreen .fs-icon {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
 }
 
 /* Fullscreen Mode Styling */
@@ -1091,7 +1082,7 @@ body.arena-fullscreen-active {
     border-radius: 0 !important;
     border: none !important;
     margin: 0 !important;
-    padding: 16px 20px 24px 20px !important;
+    padding: 0 !important;
     box-sizing: border-box !important;
     background: linear-gradient(135deg, #fff5f8 0%, #eef2ff 100%) !important;
     overflow-y: auto !important;
@@ -1101,35 +1092,32 @@ body.arena-fullscreen-active {
     justify-content: flex-start !important;
 }
 
+/* In fullscreen: header is compact and sticky */
 .game-arena-card.is-fullscreen .arena-header,
 .game-arena-card:fullscreen .arena-header {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 12px 18px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border-radius: 0;
+    padding: 10px 16px;
+    margin-bottom: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     position: sticky;
     top: 0;
     z-index: 10;
+    border-bottom: 2px solid #f1f5f9;
 }
 
+/* In fullscreen: hide the redundant back-to-menu button */
+.game-arena-card.is-fullscreen #backToMenuBtn,
+.game-arena-card:fullscreen #backToMenuBtn {
+    display: none !important;
+}
+
+/* In fullscreen: content area fills remaining space */
 .game-arena-card.is-fullscreen .arena-content-grid,
 .game-arena-card:fullscreen .arena-content-grid {
     flex: 1 1 auto;
-}
-
-.game-arena-card.is-fullscreen .fullscreen-bar,
-.game-arena-card:fullscreen .fullscreen-bar {
-    position: sticky;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(12px);
-    padding: 12px 0;
-    margin-top: 16px;
-    border-radius: 20px 20px 0 0;
-    z-index: 10;
-    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.06);
+    padding: 16px 20px 24px;
 }
 
 .arena-header {
