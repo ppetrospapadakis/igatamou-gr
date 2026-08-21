@@ -1345,11 +1345,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = snakeCanvas.getContext('2d');
         const isFullscreen = isFullscreenActive() && window.innerWidth >= 720;
         const isDesktop = window.innerWidth >= 900;
-        const scale = isFullscreen ? 1.85 : (isDesktop ? 1.5 : 1.0);
-        const dim = 300 * scale;
-        const size = 20 * scale;
+        const scale = isFullscreen ? 2.4 : (isDesktop ? 1.6 : 1.0);
+        const dim = Math.round(300 * scale);
+        const size = dim / 15;
 
-        if (snakeCanvas.width !== dim) {
+        if (snakeCanvas.width !== dim || snakeCanvas.height !== dim) {
             snakeCanvas.width = dim;
             snakeCanvas.height = dim;
         }
@@ -1357,7 +1357,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(0, 0, dim, dim);
 
-        ctx.font = `${Math.floor(16 * scale)}px sans-serif`;
+        ctx.font = `${Math.floor(18 * scale)}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(snakeFood.icon, snakeFood.x * size + size / 2, snakeFood.y * size + size / 2);
