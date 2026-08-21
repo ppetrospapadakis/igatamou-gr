@@ -2086,7 +2086,7 @@ body.arena-fullscreen-active {
     height: 100vh;
     background: rgba(15, 23, 42, 0.75) !important;
     backdrop-filter: blur(10px) !important;
-    z-index: 999999 !important;
+    z-index: 99999999 !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4156,6 +4156,61 @@ body.arena-fullscreen-active {
 .btn-save-drawing:hover {
     transform: translateY(-3px) scale(1.04);
     box-shadow: 0 12px 28px rgba(16, 185, 129, 0.45);
+}
+
+/* DRAWING STUDIO FULLSCREEN STYLES */
+body.draw-fullscreen-active {
+    overflow: hidden !important;
+}
+
+.drawing-main-card.is-fullscreen,
+.drawing-main-card:fullscreen,
+.drawing-main-card:-webkit-full-screen,
+.drawing-main-card:-moz-full-screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    width: 100dvw !important;
+    height: 100dvh !important;
+    z-index: 999999 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 16px 20px 36px !important;
+    box-sizing: border-box !important;
+    background: linear-gradient(135deg, #fff5f8 0%, #eef2ff 100%) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+}
+
+.drawing-main-card.is-fullscreen .menu-title-box {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 14px 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    max-width: 1000px;
+    box-sizing: border-box;
+}
+
+.drawing-main-card.is-fullscreen .canvas-wrapper {
+    max-width: 1000px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+}
+
+.drawing-main-card.is-fullscreen .toolbox-container {
+    max-width: 1000px;
+}
+
+.drawing-main-card.is-fullscreen .stencils-bar {
+    max-width: 1000px;
 }
 
 /* PUBLIC DRAWINGS GALLERY STYLES */

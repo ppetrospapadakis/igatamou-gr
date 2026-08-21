@@ -258,6 +258,114 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ----------------------------------------------------
+    // FULLSCREEN STUDIO TOGGLE LOGIC
+    // ----------------------------------------------------
+    const drawingMainCard = document.getElementById('drawingMainCard');
+    const toggleFullscreenBtn = document.getElementById('toggleFullscreenBtn');
+
+    function isFullscreenActive() {
+        return Boolean(
+            document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement ||
+            (drawingMainCard && drawingMainCard.classList.contains('is-fullscreen'))
+        );
+    }
+
+    function updateFullscreenButtonUI() {
+        const active = isFullscreenActive();
+        const btn = toggleFullscreenBtn;
+        if (!btn) return;
+        if (active) {
+            btn.classList.add('active-fullscreen');
+            btn.innerHTML = `<span class="fs-icon">↙️</span><span class="fs-text">Έξοδος από Πλήρη Οθόνη</span>`;
+            btn.title = "Έξοδος από Πλήρη Οθόνη";
+        } else {
+            btn.classList.remove('active-fullscreen');
+            btn.innerHTML = `<span class="fs-icon">⛶</span><span class="fs-text">Πλήρης Οθόνη</span>`;
+            btn.title = "Εναλλαγή Πλήρους Οθόνης";
+        }
+    }
+
+    function enterFullscreen() {
+        if (!drawingMainCard) return;
+
+        drawingMainCard.classList.add('is-fullscreen');
+        document.body.classList.add('draw-fullscreen-active');
+
+        if (drawingMainCard.requestFullscreen) {
+            drawingMainCard.requestFullscreen().catch(() => {});
+        } else if (drawingMainCard.webkitRequestFullscreen) {
+            drawingMainCard.webkitRequestFullscreen();
+        } else if (drawingMainCard.mozRequestFullScreen) {
+            drawingMainCard.mozRequestFullScreen();
+        } else if (drawingMainCard.msRequestFullscreen) {
+            drawingMainCard.msRequestFullscreen();
+        }
+
+        updateFullscreenButtonUI();
+    }
+
+    function exitFullscreen() {
+        if (!drawingMainCard) return;
+
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
+        drawingMainCard.classList.remove('is-fullscreen');
+        document.body.classList.remove('draw-fullscreen-active');
+
+        updateFullscreenButtonUI();
+    }
+
+    function toggleStudioFullscreen() {
+        if (isFullscreenActive()) {
+            exitFullscreen();
+        } else {
+            enterFullscreen();
+        }
+    }
+
+    if (toggleFullscreenBtn) {
+        toggleFullscreenBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleStudioFullscreen();
+        });
+    }
+
+    const handleFullscreenChange = () => {
+        if (!document.fullscreenElement &&
+            !document.webkitFullscreenElement &&
+            !document.mozFullScreenElement &&
+            !document.msFullscreenElement) {
+            if (drawingMainCard) drawingMainCard.classList.remove('is-fullscreen');
+            document.body.classList.remove('draw-fullscreen-active');
+        }
+        updateFullscreenButtonUI();
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isFullscreenActive()) {
+            exitFullscreen();
+        }
+    });
+
+    // ----------------------------------------------------
     // 5. STENCILS & OUTLINES (COLORING BOOK MODE)
     // ----------------------------------------------------
     const stencilBtns = document.querySelectorAll('.stencil-btn');
