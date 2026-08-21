@@ -1245,9 +1245,9 @@ document.addEventListener('DOMContentLoaded', () => {
             snakePauseBtn.classList.remove('is-paused');
         }
 
-        let speedMs = 240;
-        if (currentDifficulty === 'medium') speedMs = 160;
-        if (currentDifficulty === 'hard') speedMs = 100;
+        let speedMs = 340;
+        if (currentDifficulty === 'medium') speedMs = 260;
+        if (currentDifficulty === 'hard') speedMs = 260;
 
         if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Μάζεψε λιχουδιές! (Σούρε το δάχτυλο ή χρησιμοποίησε κουμπιά) 🐟"`;
 
@@ -1324,9 +1324,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 overlay.hidden = true;
                 overlay.classList.add('is-hidden');
             }
-            let speedMs = 240;
-            if (currentDifficulty === 'medium') speedMs = 160;
-            if (currentDifficulty === 'hard') speedMs = 100;
+            let speedMs = 340;
+            if (currentDifficulty === 'medium') speedMs = 260;
+            if (currentDifficulty === 'hard') speedMs = 260;
             snakeInterval = setInterval(updateSnakeGame, speedMs);
         }
     }
