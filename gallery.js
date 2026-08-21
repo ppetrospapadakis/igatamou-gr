@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.className = 'cat-gallery-card';
             card.innerHTML = `
                 <div class="cat-card-img-wrapper">
-                    <img src="${cat.image}" alt="${cat.name}" class="cat-card-img">
+                    <img src="${cat.image}" alt="${cat.name}" class="cat-card-img" loading="lazy" decoding="async" width="300" height="220">
                     <span class="cat-card-ribbon">🎀</span>
                 </div>
                 <div class="cat-card-body">
@@ -201,6 +201,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             galleryGrid.appendChild(card);
+
+            // Fade-in image once loaded
+            const imgEl = card.querySelector('.cat-card-img');
+            if (imgEl) {
+                if (imgEl.complete && imgEl.naturalWidth > 0) {
+                    imgEl.classList.add('loaded');
+                } else {
+                    imgEl.addEventListener('load', () => imgEl.classList.add('loaded'));
+                    imgEl.addEventListener('error', () => imgEl.classList.add('loaded')); // show even on error
+                }
+            }
         });
 
         // Show "Εμφάνιση όλων" button if there are more than 10 cats and not all are shown yet
@@ -249,31 +260,49 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!currentAlbumPhotos.length) return;
 
         const currentSrc = currentAlbumPhotos[currentAlbumIndex];
+
         if (albumFeaturedImg) {
-            albumFeaturedImg.style.opacity = '0.3';
-            setTimeout(() => {
+            // Fade out, swap src only when new image is loaded
+            albumFeaturedImg.style.opacity = '0.2';
+            albumFeaturedImg.style.transition = 'opacity 0.2s ease';
+
+            const preload = new Image();
+            preload.onload = () => {
                 albumFeaturedImg.src = currentSrc;
                 albumFeaturedImg.style.opacity = '1';
-            }, 100);
+            };
+            preload.onerror = () => {
+                albumFeaturedImg.src = currentSrc;
+                albumFeaturedImg.style.opacity = '1';
+            };
+            preload.src = currentSrc;
         }
 
         if (albumImageCounter) {
             albumImageCounter.textContent = `${currentAlbumIndex + 1} / ${currentAlbumPhotos.length}`;
         }
 
-        // Render Thumbnails
+        // Render Thumbnails with lazy loading
         if (albumThumbnails) {
             albumThumbnails.innerHTML = '';
             currentAlbumPhotos.forEach((src, idx) => {
                 const thumb = document.createElement('div');
                 thumb.className = `album-thumb ${idx === currentAlbumIndex ? 'active-thumb' : ''}`;
-                thumb.innerHTML = `<img src="${src}" alt="Thumbnail ${idx + 1}">`;
+                // First thumb loads eagerly (already visible), rest lazy
+                thumb.innerHTML = `<img src="${src}" alt="Thumbnail ${idx + 1}" loading="${idx === 0 ? 'eager' : 'lazy'}" decoding="async" width="80" height="80">`;
                 thumb.addEventListener('click', () => {
                     currentAlbumIndex = idx;
                     updateAlbumView();
                 });
                 albumThumbnails.appendChild(thumb);
             });
+        }
+
+        // Preload next image in background for instant navigation
+        const nextIdx = (currentAlbumIndex + 1) % currentAlbumPhotos.length;
+        if (nextIdx !== currentAlbumIndex) {
+            const nextPreload = new Image();
+            nextPreload.src = currentAlbumPhotos[nextIdx];
         }
     }
 
@@ -442,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    async function compressImageFile(file, callback) {
+    async function compressImageFile(file, callback, maxPx = 800, quality = 0.75) {
         let processFile = file;
 
         if (file && (file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif') || (file.type && file.type.includes('heic')))) {
@@ -467,8 +496,8 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = event.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 900;
-                const MAX_HEIGHT = 900;
+                const MAX_WIDTH = maxPx;
+                const MAX_HEIGHT = maxPx;
                 let width = img.width;
                 let height = img.height;
 
@@ -489,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.80);
+                const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
                 callback(compressedBase64);
             };
             img.onerror = () => {
