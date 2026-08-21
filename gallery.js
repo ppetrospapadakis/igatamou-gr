@@ -62,6 +62,77 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Returns an optimized thumbnail URL for gallery cards.
+    // For Supabase Storage URLs: uses the built-in Transform API (server-side resize, no files changed).
+    // For base64 data URLs: returns as-is (already compressed by canvas).
+    function thumbUrl(src, width = 400, quality = 65) {
+        if (!src) return src;
+        // Supabase Storage URL pattern: .../storage/v1/object/public/...
+        if (src.includes('/storage/v1/object/public/')) {
+            return src.replace('/storage/v1/object/public/', '/storage/v1/render/v1/public/')
+                + `?width=${width}&quality=${quality}&resize=cover`;
+        }
+        return src; // base64 or other — unchanged
+    }
+
+    // One-time background migration: re-compress any oversized base64 images already in localStorage.
+    // Runs silently, does NOT block page rendering.
+    function migrateOldBase64Images() {
+        const MIGRATION_KEY = 'igatamou_migration_v1';
+        if (localStorage.getItem(MIGRATION_KEY)) return; // already done
+
+        setTimeout(async () => {
+            const cats = getCatsData();
+            let changed = false;
+
+            for (const cat of cats) {
+                const urls = [cat.image, ...(cat.gallery || [])].filter(Boolean);
+                const recompressed = [];
+
+                for (const url of urls) {
+                    if (!url.startsWith('data:image')) {
+                        recompressed.push(url); // Supabase URL — skip
+                        continue;
+                    }
+                    // Only re-compress if base64 is large (> ~150KB encoded ≈ roughly 200KB string)
+                    if (url.length < 200_000) {
+                        recompressed.push(url); // already small enough
+                        continue;
+                    }
+                    // Re-compress via canvas at 500px / quality 0.65
+                    const smaller = await new Promise(resolve => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const MAX = 500;
+                            let w = img.width, h = img.height;
+                            if (w > h) { if (w > MAX) { h = h * MAX / w; w = MAX; } }
+                            else       { if (h > MAX) { w = w * MAX / h; h = MAX; } }
+                            const canvas = document.createElement('canvas');
+                            canvas.width = w; canvas.height = h;
+                            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                            resolve(canvas.toDataURL('image/jpeg', 0.65));
+                        };
+                        img.onerror = () => resolve(url); // keep original on error
+                        img.src = url;
+                    });
+                    recompressed.push(smaller);
+                    changed = true;
+                }
+
+                if (changed) {
+                    cat.image = recompressed[0] || cat.image;
+                    cat.gallery = recompressed.length > 0 ? recompressed : cat.gallery;
+                }
+            }
+
+            if (changed) {
+                saveCatsData(cats);
+                console.log('igatamou: base64 images re-compressed and saved.');
+            }
+            localStorage.setItem(MIGRATION_KEY, '1');
+        }, 3000); // run 3s after page load — doesn't affect initial render
+    }
+
     // Sync from Supabase DB on page load
     async function syncFromSupabase() {
         if (!supabase) return;
@@ -97,6 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Trigger initial sync
     syncFromSupabase();
+    migrateOldBase64Images(); // silently re-compress old large base64 images in background
 
     // ----------------------------------------------------
     // 2. PUBLIC GALLERY PAGE LOGIC (gallery.html)
@@ -203,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.className = 'cat-gallery-card';
             card.innerHTML = `
                 <div class="cat-card-img-wrapper">
-                    <img src="${cat.image}" alt="${cat.name}" class="cat-card-img" loading="lazy" decoding="async" width="300" height="220">
+                    <img src="${thumbUrl(cat.image)}" alt="${cat.name}" class="cat-card-img" loading="lazy" decoding="async" width="300" height="220">
                     <span class="cat-card-ribbon">🎀</span>
                 </div>
                 <div class="cat-card-body">
