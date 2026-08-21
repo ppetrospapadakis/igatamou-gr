@@ -1340,9 +1340,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function spawnSnakeFood() {
+        let valid = false;
+        let newX = 5;
+        let newY = 5;
+        let attempts = 0;
+        while (!valid && attempts < 250) {
+            attempts++;
+            newX = Math.floor(Math.random() * 15);
+            newY = Math.floor(Math.random() * 15);
+            const onSnake = snake.some(s => s.x === newX && s.y === newY);
+            const onObstacle = snakeObstacles.some(o => o.x === newX && o.y === newY);
+            if (!onSnake && !onObstacle) {
+                valid = true;
+            }
+        }
         snakeFood = {
-            x: Math.floor(Math.random() * 14) + 1,
-            y: Math.floor(Math.random() * 14) + 1,
+            x: newX,
+            y: newY,
             icon: foodIcons[Math.floor(Math.random() * foodIcons.length)]
         };
     }
@@ -1415,12 +1429,16 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = `${Math.floor(18 * scale)}px sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(snakeFood.icon, snakeFood.x * size + size / 2, snakeFood.y * size + size / 2);
 
+        // 1. Draw obstacles first
         snakeObstacles.forEach(o => {
             ctx.fillText('🧱', o.x * size + size / 2, o.y * size + size / 2);
         });
 
+        // 2. Draw food
+        ctx.fillText(snakeFood.icon, snakeFood.x * size + size / 2, snakeFood.y * size + size / 2);
+
+        // 3. Draw snake
         snake.forEach((segment, index) => {
             if (index === 0) {
                 ctx.fillText('🐱', segment.x * size + size / 2, segment.y * size + size / 2);
