@@ -293,9 +293,115 @@ document.addEventListener('DOMContentLoaded', () => {
     const solitaireBoard = document.getElementById('solitaireBoard');
     const solitaireStatusText = document.getElementById('solitaireStatusText');
     const solitaireResetBtn = document.getElementById('solitaireResetBtn');
+    const toggleFullscreenBtn = document.getElementById('toggleFullscreenBtn');
 
     if (trophyModal) trophyModal.hidden = true;
     updateScoreUI();
+
+    // ----------------------------------------------------
+    // FULLSCREEN TOGGLE LOGIC
+    // ----------------------------------------------------
+    function isFullscreenActive() {
+        return Boolean(
+            document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement ||
+            (gameArena && gameArena.classList.contains('is-fullscreen'))
+        );
+    }
+
+    function updateFullscreenButtonUI() {
+        const active = isFullscreenActive();
+        document.querySelectorAll('.btn-toggle-fullscreen').forEach(btn => {
+            if (active) {
+                btn.classList.add('active-fullscreen');
+                btn.innerHTML = `<span class="fs-icon">↙️</span><span class="fs-text">Έξοδος από Πλήρη Οθόνη</span>`;
+                btn.title = "Έξοδος από Πλήρη Οθόνη";
+            } else {
+                btn.classList.remove('active-fullscreen');
+                btn.innerHTML = `<span class="fs-icon">⛶</span><span class="fs-text">Πλήρης Οθόνη</span>`;
+                btn.title = "Εναλλαγή Πλήρους Οθόνης";
+            }
+        });
+    }
+
+    function enterFullscreen() {
+        if (!gameArena) return;
+
+        gameArena.classList.add('is-fullscreen');
+        document.body.classList.add('arena-fullscreen-active');
+
+        if (gameArena.requestFullscreen) {
+            gameArena.requestFullscreen().catch(() => {});
+        } else if (gameArena.webkitRequestFullscreen) {
+            gameArena.webkitRequestFullscreen();
+        } else if (gameArena.mozRequestFullScreen) {
+            gameArena.mozRequestFullScreen();
+        } else if (gameArena.msRequestFullscreen) {
+            gameArena.msRequestFullscreen();
+        }
+
+        updateFullscreenButtonUI();
+        if (currentCategory === 'snake' && typeof drawSnakeCanvas === 'function') drawSnakeCanvas();
+        if (currentCategory === 'tetris' && typeof drawTetrisCanvas === 'function') drawTetrisCanvas();
+    }
+
+    function exitFullscreen() {
+        if (!gameArena) return;
+
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
+        gameArena.classList.remove('is-fullscreen');
+        document.body.classList.remove('arena-fullscreen-active');
+
+        updateFullscreenButtonUI();
+        if (currentCategory === 'snake' && typeof drawSnakeCanvas === 'function') drawSnakeCanvas();
+        if (currentCategory === 'tetris' && typeof drawTetrisCanvas === 'function') drawTetrisCanvas();
+    }
+
+    function toggleGameFullscreen() {
+        if (isFullscreenActive()) {
+            exitFullscreen();
+        } else {
+            enterFullscreen();
+        }
+    }
+
+    document.querySelectorAll('.btn-toggle-fullscreen').forEach(btn => {
+        btn.addEventListener('click', toggleGameFullscreen);
+    });
+
+    const handleFullscreenChange = () => {
+        const nativeActive = Boolean(
+            document.fullscreenElement ||
+            document.webkitFullscreenElement ||
+            document.mozFullScreenElement ||
+            document.msFullscreenElement
+        );
+        if (!nativeActive && gameArena) {
+            gameArena.classList.remove('is-fullscreen');
+            document.body.classList.remove('arena-fullscreen-active');
+        }
+        updateFullscreenButtonUI();
+        if (currentCategory === 'snake' && typeof drawSnakeCanvas === 'function') drawSnakeCanvas();
+        if (currentCategory === 'tetris' && typeof drawTetrisCanvas === 'function') drawTetrisCanvas();
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
     // ----------------------------------------------------
     // 3. DIFFICULTY & EVENT LISTENERS
@@ -401,6 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showCategoryMenu() {
+        exitFullscreen();
         if (gameArena) gameArena.hidden = true;
         if (categoryMenu) categoryMenu.hidden = false;
         currentCategory = null;

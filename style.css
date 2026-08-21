@@ -1020,6 +1020,118 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     border: 3px solid #ffffff;
 }
 
+/* Fullscreen Control Bar & Button */
+.fullscreen-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 2px dashed #f1f5f9;
+}
+
+.btn-fullscreen {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: #ffffff;
+    border: 2px solid #818cf8;
+    padding: 10px 24px;
+    border-radius: var(--radius-full);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
+}
+
+.btn-fullscreen:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
+}
+
+.btn-fullscreen:active {
+    transform: translateY(0);
+}
+
+.btn-fullscreen.active-fullscreen {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-color: #f87171;
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+}
+
+.btn-fullscreen.active-fullscreen:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+.btn-fullscreen .fs-icon {
+    font-size: 1.25rem;
+}
+
+/* Fullscreen Mode Styling */
+body.arena-fullscreen-active {
+    overflow: hidden !important;
+}
+
+.game-arena-card.is-fullscreen,
+.game-arena-card:fullscreen,
+.game-arena-card:-webkit-full-screen,
+.game-arena-card:-moz-full-screen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    width: 100dvw !important;
+    height: 100dvh !important;
+    z-index: 999999 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 16px 20px 24px 20px !important;
+    box-sizing: border-box !important;
+    background: linear-gradient(135deg, #fff5f8 0%, #eef2ff 100%) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+}
+
+.game-arena-card.is-fullscreen .arena-header,
+.game-arena-card:fullscreen .arena-header {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.game-arena-card.is-fullscreen .arena-content-grid,
+.game-arena-card:fullscreen .arena-content-grid {
+    flex: 1 1 auto;
+}
+
+.game-arena-card.is-fullscreen .fullscreen-bar,
+.game-arena-card:fullscreen .fullscreen-bar {
+    position: sticky;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    padding: 12px 0;
+    margin-top: 16px;
+    border-radius: 20px 20px 0 0;
+    z-index: 10;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.06);
+}
+
 .arena-header {
     display: flex;
     justify-content: space-between;
