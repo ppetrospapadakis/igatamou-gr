@@ -4437,39 +4437,98 @@ body.draw-fullscreen-active {
     border-radius: 0 !important;
     border: none !important;
     margin: 0 !important;
-    padding: 16px 20px 36px !important;
+    padding: 10px 14px 14px 14px !important;
     box-sizing: border-box !important;
     background: linear-gradient(135deg, #fff5f8 0%, #eef2ff 100%) !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    overflow: hidden !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    gap: 16px !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
 }
 
-.drawing-main-card.is-fullscreen .menu-title-box {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 14px 20px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-    width: 100%;
-    max-width: 1000px;
-    box-sizing: border-box;
+/* In fullscreen: hide EVERYTHING above canvas */
+.drawing-main-card.is-fullscreen .menu-title-box,
+.drawing-main-card:fullscreen .menu-title-box,
+.drawing-main-card.is-fullscreen .stencils-bar,
+.drawing-main-card:fullscreen .stencils-bar {
+    display: none !important;
 }
 
-.drawing-main-card.is-fullscreen .canvas-wrapper {
-    max-width: 1000px;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+/* Maximize Canvas Area in Fullscreen */
+.drawing-main-card.is-fullscreen .canvas-wrapper,
+.drawing-main-card:fullscreen .canvas-wrapper {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    max-width: min(98vw, 1500px) !important;
+    height: 100% !important;
+    max-height: calc(100vh - 195px) !important;
+    max-height: calc(100dvh - 195px) !important;
+    aspect-ratio: auto !important;
+    border-radius: 20px !important;
+    border-width: 4px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
-.drawing-main-card.is-fullscreen .toolbox-container {
-    max-width: 1000px;
+.drawing-main-card.is-fullscreen #drawingCanvas,
+.drawing-main-card:fullscreen #drawingCanvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
 }
 
-.drawing-main-card.is-fullscreen .stencils-bar {
-    max-width: 1000px;
+/* Compact Toolbox & Save Action Bar at the bottom */
+.drawing-main-card.is-fullscreen .toolbox-container,
+.drawing-main-card:fullscreen .toolbox-container {
+    max-width: min(98vw, 1500px) !important;
+    width: 100% !important;
+    padding: 8px 14px !important;
+    gap: 8px !important;
+    border-radius: 18px !important;
+    margin: 0 auto !important;
+    flex-shrink: 0 !important;
+}
+
+.drawing-main-card.is-fullscreen .color-palette,
+.drawing-main-card:fullscreen .color-palette {
+    gap: 8px !important;
+}
+
+.drawing-main-card.is-fullscreen .color-swatch,
+.drawing-main-card:fullscreen .color-swatch {
+    width: 32px !important;
+    height: 32px !important;
+}
+
+.drawing-main-card.is-fullscreen .tools-bar,
+.drawing-main-card:fullscreen .tools-bar {
+    gap: 8px !important;
+}
+
+.drawing-main-card.is-fullscreen .tool-btn,
+.drawing-main-card:fullscreen .tool-btn,
+.drawing-main-card.is-fullscreen .btn-fullscreen,
+.drawing-main-card:fullscreen .btn-fullscreen {
+    padding: 7px 14px !important;
+    font-size: 0.88rem !important;
+    border-radius: 14px !important;
+}
+
+.drawing-main-card.is-fullscreen .save-draw-action-bar,
+.drawing-main-card:fullscreen .save-draw-action-bar {
+    margin-top: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+.drawing-main-card.is-fullscreen .btn-save-drawing,
+.drawing-main-card:fullscreen .btn-save-drawing {
+    padding: 9px 28px !important;
+    font-size: 1.05rem !important;
 }
 
 /* PUBLIC DRAWINGS GALLERY STYLES */
