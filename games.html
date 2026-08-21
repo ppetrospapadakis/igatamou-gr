@@ -51,7 +51,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="style.css?v=18">
+    <link rel="stylesheet" href="style.css?v=20">
 </head>
 <body class="games-page-body">
 
@@ -317,8 +317,16 @@
                                 <span class="arcade-status-badge">🐟 Λιχουδιές: <strong id="snakeScore">0</strong></span>
                                 <button id="snakeStartBtn" class="btn btn-arcade-reset">▶️ Έναρξη / Επανεκκίνηση</button>
                             </div>
-                            <div class="canvas-wrapper">
+                            <div class="canvas-wrapper" style="position: relative;">
                                 <canvas id="snakeCanvas" width="300" height="300"></canvas>
+                                <div id="snakeStartOverlay" class="game-start-overlay">
+                                    <div class="start-overlay-content">
+                                        <span class="start-overlay-icon">🐍🐾</span>
+                                        <h3 class="start-overlay-title">Γατο-Φιδάκι</h3>
+                                        <p class="start-overlay-desc">Μάζεψε όσες περισσότερες λιχουδιές μπορείς!</p>
+                                        <button id="snakeOverlayStartBtn" class="btn btn-overlay-start">▶️ Έναρξη</button>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Touch D-Pad for Mobile -->
                             <div class="dpad-container">
@@ -337,8 +345,16 @@
                                 <span class="arcade-status-badge">🧱 Γραμμές: <strong id="tetrisLines">0</strong></span>
                                 <button id="tetrisStartBtn" class="btn btn-arcade-reset">▶️ Έναρξη / Επανεκκίνηση</button>
                             </div>
-                            <div class="canvas-wrapper">
+                            <div class="canvas-wrapper" style="position: relative;">
                                 <canvas id="tetrisCanvas" width="240" height="400"></canvas>
+                                <div id="tetrisStartOverlay" class="game-start-overlay">
+                                    <div class="start-overlay-content">
+                                        <span class="start-overlay-icon">🧩🧱</span>
+                                        <h3 class="start-overlay-title">Γατο-Τέτρις</h3>
+                                        <p class="start-overlay-desc">Ταίριαξε τα τουβλάκια και σχημάτισε γραμμές!</p>
+                                        <button id="tetrisOverlayStartBtn" class="btn btn-overlay-start">▶️ Έναρξη</button>
+                                    </div>
+                                </div>
                             </div>
                             <!-- Touch Controls for Mobile -->
                             <div class="tetris-controls-bar">
@@ -354,8 +370,18 @@
                                 <span class="arcade-status-badge">🐟 Πιάστηκαν: <strong id="whackScore">0</strong> / 20</span>
                                 <button id="whackStartBtn" class="btn btn-arcade-reset">▶️ Έναρξη / Επανεκκίνηση</button>
                             </div>
-                            <div id="whackGrid" class="whack-grid">
-                                <!-- 9 holes injected dynamically -->
+                            <div class="whack-board-wrapper" style="position: relative; width: 100%; display: flex; justify-content: center;">
+                                <div id="whackGrid" class="whack-grid">
+                                    <!-- 9 holes injected dynamically -->
+                                </div>
+                                <div id="whackStartOverlay" class="game-start-overlay">
+                                    <div class="start-overlay-content">
+                                        <span class="start-overlay-icon">🔨🐟</span>
+                                        <h3 class="start-overlay-title">Πιάσε το Ψαράκι!</h3>
+                                        <p class="start-overlay-desc">Χτύπα τα ψαράκια και απόφευγε τις βόμβες!</p>
+                                        <button id="whackOverlayStartBtn" class="btn btn-overlay-start">▶️ Έναρξη</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -364,8 +390,18 @@
                                 <span class="arcade-status-badge">🎈 Σπασμένα: <strong id="bubblesScore">0</strong> / 50</span>
                                 <button id="bubblesStartBtn" class="btn btn-arcade-reset">▶️ Έναρξη / Επανεκκίνηση</button>
                             </div>
-                            <div id="bubblesBox" class="bubbles-box">
-                                <!-- Floating bubbles injected dynamically -->
+                            <div class="bubbles-board-wrapper" style="position: relative; width: 100%; display: flex; justify-content: center;">
+                                <div id="bubblesBox" class="bubbles-box">
+                                    <!-- Floating bubbles injected dynamically -->
+                                </div>
+                                <div id="bubblesStartOverlay" class="game-start-overlay">
+                                    <div class="start-overlay-content">
+                                        <span class="start-overlay-icon">🎈🐾</span>
+                                        <h3 class="start-overlay-title">Γατο-Μπαλόνια</h3>
+                                        <p class="start-overlay-desc">Σκάσε τα μπαλόνια και πρόσεχε τις βόμβες!</p>
+                                        <button id="bubblesOverlayStartBtn" class="btn btn-overlay-start">▶️ Έναρξη</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -495,7 +531,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="app.js?v=18"></script>
-    <script src="games.js?v=18"></script>
+    <script src="app.js?v=20"></script>
+    <script src="games.js?v=20"></script>
 </body>
 </html>

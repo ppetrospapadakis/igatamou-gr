@@ -3360,6 +3360,102 @@ body.arena-fullscreen-active {
 .solitaire-card { background: linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%) !important; color: #0f172a !important; }
 .solitaire-card h3, .solitaire-card p { color: #0f172a !important; }
 
+/* GAME START OVERLAYS */
+.game-start-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.78);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border-radius: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+    box-sizing: border-box;
+    animation: fadeInOverlay 0.25s ease-out;
+}
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.game-start-overlay[hidden],
+.game-start-overlay.is-hidden {
+    display: none !important;
+}
+
+.start-overlay-content {
+    background: rgba(255, 255, 255, 0.96);
+    padding: 22px 26px;
+    border-radius: 26px;
+    text-align: center;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    border: 3px solid #ffccd5;
+    max-width: 320px;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.start-overlay-icon {
+    font-size: 3rem;
+    line-height: 1;
+    display: inline-block;
+    animation: bounceOverlayIcon 2s ease-in-out infinite;
+}
+
+@keyframes bounceOverlayIcon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+}
+
+.start-overlay-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+}
+
+.start-overlay-desc {
+    font-size: 0.92rem;
+    color: #475569;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.btn-overlay-start {
+    background: linear-gradient(135deg, #ff5e7e 0%, #ff9a76 100%) !important;
+    color: white !important;
+    font-size: 1.12rem !important;
+    font-weight: 800 !important;
+    padding: 11px 28px !important;
+    border-radius: 30px !important;
+    border: 2.5px solid #ffffff !important;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(255, 94, 126, 0.45);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-overlay-start:hover {
+    transform: scale(1.06) translateY(-2px);
+    box-shadow: 0 12px 30px rgba(255, 94, 126, 0.6);
+}
+
+.btn-overlay-start:active {
+    transform: scale(0.96);
+}
+
 /* 11. WHACK A FISH GRID */
 .whack-grid {
     display: grid;
