@@ -294,6 +294,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const solitaireStatusText = document.getElementById('solitaireStatusText');
     const solitaireResetBtn = document.getElementById('solitaireResetBtn');
     const toggleFullscreenBtn = document.getElementById('toggleFullscreenBtn');
+    const mascotPopup = document.getElementById('mascotPopup');
+    const mascotPopupMsg = document.getElementById('mascotPopupMsg');
+    const mascotPopupInner = mascotPopup ? mascotPopup.querySelector('.mascot-popup-inner') : null;
+
+    let mascotPopupTimer = null;
+
+    function showMascotPopup(message, type) {
+        // Only show popup when in fullscreen on narrow (mobile) screens
+        if (!isFullscreenActive() || window.innerWidth >= 720) return;
+        if (!mascotPopup || !mascotPopupMsg || !mascotPopupInner) return;
+
+        // Clear any running dismiss timer
+        if (mascotPopupTimer) { clearTimeout(mascotPopupTimer); mascotPopupTimer = null; }
+
+        // Set content & colour
+        mascotPopupMsg.textContent = message;
+        mascotPopupInner.classList.remove('pop-correct', 'pop-wrong');
+        if (type === 'correct') mascotPopupInner.classList.add('pop-correct');
+        if (type === 'wrong')   mascotPopupInner.classList.add('pop-wrong');
+
+        // Show with slide-up animation
+        mascotPopup.classList.remove('pop-hide');
+        mascotPopup.hidden = false;
+
+        // Auto-dismiss after 1.6 s with slide-down animation
+        mascotPopupTimer = setTimeout(() => {
+            mascotPopup.classList.add('pop-hide');
+            setTimeout(() => {
+                mascotPopup.hidden = true;
+                mascotPopup.classList.remove('pop-hide');
+            }, 280);
+        }, 1600);
+    }
 
     if (trophyModal) trophyModal.hidden = true;
     updateScoreUI();
@@ -704,6 +737,16 @@ document.addEventListener('DOMContentLoaded', () => {
             updateScoreUI();
             playCatSoundEffect('correct');
             triggerCorrectAnswerReaction();
+            const correctMessages = [
+                '🎉 Σωστά! Μπράβο!',
+                '✅ Τέλεια! Συνέχισε!',
+                '🐾 Ναι! Η Μάγκας χαίρεται!',
+                '⭐ Εξαιρετικά! Καλή δουλειά!',
+                '🥳 Σωστό! Είσαι φοβερός/-ή!',
+            ];
+            const rMsg = correctMessages[Math.floor(Math.random() * correctMessages.length)];
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "${rMsg}"`;
+            showMascotPopup(rMsg, 'correct');
 
             setTimeout(() => {
                 currentQIndex++;
@@ -721,6 +764,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.quiz-option-btn').forEach(b => {
                 if (b.textContent.trim() === correct.trim()) b.classList.add('correct');
             });
+
+            const wrongMsg = `❌ Λάθος! Σωστό: "${correct}"`;
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "${wrongMsg}"`;
+            showMascotPopup(wrongMsg, 'wrong');
 
             setTimeout(() => {
                 currentQIndex++;

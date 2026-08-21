@@ -1120,6 +1120,98 @@ body.arena-fullscreen-active {
     padding: 16px 20px 24px;
 }
 
+/* In fullscreen on mobile: hide the sidebar mascot, show popup instead */
+@media (max-width: 719px) {
+    .game-arena-card.is-fullscreen .mascot-companion-column,
+    .game-arena-card:fullscreen .mascot-companion-column {
+        display: none !important;
+    }
+    .game-arena-card.is-fullscreen .arena-content-grid,
+    .game-arena-card:fullscreen .arena-content-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ---- Mascot Popup (mobile / fullscreen answer reaction) ---- */
+.mascot-popup {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999999;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    padding: 0 16px 24px;
+    animation: mascotPopupSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.mascot-popup[hidden] {
+    display: none !important;
+}
+
+@keyframes mascotPopupSlideUp {
+    from { transform: translateY(120px); opacity: 0; }
+    to   { transform: translateY(0);     opacity: 1; }
+}
+
+.mascot-popup.pop-hide {
+    animation: mascotPopupSlideDown 0.25s ease-in both;
+}
+
+@keyframes mascotPopupSlideDown {
+    from { transform: translateY(0);     opacity: 1; }
+    to   { transform: translateY(120px); opacity: 0; }
+}
+
+.mascot-popup-inner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 24px;
+    padding: 14px 22px 14px 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10);
+    border: 2px solid #ffe3ec;
+    max-width: 420px;
+    width: 100%;
+}
+
+.mascot-popup-inner.pop-correct {
+    border-color: #86efac;
+    background: linear-gradient(135deg, #f0fdf4 0%, #fff 100%);
+}
+
+.mascot-popup-inner.pop-wrong {
+    border-color: #fca5a5;
+    background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
+}
+
+.mascot-popup-cat-frame {
+    width: 68px;
+    height: 68px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 14px rgba(255, 94, 126, 0.25);
+}
+
+.mascot-popup-cat-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 58%;
+}
+
+.mascot-popup-msg {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.4;
+    font-family: inherit;
+}
+
 .arena-header {
     display: flex;
     justify-content: space-between;
