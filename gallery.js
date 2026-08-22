@@ -1737,27 +1737,45 @@ document.addEventListener('DOMContentLoaded', () => {
     let adminBookPages = [];
     let adminCurrentBookPage = 0;
 
-    function splitAdminStoryPages(htmlContent, wordsPerPage = 180) {
+    function buildAdminStoryBookPages(story) {
+        const coverUrl = story.cover_image_url || 'magkas_logo.png';
+        const coverPageHtml = `
+            <div class="book-cover-page">
+                <div class="book-cover-badge">✨ Γατο-Ιστορίες 📖</div>
+                <h2 class="book-cover-title">${escapeHtml(story.title)}</h2>
+                <div class="book-cover-author">✍️ Από: <strong>${escapeHtml(story.author)}</strong></div>
+                <div class="book-cover-img-box">
+                    <img src="${escapeHtml(coverUrl)}" alt="${escapeHtml(story.title)}" class="book-cover-img" onerror="this.src='magkas_logo.png'">
+                </div>
+                <div class="book-cover-hint">🐾 Πάτα «Επόμενη ▶» για να διαβάσεις! 📖</div>
+            </div>
+        `;
+
+        const isMobile = window.innerWidth <= 768;
+        const wordsPerPage = isMobile ? 85 : 150;
         const charsPerPage = wordsPerPage * 6;
-        let remaining = htmlContent || '';
-        const pages = [];
+
+        let remaining = story.content || '';
+        const textPages = [];
         while (remaining.length > 0) {
             if (remaining.length <= charsPerPage) {
-                pages.push(remaining);
+                textPages.push(remaining);
                 break;
             }
             let cutAt = charsPerPage;
             const pEnd = remaining.lastIndexOf('</p>', cutAt);
             if (pEnd > cutAt / 2) cutAt = pEnd + 4;
-            pages.push(remaining.slice(0, cutAt));
+            textPages.push(remaining.slice(0, cutAt));
             remaining = remaining.slice(cutAt);
         }
-        return pages.length > 0 ? pages : [htmlContent || ''];
+        if (textPages.length === 0) textPages.push(story.content || '');
+
+        return [coverPageHtml, ...textPages];
     }
 
     function openAdminBookModal(story) {
         if (!adminBookModal) return;
-        adminBookPages = splitAdminStoryPages(story.content);
+        adminBookPages = buildAdminStoryBookPages(story);
         adminCurrentBookPage = 0;
 
         if (adminBookTitle) adminBookTitle.textContent = story.title;
@@ -1782,13 +1800,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (modalContainer) modalContainer.scrollTop = 0;
         if (adminBookModal) adminBookModal.scrollTop = 0;
 
-        if (adminBookStoryHeader) adminBookStoryHeader.style.display = adminCurrentBookPage === 0 ? '' : 'none';
+        if (adminBookStoryHeader) adminBookStoryHeader.style.display = adminCurrentBookPage === 0 ? 'none' : '';
 
         const total = adminBookPages.length;
         const pageNum = adminCurrentBookPage + 1;
-        if (adminBookPageNumRight) adminBookPageNumRight.textContent = `${pageNum * 2}`;
-        if (adminBookPageNumLeft) adminBookPageNumLeft.textContent = `${pageNum * 2 - 1}`;
-        if (adminBookPageIndicator) adminBookPageIndicator.textContent = `Σελίδα ${pageNum} / ${total}`;
+        if (adminBookPageNumRight) adminBookPageNumRight.textContent = `${pageNum}`;
+        if (adminBookPageNumLeft) adminBookPageNumLeft.textContent = `${Math.max(1, pageNum - 1)}`;
+        if (adminBookPageIndicator) adminBookPageIndicator.textContent = adminCurrentBookPage === 0 ? `Εξώφυλλο (1 / ${total})` : `Σελίδα ${pageNum} / ${total}`;
         if (adminBookPrevBtn) adminBookPrevBtn.disabled = adminCurrentBookPage === 0;
         if (adminBookNextBtn) adminBookNextBtn.disabled = adminCurrentBookPage >= total - 1;
     }

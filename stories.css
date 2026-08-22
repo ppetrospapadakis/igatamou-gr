@@ -1,4 +1,4 @@
-﻿/* ====================================================
+/* ====================================================
    STORIES & STORY EDITOR & BOOK MODAL STYLES
    ==================================================== */
 
@@ -591,31 +591,220 @@
     padding: 40px 30px !important;
 }
 
-/* RESPONSIVE STYLES */
+/* COVER PAGE STYLES */
+.book-cover-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    padding: 8px 4px;
+    box-sizing: border-box;
+}
+
+.book-cover-badge {
+    background: #fef3c7;
+    color: #92400e;
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+    border: 1px solid #fde68a;
+    display: inline-block;
+}
+
+.book-cover-title {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #831843;
+    margin: 0 0 6px 0;
+    line-height: 1.25;
+}
+
+.book-cover-author {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #b45309;
+    margin-bottom: 12px;
+}
+
+.book-cover-img-box {
+    width: 100%;
+    max-width: 240px;
+    height: 160px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    border: 3px solid #fed7aa;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fdf2f8;
+}
+
+.book-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.book-cover-hint {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #059669;
+    background: #ecfdf5;
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid #a7f3d0;
+    display: inline-block;
+}
+
+/* RESPONSIVE STYLES (MOBILE & TABLET VIEWPORT FIT) */
 @media (max-width: 768px) {
-    .book {
-        flex-direction: column;
-        min-height: auto;
-        max-height: none;
+    .book-modal-overlay {
+        padding: 8px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        box-sizing: border-box !important;
     }
 
-    .book-page-left {
-        display: none; /* Hide left page on mobile, show only content */
+    .book-modal-container {
+        height: calc(100dvh - 16px) !important;
+        max-height: calc(100dvh - 16px) !important;
+        width: 100% !important;
+        max-width: 480px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        position: relative !important;
+        box-sizing: border-box !important;
+    }
+
+    .book-close-btn {
+        top: -4px !important;
+        right: -4px !important;
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 1.1rem !important;
+        border-width: 2px !important;
+        z-index: 50 !important;
+    }
+
+    .book {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+        border: 4px solid #7c2d12 !important;
+        overflow: hidden !important;
+        background: #fefcf9 !important;
     }
 
     .book::after {
-        display: none;
+        display: none !important;
     }
 
-    .book-page {
-        padding: 24px 18px;
+    .book-page-left {
+        display: none !important;
     }
 
-    .book-content {
-        font-size: 1.1rem;
+    .book-page-right {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 12px 10px 8px 10px !important;
+        box-sizing: border-box !important;
+    }
+
+    .book-page-inner {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .book-story-header {
+        margin-bottom: 6px !important;
+        padding-bottom: 4px !important;
+        flex-shrink: 0 !important;
     }
 
     .book-title {
-        font-size: 1.35rem;
+        font-size: 1.15rem !important;
+        margin: 0 0 2px 0 !important;
+    }
+
+    .book-author {
+        font-size: 0.85rem !important;
+    }
+
+    .book-content {
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        font-size: 1.02rem !important;
+        line-height: 1.5 !important;
+        padding-right: 4px !important;
+    }
+
+    .book-content p {
+        margin-bottom: 8px !important;
+    }
+
+    .book-content img {
+        max-height: 130px !important;
+        width: auto !important;
+        margin: 6px auto !important;
+    }
+
+    .book-page-number {
+        margin-top: 4px !important;
+        font-size: 0.82rem !important;
+        flex-shrink: 0 !important;
+    }
+
+    .book-controls {
+        flex-shrink: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        margin-top: 6px !important;
+        margin-bottom: 0 !important;
+        width: 100% !important;
+    }
+
+    .book-nav-btn {
+        padding: 7px 14px !important;
+        font-size: 0.88rem !important;
+    }
+
+    .book-page-indicator {
+        font-size: 0.85rem !important;
+    }
+
+    .book-cover-title {
+        font-size: 1.25rem !important;
+    }
+
+    .book-cover-img-box {
+        max-width: 180px !important;
+        height: 120px !important;
+        margin-bottom: 8px !important;
     }
 }

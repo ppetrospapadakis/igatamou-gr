@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------
     // SUPABASE INIT
     // --------------------------------------------------------
@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let localStories = [];
             try {
                 localStories = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
-                // If local storage is completely empty, initialize with official story
                 if (!localStorage.getItem('igatamou_stories_initialized')) {
                     localStories.unshift(OFFICIAL_MAGKAS_STORY);
                     localStorage.setItem('igatamou_local_stories', JSON.stringify(localStories));
@@ -178,27 +177,46 @@ document.addEventListener('DOMContentLoaded', () => {
     let bookPages = [];
     let currentBookPage = 0;
 
-    function splitIntoPages(htmlContent, wordsPerPage = 180) {
+    function buildStoryBookPages(story) {
+        const coverUrl = story.cover_image_url || 'magkas_logo.png';
+        const coverPageHtml = `
+            <div class="book-cover-page">
+                <div class="book-cover-badge">✨ Γατο-Ιστορίες 📖</div>
+                <h2 class="book-cover-title">${escapeHtml(story.title)}</h2>
+                <div class="book-cover-author">✍️ Από: <strong>${escapeHtml(story.author)}</strong></div>
+                <div class="book-cover-img-box">
+                    <img src="${escapeHtml(coverUrl)}" alt="${escapeHtml(story.title)}" class="book-cover-img" onerror="this.src='magkas_logo.png'">
+                </div>
+                <div class="book-cover-hint">🐾 Πάτα «Επόμενη ▶» για να διαβάσεις! 📖</div>
+            </div>
+        `;
+
+        const isMobile = window.innerWidth <= 768;
+        const wordsPerPage = isMobile ? 85 : 150;
         const charsPerPage = wordsPerPage * 6;
-        let remaining = htmlContent;
-        const pages = [];
+
+        let remaining = story.content || '';
+        const textPages = [];
         while (remaining.length > 0) {
             if (remaining.length <= charsPerPage) {
-                pages.push(remaining);
+                textPages.push(remaining);
                 break;
             }
             let cutAt = charsPerPage;
             const pEnd = remaining.lastIndexOf('</p>', cutAt);
             if (pEnd > cutAt / 2) cutAt = pEnd + 4;
-            pages.push(remaining.slice(0, cutAt));
+            textPages.push(remaining.slice(0, cutAt));
             remaining = remaining.slice(cutAt);
         }
-        return pages.length > 0 ? pages : [htmlContent];
+
+        if (textPages.length === 0) textPages.push(story.content || '');
+
+        return [coverPageHtml, ...textPages];
     }
 
     function openBookModal(story) {
         if (!bookModal) return;
-        bookPages = splitIntoPages(story.content);
+        bookPages = buildStoryBookPages(story);
         currentBookPage = 0;
 
         if (bookTitle) bookTitle.textContent = story.title;
@@ -211,10 +229,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderBookPage() {
         if (!bookContent) return;
-        const safeHtml = sanitizeHtml(bookPages[currentBookPage] || '');
+        const safeHtml = currentBookPage === 0 ? bookPages[0] : sanitizeHtml(bookPages[currentBookPage] || '');
         bookContent.innerHTML = safeHtml;
 
-        // Reset scroll position to the very top when changing pages
+        // Reset scroll position to top
         bookContent.scrollTop = 0;
         const bookPageRight = document.getElementById('bookPageRight');
         if (bookPageRight) bookPageRight.scrollTop = 0;
@@ -224,13 +242,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (modalContainer) modalContainer.scrollTop = 0;
         if (bookModal) bookModal.scrollTop = 0;
 
-        if (bookStoryHeader) bookStoryHeader.style.display = currentBookPage === 0 ? '' : 'none';
+        // Header hidden on cover page (page 0)
+        if (bookStoryHeader) bookStoryHeader.style.display = currentBookPage === 0 ? 'none' : '';
 
         const total = bookPages.length;
         const pageNum = currentBookPage + 1;
-        if (bookPageNumRight) bookPageNumRight.textContent = `${pageNum * 2}`;
-        if (bookPageNumLeft) bookPageNumLeft.textContent = `${pageNum * 2 - 1}`;
-        if (bookPageIndicator) bookPageIndicator.textContent = `Σελίδα ${pageNum} / ${total}`;
+        if (bookPageNumRight) bookPageNumRight.textContent = `${pageNum}`;
+        if (bookPageNumLeft) bookPageNumLeft.textContent = `${Math.max(1, pageNum - 1)}`;
+        if (bookPageIndicator) bookPageIndicator.textContent = currentBookPage === 0 ? `Εξώφυλλο (1 / ${total})` : `Σελίδα ${pageNum} / ${total}`;
         if (bookPrevBtn) bookPrevBtn.disabled = currentBookPage === 0;
         if (bookNextBtn) bookNextBtn.disabled = currentBookPage >= total - 1;
     }
