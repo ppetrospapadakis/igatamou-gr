@@ -1494,6 +1494,11 @@ document.addEventListener('DOMContentLoaded', () => {
         localDrawings = localDrawings.filter(d => d.id !== id);
         localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
 
+        if (supabase) {
+            supabase.from('cats').delete().eq('id', id).then();
+        }
+    }
+
     // ----------------------------------------------------
     // STORIES ADMIN MANAGEMENT
     // ----------------------------------------------------

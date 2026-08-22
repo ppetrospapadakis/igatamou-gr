@@ -784,6 +784,76 @@ h1, h2, h3, h4, .logo-text, .gender-ribbon, .cat-name, .screen-pop-banner, .aren
     box-shadow: 0 14px 30px rgba(251, 133, 0, 0.45);
 }
 
+/* STORIES CALLOUT CARD ON HOMEPAGE */
+.stories-callout-card {
+    background: linear-gradient(135deg, #fdf4ff 0%, #fae8ff 50%, #f5d0fe 100%) !important;
+    border: 3px solid #f0abfc !important;
+    border-radius: 28px !important;
+    padding: 30px 25px !important;
+    margin-bottom: 35px !important;
+    box-shadow: 0 10px 30px rgba(217, 70, 239, 0.15) !important;
+    text-align: center !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.callout-badge-stories {
+    display: inline-block !important;
+    background: #c026d3 !important;
+    color: white !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    padding: 4px 14px !important;
+    border-radius: var(--radius-full) !important;
+    margin-bottom: 12px !important;
+}
+
+.stories-callout-card h2 {
+    font-size: 1.8rem !important;
+    color: #701a75 !important;
+    margin-bottom: 10px !important;
+}
+
+.stories-callout-card p {
+    font-size: 1.05rem !important;
+    color: #86198f !important;
+    margin-bottom: 20px !important;
+}
+
+.btn-stories-cta,
+.btn-write-story {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    background: linear-gradient(135deg, #c026d3 0%, #8b5cf6 100%) !important;
+    color: #ffffff !important;
+    font-family: 'Fredoka', cursive, sans-serif !important;
+    font-size: 1.2rem !important;
+    font-weight: 700 !important;
+    padding: 14px 32px !important;
+    border-radius: var(--radius-full) !important;
+    text-decoration: none !important;
+    box-shadow: 0 10px 25px rgba(192, 38, 211, 0.35) !important;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    cursor: pointer !important;
+    border: none !important;
+}
+
+.btn-stories-cta:hover,
+.btn-write-story:hover {
+    transform: translateY(-3px) scale(1.05) !important;
+    box-shadow: 0 14px 30px rgba(192, 38, 211, 0.45) !important;
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+.btn-stories-cta:visited,
+.btn-write-story:visited {
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
 /* Email Notify Form */
 .notify-card {
     background: #ffffff;
@@ -2702,9 +2772,7 @@ body.arena-fullscreen-active {
 
 /* ---------------------------------------------------- */
 /* TABLET & NARROW DESKTOP NAVBAR BREAKPOINT (UNDER 1180px) */
-/* Forces 2x2 Grid (2 Top, 2 Bottom) instead of 3 Top & 1 Bottom */
-/* TABLET & NARROW DESKTOP NAVBAR BREAKPOINT (UNDER 1180px) */
-/* Forces 2x2 Grid (2 Top, 2 Bottom) with large clear font on Tablets & iPads */
+/* Forces 2-column Grid (2 Row 1, 2 Row 2, 1 Centered Row 3) with identical sizes */
 @media (max-width: 1180px) {
     .header-row-2 {
         display: grid !important;
@@ -2726,6 +2794,7 @@ body.arena-fullscreen-active {
     .nav-gallery-btn,
     .nav-games-btn,
     .nav-draw-btn,
+    .nav-stories-btn,
     .nav-likes-btn {
         font-size: 0.98rem !important;
         padding: 0 12px !important;
@@ -2743,6 +2812,14 @@ body.arena-fullscreen-active {
         letter-spacing: -0.1px !important;
         display: flex !important;
         align-items: center !important;
+    }
+
+    /* 5th Button (Row 3, centered, identical width to 1 column) */
+    .header-row-2 > a:nth-child(5),
+    .header-row-2 > :nth-child(5):last-child {
+        grid-column: 1 / -1 !important;
+        justify-self: center !important;
+        width: calc((100% - 12px) / 2) !important;
     }
 }
 
@@ -2800,6 +2877,7 @@ body.arena-fullscreen-active {
     .nav-gallery-btn,
     .nav-games-btn,
     .nav-draw-btn,
+    .nav-stories-btn,
     .nav-likes-btn {
         font-size: 0.80rem !important;
         padding: 0 4px !important;
@@ -2811,6 +2889,15 @@ body.arena-fullscreen-active {
         border-radius: 18px !important;
         letter-spacing: -0.2px !important;
     }
+
+    /* 5th Button on Mobile (Row 3, centered, identical width to 1 column) */
+    .header-row-2 > a:nth-child(5),
+    .header-row-2 > :nth-child(5):last-child {
+        grid-column: 1 / -1 !important;
+        justify-self: center !important;
+        width: calc((100% - 6px) / 2) !important;
+    }
+}
 
     /* Drawing Studio Canvas Mobile Height Fix */
     .canvas-wrapper {
