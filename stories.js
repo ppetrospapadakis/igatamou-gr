@@ -9,12 +9,22 @@
         try { supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e) {}
     }
 
+    const OFFICIAL_MAGKAS_STORY = {
+        id: 'story_official_magkas',
+        title: 'Η Μάγκας και το Μυστικό Ψάρι',
+        author: 'Αριάδνη, 7 ετών',
+        cover_image_url: 'magkas_logo.png',
+        is_admin: true,
+        status: 'approved',
+        created_at: '2025-01-01',
+        content: '<h2>Κεφάλαιο 1: Η Ανακάλυψη</h2><p>Μια ζεστή καλοκαιρινή μέρα, η Μάγκας κοιτούσε έξω από το παράθυρο και είδε κάτι να λάμπει στο δέντρο της αυλής. Τινάχτηκε έξω με μια αναπήδηση...</p><p>«Τι είναι αυτό;» σκέφτηκε με τα μεγάλα της πράσινα μάτια να αστράφτουν από περιέργεια.</p><h2>Κεφάλαιο 2: Η Περιπέτεια</h2><p>Ανέβηκε στο δέντρο — ένα, δύο, τρία άλματα — και βρήκε ένα μυστηριώδες κουτί με ψάρια ζωγραφιστά επάνω! Μέσα ήταν μια επιστολή που έγραφε:</p><blockquote>«Αγαπητή Μάγκας, αυτά τα ψάρια είναι για σένα! Από τον μυστικό σου θαυμαστή 🐟»</blockquote><p>Η Μάγκας χαμογέλασε με όλη της την καρδιά. Ήταν η καλύτερη μέρα της ζωής της! 🐾✨</p>'
+    };
+
     function escapeHtml(str) {
         return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
     }
 
     function sanitizeHtml(html) {
-        // Allow safe tags only
         const allowedTags = /^(p|br|strong|em|u|h1|h2|h3|ul|ol|li|span|div|img|blockquote)$/i;
         const div = document.createElement('div');
         div.innerHTML = html;
@@ -22,14 +32,12 @@
             if (!allowedTags.test(el.tagName)) {
                 el.replaceWith(document.createTextNode(el.textContent));
             } else {
-                // Strip event handlers
                 Array.from(el.attributes).forEach(attr => {
                     if (attr.name.startsWith('on')) el.removeAttribute(attr.name);
                 });
-                // Only allow src for img (must be https)
                 if (el.tagName.toLowerCase() === 'img') {
                     const src = el.getAttribute('src') || '';
-                    if (!src.startsWith('https://') && !src.startsWith('data:image/')) {
+                    if (!src.startsWith('https://') && !src.startsWith('data:image/') && !src.startsWith('http://') && !src.includes('.png') && !src.includes('.jpg') && !src.includes('.jpeg') && !src.includes('.webp')) {
                         el.remove();
                     }
                 }
@@ -52,49 +60,67 @@
     async function loadStories() {
         try {
             let stories = [];
+
+            // 1. Fetch from Supabase cats table (where stories are cloud-stored)
             if (supabase) {
-                const { data, error } = await supabase
-                    .from('stories')
-                    .select('*')
-                    .eq('status', 'approved')
-                    .order('created_at', { ascending: false });
-                if (!error && data) stories = data;
+                try {
+                    const { data } = await supabase.from('cats').select('*').eq('status', 'approved');
+                    if (data && data.length) {
+                        data.forEach(item => {
+                            if (item.bio && item.bio.includes('[STORY]')) {
+                                try {
+                                    const parsed = JSON.parse(item.bio.replace(/^📖\s*\[STORY\]\s*/, ''));
+                                    stories.push({
+                                        id: item.id,
+                                        title: item.name,
+                                        author: item.owner,
+                                        content: parsed.content || '',
+                                        cover_image_url: item.image || parsed.cover_image_url || 'magkas_logo.png',
+                                        is_admin: parsed.is_admin || false,
+                                        status: item.status,
+                                        created_at: item.date || ''
+                                    });
+                                } catch(pe) {}
+                            }
+                        });
+                    }
+                } catch(se) {
+                    console.log('Supabase sync notice');
+                }
             }
 
-            // Always show the Magkas built-in story first
-            const builtInStory = {
-                id: 'builtin_magkas',
-                title: 'Η Μάγκας και το Μυστικό Ψάρι',
-                author: 'Αριάδνη, 7 ετών',
-                cover_image_url: 'magkas_logo.png',
-                is_admin: true,
-                created_at: '2025-01-01',
-                content: '<h2>Κεφάλαιο 1: Η Ανακάλυψη</h2><p>Μια ζεστή καλοκαιρινή μέρα, η Μάγκας κοιτούσε έξω από το παράθυρο και είδε κάτι να λάμπει στο δέντρο της αυλής. Τινάχτηκε έξω με μια αναπήδηση...</p><p>«Τι είναι αυτό;» σκέφτηκε με τα μεγάλα της πράσινα μάτια να αστράφτουν από περιέργεια.</p><h2>Κεφάλαιο 2: Η Περιπέτεια</h2><p>Ανέβηκε στο δέντρο — ένα, δύο, τρία άλματα — και βρήκε ένα μυστηριώδες κουτί με ψάρια ζωγραφιστά επάνω! Μέσα ήταν μια επιστολή που έγραφε:</p><blockquote>«Αγαπητή Μάγκας, αυτά τα ψάρια είναι για σένα! Από τον μυστικό σου θαυμαστή 🐟»</blockquote><p>Η Μάγκας χαμογέλασε με όλη της την καρδιά. Ήταν η καλύτερη μέρα της ζωής της! 🐾✨</p>'
-            };
+            // 2. Merge with localStorage stories
+            let localStories = [];
+            try {
+                localStories = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+                // If local storage is completely empty, initialize with official story
+                if (!localStorage.getItem('igatamou_stories_initialized')) {
+                    localStories.unshift(OFFICIAL_MAGKAS_STORY);
+                    localStorage.setItem('igatamou_local_stories', JSON.stringify(localStories));
+                    localStorage.setItem('igatamou_stories_initialized', 'true');
+                }
+            } catch(le) {}
+
+            localStories.forEach(ls => {
+                if (ls.status === 'approved' && !stories.some(s => s.id === ls.id)) {
+                    stories.push(ls);
+                }
+            });
 
             if (storiesLoading) storiesLoading.hidden = true;
 
-            const allStories = [builtInStory, ...stories];
-
-            if (allStories.length === 0) {
+            if (stories.length === 0) {
                 if (emptyStories) emptyStories.hidden = false;
                 return;
             }
 
             if (storiesGrid) storiesGrid.hidden = false;
-            renderStoryCards(allStories);
+            renderStoryCards(stories);
         } catch (e) {
+            console.error('loadStories error:', e);
             if (storiesLoading) storiesLoading.hidden = true;
             if (storiesGrid) storiesGrid.hidden = false;
-            renderStoryCards([{
-                id: 'builtin_magkas',
-                title: 'Η Μάγκας και το Μυστικό Ψάρι',
-                author: 'Αριάδνη, 7 ετών',
-                cover_image_url: 'magkas_logo.png',
-                is_admin: true,
-                created_at: '2025-01-01',
-                content: '<p>Μια ζεστή καλοκαιρινή μέρα, η Μάγκας κοιτούσε έξω από το παράθυρο...</p>'
-            }]);
+            renderStoryCards([OFFICIAL_MAGKAS_STORY]);
         }
     }
 
@@ -112,7 +138,7 @@
             const coverSrc = story.cover_image_url || 'magkas_logo.png';
             const preview = getPlainTextPreview(story.content);
             const adminBadge = story.is_admin ? '<span class="story-admin-badge">👑 Επίσημη</span>' : '';
-            const dateStr = story.created_at ? new Date(story.created_at).toLocaleDateString('el-GR', { year:'numeric', month:'long', day:'numeric' }) : '';
+            const dateStr = story.created_at ? (isNaN(Date.parse(story.created_at)) ? story.created_at : new Date(story.created_at).toLocaleDateString('el-GR', { year:'numeric', month:'long', day:'numeric' })) : '';
 
             const card = document.createElement('div');
             card.className = 'story-card';
@@ -153,21 +179,14 @@
     let currentBookPage = 0;
 
     function splitIntoPages(htmlContent, wordsPerPage = 180) {
-        const div = document.createElement('div');
-        div.innerHTML = htmlContent;
-        const text = div.textContent || '';
-        const words = text.trim().split(/\s+/);
-        const pages = [];
-        // We do a word-based split while preserving some HTML structure
-        // Simple approach: split the raw HTML by characters roughly
-        const charsPerPage = wordsPerPage * 6; // ~6 chars per word avg
+        const charsPerPage = wordsPerPage * 6;
         let remaining = htmlContent;
+        const pages = [];
         while (remaining.length > 0) {
             if (remaining.length <= charsPerPage) {
                 pages.push(remaining);
                 break;
             }
-            // Try to cut at a paragraph boundary
             let cutAt = charsPerPage;
             const pEnd = remaining.lastIndexOf('</p>', cutAt);
             if (pEnd > cutAt / 2) cutAt = pEnd + 4;
@@ -195,7 +214,6 @@
         const safeHtml = sanitizeHtml(bookPages[currentBookPage] || '');
         bookContent.innerHTML = safeHtml;
 
-        // Show header only on first page
         if (bookStoryHeader) bookStoryHeader.style.display = currentBookPage === 0 ? '' : 'none';
 
         const total = bookPages.length;
@@ -223,4 +241,6 @@
             document.body.style.overflow = '';
         }
     });
+
+    window.openBookModal = openBookModal;
 });

@@ -323,9 +323,44 @@
         </div>
     </div>
 
+    <!-- BOOK MODAL FOR STORY PREVIEW -->
+    <div id="bookModal" class="book-modal-overlay" hidden>
+        <div class="book-modal-container">
+            <div class="book" id="bookElement">
+                <div class="book-page book-page-left" id="bookPageLeft">
+                    <div class="book-page-inner">
+                        <div class="book-decoration">
+                            <div class="book-paws">🐾🐱🐾</div>
+                            <img src="magkas_logo.png" alt="Μάγκας" class="book-logo">
+                            <div class="book-site-name">igatamou.gr</div>
+                        </div>
+                        <div class="book-left-text" id="bookLeftText"></div>
+                        <div class="book-page-number left" id="bookPageNumLeft"></div>
+                    </div>
+                </div>
+                <div class="book-page book-page-right" id="bookPageRight">
+                    <div class="book-page-inner">
+                        <div id="bookStoryHeader" class="book-story-header">
+                            <h2 id="bookTitle" class="book-title"></h2>
+                            <div id="bookAuthor" class="book-author"></div>
+                        </div>
+                        <div id="bookContent" class="book-content"></div>
+                        <div class="book-page-number right" id="bookPageNumRight"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="book-controls">
+                <button id="bookPrevBtn" class="book-nav-btn book-prev" disabled>◀ Προηγούμενη</button>
+                <span id="bookPageIndicator" class="book-page-indicator">Σελίδα 1 / 1</span>
+                <button id="bookNextBtn" class="book-nav-btn book-next">Επόμενη ▶</button>
+            </div>
+            <button id="closeBookBtn" class="book-close-btn" aria-label="Κλείσιμο">✖</button>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="app.js"></script>
-    <script src="gallery.js"></script>
+    <script src="app.js?v=28"></script>
+    <script src="gallery.js?v=28"></script>
 </body>
 </html>

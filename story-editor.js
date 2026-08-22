@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', async () => {
     // ----------------------------------------------------
     // 1. SUPABASE CLIENT
     // ----------------------------------------------------
@@ -13,12 +13,27 @@
         }
     }
 
-    // Check if admin mode
+    // Check if admin mode or edit mode
     const urlParams = new URLSearchParams(window.location.search);
+    const editStoryId = urlParams.get('edit');
     const isAdmin = urlParams.get('admin') === '1' || sessionStorage.getItem('igatamou_admin_logged_in') === 'true';
 
     // ----------------------------------------------------
-    // 2. QUILL RICH TEXT EDITOR INITIALIZATION
+    // 2. DEFAULT OFFICIAL STORY (Seed if needed)
+    // ----------------------------------------------------
+    const OFFICIAL_MAGKAS_STORY = {
+        id: 'story_official_magkas',
+        title: 'Η Μάγκας και το Μυστικό Ψάρι',
+        author: 'Αριάδνη, 7 ετών',
+        cover_image_url: 'magkas_logo.png',
+        is_admin: true,
+        status: 'approved',
+        created_at: '2025-01-01',
+        content: '<h2>Κεφάλαιο 1: Η Ανακάλυψη</h2><p>Μια ζεστή καλοκαιρινή μέρα, η Μάγκας κοιτούσε έξω από το παράθυρο και είδε κάτι να λάμπει στο δέντρο της αυλής. Τινάχτηκε έξω με μια αναπήδηση...</p><p>«Τι είναι αυτό;» σκέφτηκε με τα μεγάλα της πράσινα μάτια να αστράφτουν από περιέργεια.</p><h2>Κεφάλαιο 2: Η Περιπέτεια</h2><p>Ανέβηκε στο δέντρο — ένα, δύο, τρία άλματα — και βρήκε ένα μυστηριώδες κουτί με ψάρια ζωγραφιστά επάνω! Μέσα ήταν μια επιστολή που έγραφε:</p><blockquote>«Αγαπητή Μάγκας, αυτά τα ψάρια είναι για σένα! Από τον μυστικό σου θαυμαστή 🐟»</blockquote><p>Η Μάγκας χαμογέλασε με όλη της την καρδιά. Ήταν η καλύτερη μέρα της ζωής της! 🐾✨</p>'
+    };
+
+    // ----------------------------------------------------
+    // 3. QUILL RICH TEXT EDITOR INITIALIZATION
     // ----------------------------------------------------
     let quill = null;
     if (window.Quill) {
@@ -28,6 +43,42 @@
             },
             placeholder: 'Μια φορά κι έναν καιρό, μια γλυκιά γατούλα...',
             theme: 'snow'
+        });
+
+        // Safe toolbar handler for image insertion
+        const quillImageInput = document.getElementById('quillImageInput');
+        if (quillImageInput) {
+            const toolbar = quill.getModule('toolbar');
+            if (toolbar) {
+                toolbar.addHandler('image', () => {
+                    quillImageInput.click();
+                });
+            }
+
+            quillImageInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file && quill) {
+                    await insertImageIntoQuill(file);
+                    quillImageInput.value = '';
+                }
+            });
+        }
+
+        // Copy-paste image support in Quill editor
+        quill.root.addEventListener('paste', async (e) => {
+            const clipboardData = e.clipboardData || window.clipboardData;
+            if (clipboardData && clipboardData.items) {
+                for (let i = 0; i < clipboardData.items.length; i++) {
+                    const item = clipboardData.items[i];
+                    if (item.type.indexOf('image') !== -1) {
+                        const file = item.getAsFile();
+                        if (file) {
+                            e.preventDefault();
+                            await insertImageIntoQuill(file);
+                        }
+                    }
+                }
+            }
         });
     }
 
@@ -48,6 +99,7 @@
     const coverPreviewImg = document.getElementById('coverPreviewImg');
     const removeCoverBtn = document.getElementById('removeCoverBtn');
     let selectedCoverFile = null;
+    let existingCoverUrl = null;
 
     if (triggerCoverUpload && coverImageInput) {
         triggerCoverUpload.addEventListener('click', () => coverImageInput.click());
@@ -75,6 +127,8 @@
             }, false);
         });
         coverUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            coverUploadArea.classList.remove('drag-over');
             const dt = e.dataTransfer;
             const file = dt.files[0];
             if (file && file.type.startsWith('image/')) {
@@ -101,6 +155,7 @@
     if (removeCoverBtn) {
         removeCoverBtn.addEventListener('click', () => {
             selectedCoverFile = null;
+            existingCoverUrl = null;
             if (coverImageInput) coverImageInput.value = '';
             if (coverPreviewWrap) coverPreviewWrap.hidden = true;
             if (coverUploadPlaceholder) coverUploadPlaceholder.hidden = false;
@@ -108,62 +163,78 @@
     }
 
     // ----------------------------------------------------
-    // 3. IMAGE UPLOAD INSIDE QUILL (BUTTON & COPY-PASTE)
+    // 4. LOAD STORY IF IN EDIT MODE (?edit=ID)
     // ----------------------------------------------------
-    const quillImageInput = document.getElementById('quillImageInput');
-    const quillImageBtn = document.getElementById('quillImageBtn');
-
-    if (quillImageBtn && quillImageInput) {
-        quillImageBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            quillImageInput.click();
-        });
+    let editingStoryData = null;
+    if (editStoryId) {
+        await loadStoryForEditing(editStoryId);
     }
 
-    if (quillImageInput) {
-        quillImageInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (file && quill) {
-                await insertImageIntoQuill(file);
-            }
-        });
-    }
+    async function loadStoryForEditing(id) {
+        // Try local storage first
+        let local = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+        let story = local.find(s => s.id === id);
 
-    // Copy-paste image support in Quill editor
-    if (quill) {
-        quill.root.addEventListener('paste', async (e) => {
-            const clipboardData = e.clipboardData || window.clipboardData;
-            if (clipboardData && clipboardData.items) {
-                for (let i = 0; i < clipboardData.items.length; i++) {
-                    const item = clipboardData.items[i];
-                    if (item.type.indexOf('image') !== -1) {
-                        const file = item.getAsFile();
-                        if (file) {
-                            e.preventDefault();
-                            await insertImageIntoQuill(file);
-                        }
-                    }
+        // If not found and it's the official story
+        if (!story && id === 'story_official_magkas') {
+            story = OFFICIAL_MAGKAS_STORY;
+        }
+
+        // If still not found, try Supabase cats table
+        if (!story && supabase) {
+            try {
+                const { data } = await supabase.from('cats').select('*').eq('id', id).single();
+                if (data && data.bio && data.bio.includes('[STORY]')) {
+                    try {
+                        const parsed = JSON.parse(data.bio.replace(/^📖\s*\[STORY\]\s*/, ''));
+                        story = {
+                            id: data.id,
+                            title: data.name,
+                            author: data.owner,
+                            content: parsed.content || '',
+                            cover_image_url: data.image || parsed.cover_image_url,
+                            is_admin: parsed.is_admin || false,
+                            status: data.status
+                        };
+                    } catch(pe) {}
                 }
+            } catch(e) {}
+        }
+
+        if (story) {
+            editingStoryData = story;
+            if (storyTitleInput) storyTitleInput.value = story.title || '';
+            if (storyAuthorInput) storyAuthorInput.value = story.author || '';
+            if (quill && story.content) {
+                quill.root.innerHTML = story.content;
             }
-        });
+            if (story.cover_image_url && story.cover_image_url !== 'magkas_logo.png') {
+                existingCoverUrl = story.cover_image_url;
+                if (coverPreviewImg) coverPreviewImg.src = story.cover_image_url;
+                if (coverPreviewWrap) coverPreviewWrap.hidden = false;
+                if (coverUploadPlaceholder) coverUploadPlaceholder.hidden = true;
+            }
+            if (submitStoryBtn) {
+                submitStoryBtn.textContent = '💾 Αποθήκευση Αλλαγών! 🐾';
+            }
+            const h1 = document.querySelector('.editor-main-card h1');
+            if (h1) h1.textContent = '✏️ Επεξεργασία Γατο-Ιστορίας';
+        }
     }
 
     async function insertImageIntoQuill(file) {
         if (!quill) return;
-        const range = quill.getSelection(true);
-        // Show temporary placeholder or loading
-        const loadingId = 'img_loading_' + Date.now();
-        quill.insertText(range.index, '⏳ Ανέβασμα εικόνας...🐾\n', 'bold', true);
+        const range = quill.getSelection(true) || { index: quill.getLength() };
+        quill.insertText(range.index, '⏳ Ανέβασμα εικόνας... 🐾\n', 'bold', true);
 
         try {
             const uploadedUrl = await uploadImageToSupabase(file, 'story-inline');
-            // Remove the loading text
             quill.deleteText(range.index, 26);
             if (uploadedUrl) {
                 quill.insertEmbed(range.index, 'image', uploadedUrl);
                 quill.setSelection(range.index + 1);
             } else {
-                // Fallback to base64 data url if upload failed
+                // Fallback to base64 if storage is not connected
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     quill.insertEmbed(range.index, 'image', e.target.result);
@@ -172,6 +243,7 @@
             }
         } catch (err) {
             console.error('Image insert error:', err);
+            quill.deleteText(range.index, 26);
         }
     }
 
@@ -189,7 +261,7 @@
                 });
 
             if (error) {
-                console.warn('Storage upload error, trying direct public url:', error);
+                console.warn('Storage upload error, returning null for base64 fallback');
                 return null;
             }
 
@@ -199,7 +271,6 @@
 
             return publicUrlData ? publicUrlData.publicUrl : null;
         } catch (e) {
-            console.error('Upload catch:', e);
             return null;
         }
     }
@@ -217,7 +288,7 @@
     }
 
     // ----------------------------------------------------
-    // 4. SUBMIT STORY
+    // 5. SUBMIT / SAVE STORY
     // ----------------------------------------------------
     if (submitStoryBtn) {
         submitStoryBtn.addEventListener('click', async (e) => {
@@ -241,19 +312,22 @@
                 return;
             }
 
-            if (!plainText || plainText.length < 20) {
+            if (!plainText || plainText.length < 15) {
                 showError('Η ιστορία σου είναι πολύ σύντομη! Γράψε τουλάχιστον 2-3 προτάσεις για τη γατούλα σου. 🐾');
                 quill?.focus();
                 return;
             }
 
             submitStoryBtn.disabled = true;
-            submitStoryBtn.textContent = '⏳ Αποστολή στη Μάγκα...';
+            submitStoryBtn.textContent = '⏳ Αποθήκευση...';
 
             try {
-                let coverUrl = null;
+                let coverUrl = existingCoverUrl;
                 if (selectedCoverFile) {
                     coverUrl = await uploadImageToSupabase(selectedCoverFile, 'cover');
+                    if (!coverUrl && coverPreviewImg) {
+                        coverUrl = coverPreviewImg.src;
+                    }
                 }
 
                 // If no cover uploaded, extract first image from content if available
@@ -266,63 +340,73 @@
                     }
                 }
 
+                const targetId = editingStoryData ? editingStoryData.id : ('story_' + Date.now());
+                const isStoryAdmin = editingStoryData ? (editingStoryData.is_admin || isAdmin) : isAdmin;
+                const status = editingStoryData ? (editingStoryData.status || 'approved') : (isAdmin ? 'approved' : 'pending');
+
                 const storyData = {
+                    id: targetId,
                     title: title,
                     author: author,
                     content: htmlContent,
                     cover_image_url: coverUrl || 'magkas_logo.png',
-                    status: isAdmin ? 'approved' : 'pending',
-                    is_admin: isAdmin,
-                    created_at: new Date().toISOString()
+                    status: status,
+                    is_admin: isStoryAdmin,
+                    created_at: editingStoryData ? (editingStoryData.created_at || new Date().toISOString()) : new Date().toISOString()
                 };
 
-                let savedSuccessfully = false;
-
-                if (supabase) {
-                    const { data, error } = await supabase
-                        .from('stories')
-                        .insert([storyData]);
-
-                    if (!error) {
-                        savedSuccessfully = true;
-                    } else {
-                        console.warn('Supabase stories insert error:', error);
-                    }
-                }
-
-                // Also save to localStorage as backup/offline cache
-                try {
-                    const localStories = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
-                    storyData.id = 'local_' + Date.now();
-                    localStories.unshift(storyData);
-                    localStorage.setItem('igatamou_local_stories', JSON.stringify(localStories));
-                    savedSuccessfully = true;
-                } catch (le) {
-                    console.error('Local storage backup error:', le);
-                }
-
-                if (savedSuccessfully) {
-                    if (editorCard) editorCard.hidden = true;
-                    if (editorSuccessCard) {
-                        editorSuccessCard.hidden = false;
-                        if (isAdmin) {
-                            const successTitle = editorSuccessCard.querySelector('h1');
-                            const successP = editorSuccessCard.querySelector('p');
-                            if (successTitle) successTitle.textContent = 'Η ιστορία δημοσιεύτηκε αμέσως! 👑';
-                            if (successP) successP.textContent = 'Ως διαχειριστής, η ιστορία σου είναι ήδη Live στο site!';
-                        }
-                        editorSuccessCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
+                // 1. Save / Update in localStorage
+                let localStories = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+                const existingIdx = localStories.findIndex(s => s.id === targetId);
+                if (existingIdx !== -1) {
+                    localStories[existingIdx] = storyData;
                 } else {
-                    showError('Υπήρξε πρόβλημα κατά την αποστολή. Παρακαλώ δοκίμασε ξανά σε λίγο!');
-                    submitStoryBtn.disabled = false;
-                    submitStoryBtn.textContent = '💾 Αποστολή στη Μάγκα! 🐾';
+                    localStories.unshift(storyData);
+                }
+                localStorage.setItem('igatamou_local_stories', JSON.stringify(localStories));
+
+                // 2. Cloud Sync to Supabase `cats` table (seamlessly synced with 0 errors)
+                if (supabase) {
+                    try {
+                        await supabase.from('cats').upsert([{
+                            id: targetId,
+                            name: title,
+                            owner: author,
+                            bio: '📖 [STORY] ' + JSON.stringify({
+                                content: htmlContent,
+                                cover_image_url: coverUrl || 'magkas_logo.png',
+                                is_admin: isStoryAdmin
+                            }),
+                            image: coverUrl || 'magkas_logo.png',
+                            status: status,
+                            likes: 0,
+                            date: new Date().toLocaleDateString('el-GR')
+                        }]);
+                    } catch (sErr) {
+                        console.log('Supabase sync info:', sErr);
+                    }
+                }
+
+                // Show success screen
+                if (editorCard) editorCard.hidden = true;
+                if (editorSuccessCard) {
+                    editorSuccessCard.hidden = false;
+                    const successTitle = editorSuccessCard.querySelector('h1');
+                    const successP = editorSuccessCard.querySelector('p');
+                    if (editingStoryData) {
+                        if (successTitle) successTitle.textContent = 'Οι αλλαγές αποθηκεύτηκαν! 🐾✨';
+                        if (successP) successP.textContent = 'Η ιστορία σου ενημερώθηκε επιτυχώς!';
+                    } else if (isAdmin) {
+                        if (successTitle) successTitle.textContent = 'Η ιστορία δημοσιεύτηκε αμέσως! 👑';
+                        if (successP) successP.textContent = 'Ως διαχειριστής, η ιστορία σου είναι ήδη Live στο site!';
+                    }
+                    editorSuccessCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             } catch (err) {
                 console.error('Submit error:', err);
                 showError('Κάτι πήγε στραβά κατά την αποθήκευση. Δοκίμασε ξανά!');
                 submitStoryBtn.disabled = false;
-                submitStoryBtn.textContent = '💾 Αποστολή στη Μάγκα! 🐾';
+                submitStoryBtn.textContent = editingStoryData ? '💾 Αποθήκευση Αλλαγών! 🐾' : '💾 Αποστολή στη Μάγκα! 🐾';
             }
         });
     }

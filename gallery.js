@@ -1494,34 +1494,66 @@ document.addEventListener('DOMContentLoaded', () => {
         localDrawings = localDrawings.filter(d => d.id !== id);
         localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
 
-        if (supabase) {
-            supabase.from('cats').delete().eq('id', id).then();
-        }
-    }
-
     // ----------------------------------------------------
     // STORIES ADMIN MANAGEMENT
     // ----------------------------------------------------
+    const OFFICIAL_MAGKAS_STORY = {
+        id: 'story_official_magkas',
+        title: 'Η Μάγκας και το Μυστικό Ψάρι',
+        author: 'Αριάδνη, 7 ετών',
+        cover_image_url: 'magkas_logo.png',
+        is_admin: true,
+        status: 'approved',
+        created_at: '2025-01-01',
+        content: '<h2>Κεφάλαιο 1: Η Ανακάλυψη</h2><p>Μια ζεστή καλοκαιρινή μέρα, η Μάγκας κοιτούσε έξω από το παράθυρο και είδε κάτι να λάμπει στο δέντρο της αυλής. Τινάχτηκε έξω με μια αναπήδηση...</p><p>«Τι είναι αυτό;» σκέφτηκε με τα μεγάλα της πράσινα μάτια να αστράφτουν από περιέργεια.</p><h2>Κεφάλαιο 2: Η Περιπέτεια</h2><p>Ανέβηκε στο δέντρο — ένα, δύο, τρία άλματα — και βρήκε ένα μυστηριώδες κουτί με ψάρια ζωγραφιστά επάνω! Μέσα ήταν μια επιστολή που έγραφε:</p><blockquote>«Αγαπητή Μάγκας, αυτά τα ψάρια είναι για σένα! Από τον μυστικό σου θαυμαστή 🐟»</blockquote><p>Η Μάγκας χαμογέλασε με όλη της την καρδιά. Ήταν η καλύτερη μέρα της ζωής της! 🐾✨</p>'
+    };
+
     async function getAdminStories() {
         let stories = [];
         if (supabase) {
             try {
-                const { data, error } = await supabase
-                    .from('stories')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                if (!error && data) stories = data;
+                // Fetch from cats table where stories are synced
+                const { data } = await supabase.from('cats').select('*');
+                if (data && data.length) {
+                    data.forEach(item => {
+                        if (item.bio && item.bio.includes('[STORY]')) {
+                            try {
+                                const parsed = JSON.parse(item.bio.replace(/^📖\s*\[STORY\]\s*/, ''));
+                                stories.push({
+                                    id: item.id,
+                                    title: item.name,
+                                    author: item.owner,
+                                    content: parsed.content || '',
+                                    cover_image_url: item.image || parsed.cover_image_url || 'magkas_logo.png',
+                                    is_admin: parsed.is_admin || false,
+                                    status: item.status,
+                                    created_at: item.date || ''
+                                });
+                            } catch(pe) {}
+                        }
+                    });
+                }
             } catch (e) {
-                console.log('Supabase fetch stories error:', e);
+                console.log('Supabase fetch stories notice:', e);
             }
         }
+
         // Merge with local stories backup if any
+        let local = [];
         try {
-            const local = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
-            local.forEach(ls => {
-                if (!stories.some(s => s.id === ls.id)) stories.push(ls);
-            });
+            local = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+            // Initialize official story on first load if not explicitly deleted
+            if (!localStorage.getItem('igatamou_stories_initialized')) {
+                local.unshift(OFFICIAL_MAGKAS_STORY);
+                localStorage.setItem('igatamou_local_stories', JSON.stringify(local));
+                localStorage.setItem('igatamou_stories_initialized', 'true');
+            }
         } catch (le) {}
+
+        local.forEach(ls => {
+            if (!stories.some(s => s.id === ls.id)) stories.push(ls);
+        });
+
         return stories;
     }
 
@@ -1582,11 +1614,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = story.content || '';
         const preview = (tempDiv.textContent || '').slice(0, 120).trim() + '…';
-        const dateStr = story.created_at ? new Date(story.created_at).toLocaleDateString('el-GR') : '';
+        const dateStr = story.created_at ? (isNaN(Date.parse(story.created_at)) ? story.created_at : new Date(story.created_at).toLocaleDateString('el-GR')) : '';
+        const adminBadge = story.is_admin ? '<span class="story-admin-badge">👑 Επίσημη</span>' : '';
 
         card.innerHTML = `
             <div class="story-card-cover">
                 <img src="${coverSrc}" alt="${escapeHtml(story.title)}" class="story-cover-img" onerror="this.src='magkas_logo.png'">
+                ${adminBadge}
             </div>
             <div class="story-card-body">
                 <h3 class="story-card-title">${escapeHtml(story.title)}</h3>
@@ -1594,24 +1628,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${dateStr ? `<div class="story-card-date">📅 ${dateStr}</div>` : ''}
                 <p class="story-card-preview">${escapeHtml(preview)}</p>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto;">
+                    <button class="btn btn-read-story preview-story-btn" style="width: 100%; padding: 8px 12px; font-size: 0.92rem; margin-bottom: 4px;">
+                        📖 Προεπισκόπηση
+                    </button>
                     ${isPending ? `
-                        <button class="btn btn-submit-upload approve-story-btn" style="flex: 1; padding: 8px 12px; font-size: 0.9rem; background: #10b981; color: white;">
+                        <button class="btn btn-submit-upload approve-story-btn" style="flex: 1; min-width: 90px; padding: 8px 10px; font-size: 0.88rem; background: #10b981; color: white;">
                             ✅ Έγκριση
                         </button>
                     ` : ''}
-                    <button class="btn btn-back-menu delete-story-btn" style="flex: 1; padding: 8px 12px; font-size: 0.9rem; background: #ef4444; color: white;">
-                        🗑️ Διαγραφή
+                    <a href="story-editor.html?edit=${encodeURIComponent(story.id)}&admin=1" class="btn btn-edit-cat" style="flex: 1; min-width: 90px; padding: 8px 10px; font-size: 0.88rem; text-decoration: none; text-align: center; display: inline-flex; align-items: center; justify-content: center;">
+                        ✏️ Edit
+                    </a>
+                    <button class="btn btn-back-menu delete-story-btn" style="flex: 1; min-width: 90px; padding: 8px 10px; font-size: 0.88rem; background: #ef4444; color: white;">
+                        🗑️ Delete
                     </button>
                 </div>
             </div>
         `;
+
+        // Preview in Book Modal
+        const previewBtn = card.querySelector('.preview-story-btn');
+        if (previewBtn) {
+            previewBtn.addEventListener('click', () => {
+                openAdminBookModal(story);
+            });
+        }
 
         if (isPending) {
             const approveBtn = card.querySelector('.approve-story-btn');
             if (approveBtn) {
                 approveBtn.addEventListener('click', async () => {
                     await updateStoryStatus(story.id, 'approved');
-                    renderStoriesAdminSection();
+                    await renderStoriesAdminSection();
                     renderAdminDashboard();
                 });
             }
@@ -1620,9 +1668,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const deleteBtn = card.querySelector('.delete-story-btn');
         if (deleteBtn) {
             deleteBtn.addEventListener('click', async () => {
-                if (confirm('Είσαι σίγουρος/η ότι θέλεις να διαγράψεις αυτή την ιστορία;')) {
+                if (confirm(`Είσαι σίγουρος/η ότι θέλεις να διαγράψεις την ιστορία «${story.title}»;`)) {
                     await deleteStory(story.id);
-                    renderStoriesAdminSection();
+                    await renderStoriesAdminSection();
                     renderAdminDashboard();
                 }
             });
@@ -1634,7 +1682,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function updateStoryStatus(id, newStatus) {
         if (supabase) {
             try {
-                await supabase.from('stories').update({ status: newStatus }).eq('id', id);
+                await supabase.from('cats').update({ status: newStatus }).eq('id', id);
             } catch (e) {
                 console.error('Update story status error:', e);
             }
@@ -1653,7 +1701,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function deleteStory(id) {
         if (supabase) {
             try {
-                await supabase.from('stories').delete().eq('id', id);
+                await supabase.from('cats').delete().eq('id', id);
             } catch (e) {
                 console.error('Delete story error:', e);
             }
@@ -1665,4 +1713,85 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('igatamou_local_stories', JSON.stringify(local));
         } catch (le) {}
     }
+
+    // ----------------------------------------------------
+    // BOOK MODAL IN ADMIN PANEL (PREVIEW)
+    // ----------------------------------------------------
+    const adminBookModal = document.getElementById('bookModal');
+    const adminCloseBookBtn = document.getElementById('closeBookBtn');
+    const adminBookTitle = document.getElementById('bookTitle');
+    const adminBookAuthor = document.getElementById('bookAuthor');
+    const adminBookContent = document.getElementById('bookContent');
+    const adminBookPrevBtn = document.getElementById('bookPrevBtn');
+    const adminBookNextBtn = document.getElementById('bookNextBtn');
+    const adminBookPageIndicator = document.getElementById('bookPageIndicator');
+    const adminBookPageNumLeft = document.getElementById('bookPageNumLeft');
+    const adminBookPageNumRight = document.getElementById('bookPageNumRight');
+    const adminBookStoryHeader = document.getElementById('bookStoryHeader');
+
+    let adminBookPages = [];
+    let adminCurrentBookPage = 0;
+
+    function splitAdminStoryPages(htmlContent, wordsPerPage = 180) {
+        const charsPerPage = wordsPerPage * 6;
+        let remaining = htmlContent || '';
+        const pages = [];
+        while (remaining.length > 0) {
+            if (remaining.length <= charsPerPage) {
+                pages.push(remaining);
+                break;
+            }
+            let cutAt = charsPerPage;
+            const pEnd = remaining.lastIndexOf('</p>', cutAt);
+            if (pEnd > cutAt / 2) cutAt = pEnd + 4;
+            pages.push(remaining.slice(0, cutAt));
+            remaining = remaining.slice(cutAt);
+        }
+        return pages.length > 0 ? pages : [htmlContent || ''];
+    }
+
+    function openAdminBookModal(story) {
+        if (!adminBookModal) return;
+        adminBookPages = splitAdminStoryPages(story.content);
+        adminCurrentBookPage = 0;
+
+        if (adminBookTitle) adminBookTitle.textContent = story.title;
+        if (adminBookAuthor) adminBookAuthor.innerHTML = `✍️ ${escapeHtml(story.author)}`;
+
+        renderAdminBookPage();
+        adminBookModal.hidden = false;
+        document.body.style.overflow = 'hidden';
+    }
+
+    function renderAdminBookPage() {
+        if (!adminBookContent) return;
+        adminBookContent.innerHTML = adminBookPages[adminCurrentBookPage] || '';
+
+        if (adminBookStoryHeader) adminBookStoryHeader.style.display = adminCurrentBookPage === 0 ? '' : 'none';
+
+        const total = adminBookPages.length;
+        const pageNum = adminCurrentBookPage + 1;
+        if (adminBookPageNumRight) adminBookPageNumRight.textContent = `${pageNum * 2}`;
+        if (adminBookPageNumLeft) adminBookPageNumLeft.textContent = `${pageNum * 2 - 1}`;
+        if (adminBookPageIndicator) adminBookPageIndicator.textContent = `Σελίδα ${pageNum} / ${total}`;
+        if (adminBookPrevBtn) adminBookPrevBtn.disabled = adminCurrentBookPage === 0;
+        if (adminBookNextBtn) adminBookNextBtn.disabled = adminCurrentBookPage >= total - 1;
+    }
+
+    if (adminBookPrevBtn) adminBookPrevBtn.addEventListener('click', () => {
+        if (adminCurrentBookPage > 0) { adminCurrentBookPage--; renderAdminBookPage(); }
+    });
+    if (adminBookNextBtn) adminBookNextBtn.addEventListener('click', () => {
+        if (adminCurrentBookPage < adminBookPages.length - 1) { adminCurrentBookPage++; renderAdminBookPage(); }
+    });
+    if (adminCloseBookBtn) adminCloseBookBtn.addEventListener('click', () => {
+        if (adminBookModal) adminBookModal.hidden = true;
+        document.body.style.overflow = '';
+    });
+    if (adminBookModal) adminBookModal.addEventListener('click', (e) => {
+        if (e.target === adminBookModal) {
+            adminBookModal.hidden = true;
+            document.body.style.overflow = '';
+        }
+    });
 });
