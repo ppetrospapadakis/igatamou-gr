@@ -1772,6 +1772,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!adminBookContent) return;
         adminBookContent.innerHTML = adminBookPages[adminCurrentBookPage] || '';
 
+        // Reset scroll position to top when changing pages
+        adminBookContent.scrollTop = 0;
+        const bookPageRight = document.querySelector('#bookModal .book-page-right');
+        if (bookPageRight) bookPageRight.scrollTop = 0;
+        const bookElement = document.getElementById('bookElement');
+        if (bookElement) bookElement.scrollTop = 0;
+        const modalContainer = document.querySelector('#bookModal .book-modal-container');
+        if (modalContainer) modalContainer.scrollTop = 0;
+        if (adminBookModal) adminBookModal.scrollTop = 0;
+
         if (adminBookStoryHeader) adminBookStoryHeader.style.display = adminCurrentBookPage === 0 ? '' : 'none';
 
         const total = adminBookPages.length;

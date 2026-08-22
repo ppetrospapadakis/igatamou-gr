@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------
     // SUPABASE INIT
     // --------------------------------------------------------
@@ -213,6 +213,16 @@
         if (!bookContent) return;
         const safeHtml = sanitizeHtml(bookPages[currentBookPage] || '');
         bookContent.innerHTML = safeHtml;
+
+        // Reset scroll position to the very top when changing pages
+        bookContent.scrollTop = 0;
+        const bookPageRight = document.getElementById('bookPageRight');
+        if (bookPageRight) bookPageRight.scrollTop = 0;
+        const bookElement = document.getElementById('bookElement');
+        if (bookElement) bookElement.scrollTop = 0;
+        const modalContainer = document.querySelector('.book-modal-container');
+        if (modalContainer) modalContainer.scrollTop = 0;
+        if (bookModal) bookModal.scrollTop = 0;
 
         if (bookStoryHeader) bookStoryHeader.style.display = currentBookPage === 0 ? '' : 'none';
 
