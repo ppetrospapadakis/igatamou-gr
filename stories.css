@@ -237,13 +237,15 @@
 .book {
     display: flex;
     width: 100%;
-    min-height: 480px;
-    max-height: 680px;
+    height: 620px;
+    min-height: 620px;
+    max-height: 620px;
     background: #fdfbf7;
     border-radius: 20px;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45), 0 0 0 10px #7c2d12, 0 0 0 14px #b45309;
     overflow: hidden;
     position: relative;
+    box-sizing: border-box;
 }
 
 /* Book Spine shadow in middle */
@@ -261,13 +263,16 @@
 }
 
 .book-page {
-    flex: 1;
-    padding: 35px 30px;
+    flex: 1 1 50%;
+    width: 50%;
+    height: 100%;
+    padding: 30px 28px;
     position: relative;
     background: #fefcf9;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .book-page-left {
@@ -283,7 +288,10 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    width: 100%;
     position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .book-left-illustration {
@@ -379,7 +387,8 @@
     line-height: 1.7;
     color: #27272a;
     overflow-y: auto;
-    flex-grow: 1;
+    flex: 1 1 auto;
+    min-height: 0;
     padding-right: 8px;
 }
 
