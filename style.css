@@ -2282,7 +2282,7 @@ body.arena-fullscreen-active {
 .cat-card-img-wrapper {
     position: relative;
     width: 100%;
-    aspect-ratio: 1;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
     /* Shimmer skeleton while image loads */
     background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
@@ -2897,7 +2897,6 @@ body.arena-fullscreen-active {
         justify-self: center !important;
         width: calc((100% - 6px) / 2) !important;
     }
-}
 
     /* Drawing Studio Canvas Mobile Height Fix */
     .canvas-wrapper {

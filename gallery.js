@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderPublicGallery() {
-        const cats = getCatsData().filter(c => !(c.id && c.id.startsWith('draw_')) && !(c.bio && c.bio.includes('🎨 [DRAWING]')));
+        const cats = getCatsData().filter(c => !(c.id && (c.id.startsWith('draw_') || c.id.startsWith('story_'))) && !(c.bio && (c.bio.includes('🎨 [DRAWING]') || c.bio.includes('📖 [STORY]'))));
         const likedCatIds = getLikedCatIds();
         const approvedCats = cats.filter(c => c.status === 'approved');
 
@@ -1025,7 +1025,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderAdminDashboard() {
-        const cats = getCatsData().filter(c => !(c.id && c.id.startsWith('draw_')) && !(c.bio && c.bio.includes('🎨 [DRAWING]')));
+        const cats = getCatsData().filter(c => !(c.id && (c.id.startsWith('draw_') || c.id.startsWith('story_'))) && !(c.bio && (c.bio.includes('🎨 [DRAWING]') || c.bio.includes('📖 [STORY]'))));
         const pendingCats = cats.filter(c => c.status === 'pending');
         const approvedCats = cats.filter(c => c.status === 'approved');
 
