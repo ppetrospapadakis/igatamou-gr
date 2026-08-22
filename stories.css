@@ -776,31 +776,32 @@
     }
 
     .book-story-header {
-        margin-bottom: 6px !important;
-        padding-bottom: 4px !important;
+        margin-bottom: 4px !important;
+        padding-bottom: 3px !important;
         flex-shrink: 0 !important;
     }
 
     .book-title {
-        font-size: 1.15rem !important;
-        margin: 0 0 2px 0 !important;
+        font-size: 1.05rem !important;
+        margin: 0 0 1px 0 !important;
     }
 
     .book-author {
-        font-size: 0.85rem !important;
+        font-size: 0.80rem !important;
     }
 
     .book-content {
         flex: 1 1 auto !important;
         min-height: 0 !important;
         overflow-y: auto !important;
-        font-size: 1.02rem !important;
-        line-height: 1.5 !important;
+        font-size: 1.06rem !important;
+        line-height: 1.6 !important;
         padding-right: 4px !important;
+        margin-bottom: 4px !important;
     }
 
     .book-content p {
-        margin-bottom: 8px !important;
+        margin-bottom: 10px !important;
     }
 
     .book-content img {
@@ -810,8 +811,9 @@
     }
 
     .book-page-number {
-        margin-top: 4px !important;
-        font-size: 0.82rem !important;
+        margin-top: 2px !important;
+        margin-bottom: 2px !important;
+        font-size: 0.80rem !important;
         flex-shrink: 0 !important;
     }
 
