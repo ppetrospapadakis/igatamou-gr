@@ -1517,8 +1517,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let stories = [];
         if (supabase) {
             try {
-                // Fetch from cats table where stories are synced
-                const { data } = await supabase.from('cats').select('*');
+                // Fetch from cats table where stories are synced (only story rows)
+                const { data } = await supabase
+                    .from('cats')
+                    .select('id, name, owner, bio, image, status, date')
+                    .ilike('bio', '%STORY%');
                 if (data && data.length) {
                     data.forEach(item => {
                         if (item.bio && item.bio.includes('[STORY]')) {

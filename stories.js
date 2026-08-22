@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     // --------------------------------------------------------
     // SUPABASE INIT
     // --------------------------------------------------------
@@ -54,72 +54,91 @@
     const emptyStories = document.getElementById('emptyStories');
 
     if (storiesGrid !== null) {
-        loadStories();
+        initStoriesPage();
     }
 
-    async function loadStories() {
+    function getLocalStories() {
+        let localStories = [];
         try {
-            let stories = [];
-
-            // 1. Fetch from Supabase cats table (where stories are cloud-stored)
-            if (supabase) {
-                try {
-                    const { data } = await supabase.from('cats').select('*').eq('status', 'approved');
-                    if (data && data.length) {
-                        data.forEach(item => {
-                            if (item.bio && item.bio.includes('[STORY]')) {
-                                try {
-                                    const parsed = JSON.parse(item.bio.replace(/^📖\s*\[STORY\]\s*/, ''));
-                                    stories.push({
-                                        id: item.id,
-                                        title: item.name,
-                                        author: item.owner,
-                                        content: parsed.content || '',
-                                        cover_image_url: item.image || parsed.cover_image_url || 'magkas_logo.png',
-                                        is_admin: parsed.is_admin || false,
-                                        status: item.status,
-                                        created_at: item.date || ''
-                                    });
-                                } catch(pe) {}
-                            }
-                        });
-                    }
-                } catch(se) {
-                    console.log('Supabase sync notice');
-                }
+            localStories = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+            if (!localStorage.getItem('igatamou_stories_initialized')) {
+                localStories.unshift(OFFICIAL_MAGKAS_STORY);
+                localStorage.setItem('igatamou_local_stories', JSON.stringify(localStories));
+                localStorage.setItem('igatamou_stories_initialized', 'true');
             }
+        } catch(e) {}
+        return localStories.filter(s => s.status === 'approved');
+    }
 
-            // 2. Merge with localStorage stories
-            let localStories = [];
+    async function initStoriesPage() {
+        // 1. INSTANT RENDER (0ms) from local cache / defaults
+        const cachedStories = getLocalStories();
+        if (cachedStories.length > 0) {
+            if (storiesLoading) storiesLoading.hidden = true;
+            if (emptyStories) emptyStories.hidden = true;
+            if (storiesGrid) storiesGrid.hidden = false;
+            renderStoryCards(cachedStories);
+        }
+
+        // 2. FAST BACKGROUND SYNC with targeted query (only story rows, minimal payload)
+        if (supabase) {
             try {
-                localStories = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
-                if (!localStorage.getItem('igatamou_stories_initialized')) {
-                    localStories.unshift(OFFICIAL_MAGKAS_STORY);
-                    localStorage.setItem('igatamou_local_stories', JSON.stringify(localStories));
-                    localStorage.setItem('igatamou_stories_initialized', 'true');
+                const { data, error } = await supabase
+                    .from('cats')
+                    .select('id, name, owner, bio, image, status, date')
+                    .ilike('bio', '%STORY%')
+                    .eq('status', 'approved');
+
+                if (!error && data && data.length > 0) {
+                    const cloudStories = [];
+                    data.forEach(item => {
+                        if (item.bio && item.bio.includes('[STORY]')) {
+                            try {
+                                const parsed = JSON.parse(item.bio.replace(/^📖\s*\[STORY\]\s*/, ''));
+                                cloudStories.push({
+                                    id: item.id,
+                                    title: item.name,
+                                    author: item.owner,
+                                    content: parsed.content || '',
+                                    cover_image_url: item.image || parsed.cover_image_url || 'magkas_logo.png',
+                                    is_admin: parsed.is_admin || false,
+                                    status: item.status,
+                                    created_at: item.date || ''
+                                });
+                            } catch(pe) {}
+                        }
+                    });
+
+                    // Merge cloud with local
+                    const mergedMap = new Map();
+                    cachedStories.forEach(s => mergedMap.set(s.id, s));
+                    cloudStories.forEach(s => mergedMap.set(s.id, s));
+                    const finalStories = Array.from(mergedMap.values());
+
+                    // Save merged cache
+                    try {
+                        localStorage.setItem('igatamou_local_stories', JSON.stringify(finalStories));
+                    } catch(se) {}
+
+                    if (storiesLoading) storiesLoading.hidden = true;
+                    if (emptyStories) emptyStories.hidden = finalStories.length > 0;
+                    if (storiesGrid) storiesGrid.hidden = false;
+                    renderStoryCards(finalStories);
+                    return;
                 }
-            } catch(le) {}
-
-            localStories.forEach(ls => {
-                if (ls.status === 'approved' && !stories.some(s => s.id === ls.id)) {
-                    stories.push(ls);
-                }
-            });
-
-            if (storiesLoading) storiesLoading.hidden = true;
-
-            if (stories.length === 0) {
-                if (emptyStories) emptyStories.hidden = false;
-                return;
+            } catch(e) {
+                console.log('Background stories sync notice:', e);
             }
+        }
 
+        // Fallback if no cache was shown
+        if (storiesLoading) storiesLoading.hidden = true;
+        const current = getLocalStories();
+        if (current.length > 0) {
             if (storiesGrid) storiesGrid.hidden = false;
-            renderStoryCards(stories);
-        } catch (e) {
-            console.error('loadStories error:', e);
-            if (storiesLoading) storiesLoading.hidden = true;
-            if (storiesGrid) storiesGrid.hidden = false;
-            renderStoryCards([OFFICIAL_MAGKAS_STORY]);
+            renderStoryCards(current);
+        } else {
+            if (emptyStories) emptyStories.hidden = false;
         }
     }
 
