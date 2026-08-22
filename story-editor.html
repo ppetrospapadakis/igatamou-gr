@@ -137,10 +137,21 @@
                                     <button class="ql-image" id="quillImageBtn" title="Εισαγωγή Εικόνας"></button>
                                 </span>
                                 <span class="ql-formats">
+                                    <button class="ql-pageBreak" id="quillPageBreakBtn" type="button" title="✂️ Πρόσθεσε Αλλαγή Σελίδας (Νέα σελίδα στο βιβλίο)" style="width: auto !important; padding: 0 8px !important; font-weight: 700 !important; font-size: 0.85rem !important; border-radius: 6px !important; background: #fef3c7 !important; color: #92400e !important; border: 1px solid #fde68a !important; display: inline-flex !important; align-items: center !important; gap: 4px !important;">
+                                        ✂️ Νέα Σελίδα
+                                    </button>
+                                </span>
+                                <span class="ql-formats">
                                     <button class="ql-clean"></button>
                                 </span>
                             </div>
                             <div id="quillEditor" class="quill-editor-body"></div>
+                        </div>
+                        <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                            <button type="button" id="insertPageBreakBtn" class="btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; font-size: 0.95rem; font-weight: 700; padding: 9px 18px; border-radius: 20px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);">
+                                ✂️ Πρόσθεσε Αλλαγή Σελίδας εδώ
+                            </button>
+                            <span style="font-size: 0.88rem; color: #64748b; font-weight: 600;">📖 Κάθε «Αλλαγή Σελίδας» δημιουργεί μία νέα σελίδα στο βιβλίο!</span>
                         </div>
                         <input type="file" id="quillImageInput" accept="image/*" hidden>
                     </div>

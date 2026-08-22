@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // ----------------------------------------------------
     // 1. SUPABASE CLIENT
     // ----------------------------------------------------
@@ -29,7 +29,7 @@
         is_admin: true,
         status: 'approved',
         created_at: '2025-01-01',
-        content: '<h2>Κεφάλαιο 1: Η Ανακάλυψη</h2><p>Μια ζεστή καλοκαιρινή μέρα, η Μάγκας κοιτούσε έξω από το παράθυρο και είδε κάτι να λάμπει στο δέντρο της αυλής. Τινάχτηκε έξω με μια αναπήδηση...</p><p>«Τι είναι αυτό;» σκέφτηκε με τα μεγάλα της πράσινα μάτια να αστράφτουν από περιέργεια.</p><h2>Κεφάλαιο 2: Η Περιπέτεια</h2><p>Ανέβηκε στο δέντρο — ένα, δύο, τρία άλματα — και βρήκε ένα μυστηριώδες κουτί με ψάρια ζωγραφιστά επάνω! Μέσα ήταν μια επιστολή που έγραφε:</p><blockquote>«Αγαπητή Μάγκας, αυτά τα ψάρια είναι για σένα! Από τον μυστικό σου θαυμαστή 🐟»</blockquote><p>Η Μάγκας χαμογέλασε με όλη της την καρδιά. Ήταν η καλύτερη μέρα της ζωής της! 🐾✨</p>'
+        content: '<h2>Κεφάλαιο 1: Η Ανακάλυψη</h2><p>Μια ζεστή καλοκαιρινή μέρα, η Μάγκας κοιτούσε έξω από το παράθυρο και είδε κάτι να λάμπει στο δέντρο της αυλής. Τινάχτηκε έξω με μια αναπήδηση...</p><p>«Τι είναι αυτό;» σκέφτηκε με τα μεγάλα της πράσινα μάτια να αστράφτουν από περιέργεια.</p><hr class="story-page-break" data-page-break="true"><h2>Κεφάλαιο 2: Η Περιπέτεια</h2><p>Ανέβηκε στο δέντρο — ένα, δύο, τρία άλματα — και βρήκε ένα μυστηριώδες κουτί με ψάρια ζωγραφιστά επάνω! Μέσα ήταν μια επιστολή που έγραφε:</p><blockquote>«Αγαπητή Μάγκας, αυτά τα ψάρια είναι για σένα! Από τον μυστικό σου θαυμαστή 🐟»</blockquote><p>Η Μάγκας χαμογέλασε με όλη της την καρδιά. Ήταν η καλύτερη μέρα της ζωής της! 🐾✨</p>'
     };
 
     // ----------------------------------------------------
@@ -37,6 +37,21 @@
     // ----------------------------------------------------
     let quill = null;
     if (window.Quill) {
+        // Register custom Page Break blot
+        const BlockEmbed = Quill.import('blots/block/embed');
+        class PageBreakBlot extends BlockEmbed {
+            static create(value) {
+                const node = super.create();
+                node.setAttribute('class', 'story-page-break');
+                node.setAttribute('data-page-break', 'true');
+                node.setAttribute('contenteditable', 'false');
+                return node;
+            }
+        }
+        PageBreakBlot.blotName = 'pageBreak';
+        PageBreakBlot.tagName = 'hr';
+        Quill.register(PageBreakBlot);
+
         quill = new Quill('#quillEditor', {
             modules: {
                 toolbar: '#storyEditorToolbar'
@@ -45,10 +60,27 @@
             theme: 'snow'
         });
 
+        function insertPageBreak() {
+            if (!quill) return;
+            const range = quill.getSelection(true);
+            const index = range ? range.index : quill.getLength();
+            quill.insertEmbed(index, 'pageBreak', true, Quill.sources.USER);
+            quill.setSelection(index + 1, Quill.sources.SILENT);
+        }
+
+        const toolbar = quill.getModule('toolbar');
+        if (toolbar) {
+            toolbar.addHandler('pageBreak', insertPageBreak);
+        }
+
+        const insertPageBreakBtn = document.getElementById('insertPageBreakBtn');
+        if (insertPageBreakBtn) {
+            insertPageBreakBtn.addEventListener('click', insertPageBreak);
+        }
+
         // Safe toolbar handler for image insertion
         const quillImageInput = document.getElementById('quillImageInput');
         if (quillImageInput) {
-            const toolbar = quill.getModule('toolbar');
             if (toolbar) {
                 toolbar.addHandler('image', () => {
                     quillImageInput.click();

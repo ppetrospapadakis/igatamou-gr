@@ -605,6 +605,41 @@
     margin-bottom: 12px;
 }
 
+/* Custom Page Break divider in Editor */
+.story-page-break,
+hr.story-page-break {
+    border: none !important;
+    border-top: 3px dashed #f59e0b !important;
+    margin: 28px 0 !important;
+    position: relative !important;
+    text-align: center !important;
+    height: 32px !important;
+    overflow: visible !important;
+    display: block !important;
+    background: transparent !important;
+    cursor: default !important;
+    user-select: none !important;
+}
+
+.story-page-break::after,
+hr.story-page-break::after {
+    content: '📖 --- ΑΛΛΑΓΗ ΣΕΛΙΔΑΣ (ΝΕΑ ΣΕΛΙΔΑ) --- 📖';
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fef3c7;
+    color: #92400e;
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 4px 18px;
+    border-radius: 20px;
+    border: 1.5px solid #fde68a;
+    box-shadow: 0 3px 10px rgba(245, 158, 11, 0.2);
+    white-space: nowrap;
+}
+
 .editor-error {
     background: #fef2f2;
     border: 2px solid #fca5a5;

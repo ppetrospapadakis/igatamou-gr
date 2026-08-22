@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         is_admin: true,
         status: 'approved',
         created_at: '2025-01-01',
-        content: '<h2>Κεφάλαιο 1: Η Ανακάλυψη</h2><p>Μια ζεστή καλοκαιρινή μέρα, η Μάγκας κοιτούσε έξω από το παράθυρο και είδε κάτι να λάμπει στο δέντρο της αυλής. Τινάχτηκε έξω με μια αναπήδηση...</p><p>«Τι είναι αυτό;» σκέφτηκε με τα μεγάλα της πράσινα μάτια να αστράφτουν από περιέργεια.</p><h2>Κεφάλαιο 2: Η Περιπέτεια</h2><p>Ανέβηκε στο δέντρο — ένα, δύο, τρία άλματα — και βρήκε ένα μυστηριώδες κουτί με ψάρια ζωγραφιστά επάνω! Μέσα ήταν μια επιστολή που έγραφε:</p><blockquote>«Αγαπητή Μάγκας, αυτά τα ψάρια είναι για σένα! Από τον μυστικό σου θαυμαστή 🐟»</blockquote><p>Η Μάγκας χαμογέλασε με όλη της την καρδιά. Ήταν η καλύτερη μέρα της ζωής της! 🐾✨</p>'
+        content: '<h2>Κεφάλαιο 1: Η Ανακάλυψη</h2><p>Μια ζεστή καλοκαιρινή μέρα, η Μάγκας κοιτούσε έξω από το παράθυρο και είδε κάτι να λάμπει στο δέντρο της αυλής. Τινάχτηκε έξω με μια αναπήδηση...</p><p>«Τι είναι αυτό;» σκέφτηκε με τα μεγάλα της πράσινα μάτια να αστράφτουν από περιέργεια.</p><hr class="story-page-break" data-page-break="true"><h2>Κεφάλαιο 2: Η Περιπέτεια</h2><p>Ανέβηκε στο δέντρο — ένα, δύο, τρία άλματα — και βρήκε ένα μυστηριώδες κουτί με ψάρια ζωγραφιστά επάνω! Μέσα ήταν μια επιστολή που έγραφε:</p><blockquote>«Αγαπητή Μάγκας, αυτά τα ψάρια είναι για σένα! Από τον μυστικό σου θαυμαστή 🐟»</blockquote><p>Η Μάγκας χαμογέλασε με όλη της την καρδιά. Ήταν η καλύτερη μέρα της ζωής της! 🐾✨</p>'
     };
 
     function escapeHtml(str) {
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function sanitizeHtml(html) {
-        const allowedTags = /^(p|br|strong|em|u|h1|h2|h3|ul|ol|li|span|div|img|blockquote)$/i;
+        const allowedTags = /^(p|br|hr|strong|em|u|h1|h2|h3|ul|ol|li|span|div|img|blockquote)$/i;
         const div = document.createElement('div');
         div.innerHTML = html;
         div.querySelectorAll('*').forEach(el => {
@@ -210,78 +210,19 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        const isMobile = window.innerWidth <= 768;
-        const targetChars = isMobile ? 850 : 1300;
-        const minChars = isMobile ? 650 : 1000;
-        const maxChars = isMobile ? 1150 : 1700;
-
-        let remaining = (story.content || '').trim();
-        const textPages = [];
-
-        while (remaining.length > 0) {
-            if (remaining.length <= maxChars) {
-                textPages.push(remaining);
-                break;
-            }
-
-            const searchSlice = remaining.slice(0, maxChars);
-            let cutPoint = -1;
-
-            // 1. Check for block tag closures (</p>, </div>, </blockquote>, </h2>, </h3>)
-            const pCloseMatches = [
-                searchSlice.lastIndexOf('</p>'),
-                searchSlice.lastIndexOf('</div>'),
-                searchSlice.lastIndexOf('</blockquote>'),
-                searchSlice.lastIndexOf('</h2>'),
-                searchSlice.lastIndexOf('</h3>')
-            ].filter(idx => idx >= minChars);
-
-            if (pCloseMatches.length > 0) {
-                const bestBlock = Math.max(...pCloseMatches);
-                const tagEnd = searchSlice.indexOf('>', bestBlock);
-                if (tagEnd !== -1) cutPoint = tagEnd + 1;
-            }
-
-            // 2. Check for sentence ends (. ! ?) followed by whitespace, tag or end
-            if (cutPoint === -1) {
-                const sentenceMatches = [];
-                const regex = /[.!?](\s+|<|$)/g;
-                let m;
-                while ((m = regex.exec(searchSlice)) !== null) {
-                    if (m.index >= minChars) {
-                        sentenceMatches.push(m.index + 1);
-                    }
-                }
-                if (sentenceMatches.length > 0) {
-                    cutPoint = sentenceMatches[sentenceMatches.length - 1];
-                }
-            }
-
-            // 3. Check for <br>
-            if (cutPoint === -1) {
-                const brPos = searchSlice.lastIndexOf('<br');
-                if (brPos >= minChars) {
-                    const tagEnd = searchSlice.indexOf('>', brPos);
-                    if (tagEnd !== -1) cutPoint = tagEnd + 1;
-                }
-            }
-
-            // 4. Fallback to space
-            if (cutPoint === -1) {
-                const spacePos = searchSlice.lastIndexOf(' ');
-                if (spacePos >= minChars * 0.7) {
-                    cutPoint = spacePos + 1;
-                } else {
-                    cutPoint = targetChars;
-                }
-            }
-
-            const pageChunk = remaining.slice(0, cutPoint).trim();
-            if (pageChunk) textPages.push(pageChunk);
-            remaining = remaining.slice(cutPoint).trim();
+        const rawHtml = (story.content || '').trim();
+        if (!rawHtml) {
+            return [coverPageHtml, '<p>Δεν υπάρχει περιεχόμενο.</p>'];
         }
 
-        if (textPages.length === 0) textPages.push(story.content || '');
+        // Split STRICTLY by Page Break markers inserted by author (or single page if no break)
+        const pageBreakRegex = /<hr[^>]*class=["'][^"']*story-page-break[^"']*["'][^>]*>|<hr[^>]*data-page-break[^>]*>|<!--page-break-->|<div[^>]*class=["'][^"']*story-page-break[^"']*["'][^>]*>.*?<\/div>/gi;
+
+        const parts = rawHtml.split(pageBreakRegex)
+            .map(p => p.trim())
+            .filter(p => p.length > 0);
+
+        const textPages = parts.length > 0 ? parts : [rawHtml];
 
         return [coverPageHtml, ...textPages];
     }
