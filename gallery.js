@@ -1784,6 +1784,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (adminBookTitle) adminBookTitle.textContent = story.title;
         if (adminBookAuthor) adminBookAuthor.innerHTML = `✍️ ${escapeHtml(story.author)}`;
 
+        const bookLeftCoverImg = document.querySelector('#bookModal #bookLeftCoverImg');
+        const bookLeftTitle = document.querySelector('#bookModal #bookLeftTitle');
+        const bookLeftAuthor = document.querySelector('#bookModal #bookLeftAuthor');
+        if (bookLeftCoverImg) {
+            bookLeftCoverImg.src = story.cover_image_url || 'magkas_logo.png';
+            bookLeftCoverImg.onerror = () => { bookLeftCoverImg.src = 'magkas_logo.png'; };
+        }
+        if (bookLeftTitle) bookLeftTitle.textContent = story.title;
+        if (bookLeftAuthor) bookLeftAuthor.textContent = `✍️ ${story.author}`;
+
         renderAdminBookPage();
         adminBookModal.hidden = false;
         document.body.style.overflow = 'hidden';

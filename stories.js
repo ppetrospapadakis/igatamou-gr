@@ -241,6 +241,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (bookTitle) bookTitle.textContent = story.title;
         if (bookAuthor) bookAuthor.innerHTML = `✍️ ${escapeHtml(story.author)}`;
 
+        const bookLeftCoverImg = document.getElementById('bookLeftCoverImg');
+        const bookLeftTitle = document.getElementById('bookLeftTitle');
+        const bookLeftAuthor = document.getElementById('bookLeftAuthor');
+        if (bookLeftCoverImg) {
+            bookLeftCoverImg.src = story.cover_image_url || 'magkas_logo.png';
+            bookLeftCoverImg.onerror = () => { bookLeftCoverImg.src = 'magkas_logo.png'; };
+        }
+        if (bookLeftTitle) bookLeftTitle.textContent = story.title;
+        if (bookLeftAuthor) bookLeftAuthor.textContent = `✍️ ${story.author}`;
+
         renderBookPage();
         bookModal.hidden = false;
         document.body.style.overflow = 'hidden';

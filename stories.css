@@ -286,33 +286,70 @@
     position: relative;
 }
 
-.book-decoration {
+.book-left-illustration {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    margin-top: auto;
-    margin-bottom: auto;
-    padding: 20px;
-    opacity: 0.85;
+    height: 100%;
+    width: 100%;
+    padding: 10px 8px;
+    box-sizing: border-box;
+    margin: auto 0;
 }
 
-.book-paws {
-    font-size: 2.2rem;
-    margin-bottom: 12px;
+.book-left-img-wrapper {
+    width: 100%;
+    max-width: 320px;
+    height: 270px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 0 0 4px #fed7aa;
+    margin-bottom: 16px;
+    background: #fdf2f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.book-logo {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    border: 3px solid #f59e0b;
-    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3);
-    margin-bottom: 10px;
+.book-left-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
 }
 
-.book-site-name {
+.book-left-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.book-left-badge {
+    background: #fef3c7;
+    color: #92400e;
     font-family: 'Fredoka', cursive, sans-serif;
     font-weight: 700;
-    color: #92400e;
-    font-size: 1.1rem;
+    font-size: 0.85rem;
+    padding: 3px 12px;
+    border-radius: 20px;
+    border: 1px solid #fde68a;
+}
+
+.book-left-title {
+    font-family: 'Fredoka', cursive, sans-serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #831843;
+    line-height: 1.25;
+}
+
+.book-left-author {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #b45309;
 }
 
 .book-story-header {
