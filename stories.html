@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Γατο-Ιστορίες 📖 | igatamou.gr</title>
+    <meta name="description" content="Διάβασε υπέροχες ιστορίες για γάτες & γράψε τη δική σου ιστορία!">
+    <meta name="theme-color" content="#ff5e7e">
+    <link rel="canonical" href="https://www.igatamou.gr/stories.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.igatamou.gr/stories.html">
+    <meta property="og:title" content="Γατο-Ιστορίες 📖 | igatamou.gr">
+    <meta property="og:description" content="Διάβασε ιστορίες για γάτες & γράψε τη δική σου!">
+    <meta property="og:image" content="https://www.igatamou.gr/magkas_logo.png">
+    <meta property="og:locale" content="el_GR">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://www.igatamou.gr/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="https://www.igatamou.gr/favicon-48x48.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://www.igatamou.gr/favicon-192x192.png">
+    <link rel="shortcut icon" href="https://www.igatamou.gr/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;700;800&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <link rel="stylesheet" href="style.css?v=27">
+    <link rel="stylesheet" href="stories.css?v=1">
+</head>
+<body class="stories-page-body">
+    <div class="bg-decorations" aria-hidden="true">
+        <span class="floating-paw paw-1">📖</span>
+        <span class="floating-paw paw-2">🐱</span>
+        <span class="floating-paw paw-3">✨</span>
+        <span class="floating-paw paw-4">🐾</span>
+        <span class="floating-paw paw-5">🌟</span>
+        <span class="floating-paw paw-6">📚</span>
+    </div>
+    <div class="page-wrapper">
+        <header class="header">
+            <div class="header-row-1">
+                <div class="header-row-1-inner">
+                    <a href="index.html" class="logo" style="text-decoration:none;" title="igatamou.gr">
+                        <img src="magkas_logo.png" alt="Μάγκας 🐱" class="logo-avatar-img">
+                        <span class="logo-text">igatamou<span class="highlight">.gr</span></span>
+                    </a>
+                    <div class="designer-badge">
+                        <span class="badge-icon">🎨</span>
+                        <span class="badge-text">Σχεδιάστρια: <strong>Αριάδνη (7 ετών)</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-row-2">
+                <a href="gallery.html" class="nav-gallery-btn">📸 Γατο-Άλμπουμ 🐾</a>
+                <a href="games.html" class="nav-games-btn">🎮 Γατο-Παιχνίδια 🐾</a>
+                <a href="drawings-gallery.html" class="nav-draw-btn">🎨 Γατο-Ζωγραφιές 🐾</a>
+                <a href="stories.html" class="nav-stories-btn active">📖 Γατο-Ιστορίες 🐾</a>
+                <a href="cat-likes.html" class="nav-likes-btn">💡 Γατο-Συμβουλές 🐾</a>
+            </div>
+        </header>
+        <main class="main-content">
+            <div class="category-menu-card stories-main-card">
+                <div class="menu-title-box">
+                    <span class="cat-hero-emoji">📖🐱</span>
+                    <h1>Γατο-Ιστορίες!</h1>
+                    <p>Διάβασε υπέροχες ιστορίες για γάτες από παιδιά σαν κι εσένα — κι αν θέλεις, γράψε τη δική σου! 🐾✨</p>
+                    <div style="margin-top:14px;">
+                        <a href="story-editor.html" class="btn btn-write-story">✍️ Γράψε τη δική σου Ιστορία! 🐾</a>
+                    </div>
+                </div>
+                <div id="storiesLoading" class="stories-loading">
+                    <div class="loading-cat">🐱</div>
+                    <p>Η Μάγκας φέρνει τις ιστορίες... ✨</p>
+                </div>
+                <div id="storiesGrid" class="stories-grid" hidden></div>
+                <div id="emptyStories" class="empty-gallery-card" hidden>
+                    <span class="empty-icon">📖✨</span>
+                    <h3>Δεν υπάρχουν ιστορίες ακόμα!</h3>
+                    <p>Γίνε ο πρώτος που θα γράψει μια ιστορία για τη γατούλα του! 🐾</p>
+                    <a href="story-editor.html" class="btn btn-write-story" style="margin-top:16px;">✍️ Γράψε την Πρώτη Ιστορία!</a>
+                </div>
+            </div>
+        </main>
+        <footer class="footer"><p>© igatamou.gr • Σχεδιασμένο με πολύ αγάπη & παιδαγωγική φροντίδα! 🐾</p></footer>
+    </div>
+
+    <!-- BOOK MODAL -->
+    <div id="bookModal" class="book-modal-overlay" hidden>
+        <div class="book-modal-container">
+            <div class="book" id="bookElement">
+                <div class="book-page book-page-left" id="bookPageLeft">
+                    <div class="book-page-inner">
+                        <div class="book-decoration">
+                            <div class="book-paws">🐾🐱🐾</div>
+                            <img src="magkas_logo.png" alt="Μάγκας" class="book-logo">
+                            <div class="book-site-name">igatamou.gr</div>
+                        </div>
+                        <div class="book-left-text" id="bookLeftText"></div>
+                        <div class="book-page-number left" id="bookPageNumLeft"></div>
+                    </div>
+                </div>
+                <div class="book-page book-page-right" id="bookPageRight">
+                    <div class="book-page-inner">
+                        <div id="bookStoryHeader" class="book-story-header">
+                            <h2 id="bookTitle" class="book-title"></h2>
+                            <div id="bookAuthor" class="book-author"></div>
+                        </div>
+                        <div id="bookContent" class="book-content"></div>
+                        <div class="book-page-number right" id="bookPageNumRight"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="book-controls">
+                <button id="bookPrevBtn" class="book-nav-btn book-prev" disabled>◀ Προηγούμενη</button>
+                <span id="bookPageIndicator" class="book-page-indicator">Σελίδα 1 / 1</span>
+                <button id="bookNextBtn" class="book-nav-btn book-next">Επόμενη ▶</button>
+            </div>
+            <button id="closeBookBtn" class="book-close-btn" aria-label="Κλείσιμο">✖</button>
+        </div>
+    </div>
+
+    <script src="stories.js?v=1"></script>
+</body>
+</html>

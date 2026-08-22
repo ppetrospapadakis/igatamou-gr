@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Γράψε Ιστορία ✍️ | igatamou.gr</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://www.igatamou.gr/favicon-192x192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Quill Rich Text Editor -->
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <link rel="stylesheet" href="style.css?v=27">
+    <link rel="stylesheet" href="stories.css?v=1">
+</head>
+<body class="stories-page-body">
+    <div class="bg-decorations" aria-hidden="true">
+        <span class="floating-paw paw-1">✍️</span>
+        <span class="floating-paw paw-2">🐱</span>
+        <span class="floating-paw paw-3">📖</span>
+        <span class="floating-paw paw-4">🐾</span>
+        <span class="floating-paw paw-5">💫</span>
+        <span class="floating-paw paw-6">🌟</span>
+    </div>
+    <div class="page-wrapper">
+        <header class="header">
+            <div class="header-row-1">
+                <div class="header-row-1-inner">
+                    <a href="index.html" class="logo" style="text-decoration:none;">
+                        <img src="magkas_logo.png" alt="Μάγκας 🐱" class="logo-avatar-img">
+                        <span class="logo-text">igatamou<span class="highlight">.gr</span></span>
+                    </a>
+                    <div class="designer-badge">
+                        <span class="badge-icon">🎨</span>
+                        <span class="badge-text">Σχεδιάστρια: <strong>Αριάδνη (7 ετών)</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-row-2">
+                <a href="gallery.html" class="nav-gallery-btn">📸 Γατο-Άλμπουμ 🐾</a>
+                <a href="games.html" class="nav-games-btn">🎮 Γατο-Παιχνίδια 🐾</a>
+                <a href="drawings-gallery.html" class="nav-draw-btn">🎨 Γατο-Ζωγραφιές 🐾</a>
+                <a href="stories.html" class="nav-stories-btn active">📖 Γατο-Ιστορίες 🐾</a>
+                <a href="cat-likes.html" class="nav-likes-btn">💡 Γατο-Συμβουλές 🐾</a>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- SUCCESS STATE (hidden initially) -->
+            <div id="editorSuccessCard" class="category-menu-card editor-success-card" hidden>
+                <div class="menu-title-box" style="text-align:center;">
+                    <span class="cat-hero-emoji">🎉🐱</span>
+                    <h1>Η ιστορία σου στάλθηκε!</h1>
+                    <p style="font-size:1.15rem; margin-top:10px;">Η <strong>Μάγκας</strong> θα τη διαβάσει σύντομα και θα την εγκρίνει! 🐾✨</p>
+                    <div style="margin-top:20px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+                        <a href="stories.html" class="btn btn-submit-upload">📖 Δες όλες τις Ιστορίες</a>
+                        <a href="story-editor.html" class="btn btn-back-menu">✍️ Γράψε άλλη Ιστορία</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDITOR CARD -->
+            <div id="editorCard" class="category-menu-card editor-main-card">
+                <div class="menu-title-box">
+                    <span class="cat-hero-emoji">✍️🐱</span>
+                    <h1>Γράψε τη δική σου Γατο-Ιστορία!</h1>
+                    <p>Πες μας μια ιστορία για τη γατούλα σου — μεγάλη ή μικρή, αστεία ή τρυφερή! 🐾</p>
+                </div>
+
+                <div class="editor-form">
+                    <!-- Title -->
+                    <div class="editor-field-group">
+                        <label class="editor-label" for="storyTitle">📌 Τίτλος Ιστορίας</label>
+                        <input type="text" id="storyTitle" class="input-field editor-input"
+                            placeholder="π.χ. «Η Μάγκας και το Χαμένο Ψάρι»" maxlength="100">
+                    </div>
+
+                    <!-- Author -->
+                    <div class="editor-field-group">
+                        <label class="editor-label" for="storyAuthor">🐱 Όνομα (ή ψευδώνυμο)</label>
+                        <input type="text" id="storyAuthor" class="input-field editor-input"
+                            placeholder="π.χ. Αριάδνη, 7 ετών" maxlength="60">
+                    </div>
+
+                    <!-- Cover Image -->
+                    <div class="editor-field-group">
+                        <label class="editor-label">🖼️ Εικόνα Εξωφύλλου (προαιρετικό)</label>
+                        <div class="cover-upload-area" id="coverUploadArea">
+                            <input type="file" id="coverImageInput" accept="image/*" class="cover-file-input" hidden>
+                            <div id="coverPreviewWrap" class="cover-preview-wrap" hidden>
+                                <img id="coverPreviewImg" class="cover-preview-img" src="" alt="Preview">
+                                <button type="button" id="removeCoverBtn" class="cover-remove-btn">✖ Αφαίρεση</button>
+                            </div>
+                            <div id="coverUploadPlaceholder" class="cover-upload-placeholder">
+                                <span>📷</span>
+                                <p>Κλικ για upload ή σύρε εδώ μια εικόνα</p>
+                                <button type="button" id="triggerCoverUpload" class="btn btn-back-menu" style="margin-top:8px;">Επιλογή Εικόνας</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quill Editor -->
+                    <div class="editor-field-group">
+                        <label class="editor-label">📝 Η Ιστορία σου</label>
+                        <div class="quill-toolbar-wrap">
+                            <div id="storyEditorToolbar">
+                                <span class="ql-formats">
+                                    <select class="ql-header">
+                                        <option value="1">Τίτλος</option>
+                                        <option value="2">Υπότιτλος</option>
+                                        <option selected></option>
+                                    </select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-bold"></button>
+                                    <button class="ql-italic"></button>
+                                    <button class="ql-underline"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <select class="ql-color"></select>
+                                    <select class="ql-background"></select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered"></button>
+                                    <button class="ql-list" value="bullet"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-align" value=""></button>
+                                    <button class="ql-align" value="center"></button>
+                                    <button class="ql-align" value="right"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-image" id="quillImageBtn" title="Εισαγωγή Εικόνας"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-clean"></button>
+                                </span>
+                            </div>
+                            <div id="quillEditor" class="quill-editor-body"></div>
+                        </div>
+                        <input type="file" id="quillImageInput" accept="image/*" hidden>
+                    </div>
+
+                    <!-- Error message -->
+                    <div id="editorError" class="editor-error" hidden>
+                        <span id="editorErrorText"></span>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="editor-actions">
+                        <button id="submitStoryBtn" class="btn btn-submit-upload editor-submit-btn">
+                            💾 Αποστολή στη Μάγκα! 🐾
+                        </button>
+                        <a href="stories.html" class="btn btn-back-menu">← Πίσω στις Ιστορίες</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer"><p>© igatamou.gr • Σχεδιασμένο με πολύ αγάπη & παιδαγωγική φροντίδα! 🐾</p></footer>
+    </div>
+
+    <script src="story-editor.js?v=1"></script>
+</body>
+</html>

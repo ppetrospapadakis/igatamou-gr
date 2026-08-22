@@ -18,7 +18,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="style.css?v=10">
+    <link rel="stylesheet" href="style.css?v=27">
+    <link rel="stylesheet" href="stories.css?v=1">
 </head>
 <body class="admin-page-body">
 
@@ -39,7 +40,7 @@
                 </div>
             </div>
 
-            <!-- Row 2: 4 Navigation Subpage Buttons -->
+            <!-- Row 2: Navigation Subpage Buttons -->
             <div class="header-row-2">
                 <a href="gallery.html" class="nav-gallery-btn" title="Δες & ανέβασε φωτογραφίες γατών!">
                     📸 Γατο-Άλμπουμ 🐾
@@ -50,8 +51,11 @@
                 <a href="drawings-gallery.html" class="nav-draw-btn" title="Δες τις Γατο-Ζωγραφιές!">
                     🎨 Γατο-Ζωγραφιές 🐾
                 </a>
+                <a href="stories.html" class="nav-stories-btn" title="Διάβασε Γατο-Ιστορίες!">
+                    📖 Γατο-Ιστορίες 🐾
+                </a>
                 <a href="cat-likes.html" class="nav-likes-btn" title="Μάθε τι αρέσει στη γάτα σου!">
-                    💡 Μάθε τι αρέσει στη γάτα σου 🐾
+                    💡 Γατο-Συμβουλές 🐾
                 </a>
                 <div id="adminHeaderActions" style="display: flex; align-items: center; gap: 8px;" hidden>
                     <button id="adminLogoutBtn" class="btn btn-back-menu" style="padding: 6px 12px; font-size: 0.85rem;">
@@ -104,6 +108,9 @@
                     </button>
                     <button class="admin-tab-btn" id="tabDrawings">
                         🎨 Εγκρίσεις Ζωγραφιών (<span id="pendingDrawingsCount">0</span>)
+                    </button>
+                    <button class="admin-tab-btn" id="tabStories">
+                        📖 Εγκρίσεις Ιστοριών (<span id="pendingStoriesCount">0</span>)
                     </button>
                 </div>
 
@@ -190,6 +197,33 @@
                     <div id="emptyAdminDrawingsApproved" class="empty-gallery-card" hidden>
                         <span class="empty-icon">🖼️</span>
                         <h3>Δεν υπάρχουν ακόμα εγκεκριμένες ζωγραφιές.</h3>
+                    </div>
+                </div>
+
+                <!-- STORIES APPROVAL SECTION -->
+                <div id="adminStoriesSection" class="admin-section" hidden>
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+                        <h3 class="section-title" style="margin: 0;">⏳ Ιστορίες που περιμένουν την έγκριση της Μάγκας:</h3>
+                        <a href="story-editor.html?admin=1" class="btn btn-write-story" style="font-size: 0.95rem; padding: 9px 20px;">
+                            ✍️ Γράψε Ιστορία ως Admin 👑
+                        </a>
+                    </div>
+                    <div id="adminPendingStoriesGrid" class="stories-grid" style="margin-top: 10px;">
+                        <!-- Injected dynamically by gallery.js -->
+                    </div>
+                    <div id="emptyAdminStoriesPending" class="empty-gallery-card" hidden>
+                        <span class="empty-icon">📖✨</span>
+                        <h3>Δεν υπάρχουν ιστορίες σε αναμονή!</h3>
+                        <p>Όλες οι ιστορίες έχουν ελεγχθεί!</p>
+                    </div>
+
+                    <h3 class="section-title" style="margin-top: 36px;">✅ Εγκεκριμένες Ιστορίες (Live):</h3>
+                    <div id="adminApprovedStoriesGrid" class="stories-grid" style="margin-top: 10px;">
+                        <!-- Injected dynamically by gallery.js -->
+                    </div>
+                    <div id="emptyAdminStoriesApproved" class="empty-gallery-card" hidden>
+                        <span class="empty-icon">📚</span>
+                        <h3>Δεν υπάρχουν ακόμα εγκεκριμένες ιστορίες.</h3>
                     </div>
                 </div>
             </div>

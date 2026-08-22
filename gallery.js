@@ -855,55 +855,60 @@ document.addEventListener('DOMContentLoaded', () => {
         // Tab Switching
         const tabDrawings = document.getElementById('tabDrawings');
         const adminDrawingsSection = document.getElementById('adminDrawingsSection');
+        const tabStories = document.getElementById('tabStories');
+        const adminStoriesSection = document.getElementById('adminStoriesSection');
+
+        function resetAdminTabs() {
+            if (tabPending) tabPending.classList.remove('active');
+            if (tabApproved) tabApproved.classList.remove('active');
+            if (tabSubscribers) tabSubscribers.classList.remove('active');
+            if (tabDrawings) tabDrawings.classList.remove('active');
+            if (tabStories) tabStories.classList.remove('active');
+
+            if (adminPendingSection) adminPendingSection.hidden = true;
+            if (adminApprovedSection) adminApprovedSection.hidden = true;
+            if (adminSubscribersSection) adminSubscribersSection.hidden = true;
+            if (adminDrawingsSection) adminDrawingsSection.hidden = true;
+            if (adminStoriesSection) adminStoriesSection.hidden = true;
+        }
 
         if (tabPending && tabApproved) {
             tabPending.addEventListener('click', () => {
+                resetAdminTabs();
                 tabPending.classList.add('active');
-                tabApproved.classList.remove('active');
-                if (tabSubscribers) tabSubscribers.classList.remove('active');
-                if (tabDrawings) tabDrawings.classList.remove('active');
                 if (adminPendingSection) adminPendingSection.hidden = false;
-                if (adminApprovedSection) adminApprovedSection.hidden = true;
-                if (adminSubscribersSection) adminSubscribersSection.hidden = true;
-                if (adminDrawingsSection) adminDrawingsSection.hidden = true;
             });
 
             tabApproved.addEventListener('click', () => {
+                resetAdminTabs();
                 tabApproved.classList.add('active');
-                tabPending.classList.remove('active');
-                if (tabSubscribers) tabSubscribers.classList.remove('active');
-                if (tabDrawings) tabDrawings.classList.remove('active');
                 if (adminApprovedSection) adminApprovedSection.hidden = false;
-                if (adminPendingSection) adminPendingSection.hidden = true;
-                if (adminSubscribersSection) adminSubscribersSection.hidden = true;
-                if (adminDrawingsSection) adminDrawingsSection.hidden = true;
             });
 
             if (tabSubscribers) {
                 tabSubscribers.addEventListener('click', () => {
+                    resetAdminTabs();
                     tabSubscribers.classList.add('active');
-                    tabPending.classList.remove('active');
-                    tabApproved.classList.remove('active');
-                    if (tabDrawings) tabDrawings.classList.remove('active');
                     if (adminSubscribersSection) adminSubscribersSection.hidden = false;
-                    if (adminPendingSection) adminPendingSection.hidden = true;
-                    if (adminApprovedSection) adminApprovedSection.hidden = true;
-                    if (adminDrawingsSection) adminDrawingsSection.hidden = true;
                     renderSubscribersSection();
                 });
             }
 
             if (tabDrawings) {
                 tabDrawings.addEventListener('click', () => {
+                    resetAdminTabs();
                     tabDrawings.classList.add('active');
-                    tabPending.classList.remove('active');
-                    tabApproved.classList.remove('active');
-                    if (tabSubscribers) tabSubscribers.classList.remove('active');
                     if (adminDrawingsSection) adminDrawingsSection.hidden = false;
-                    if (adminPendingSection) adminPendingSection.hidden = true;
-                    if (adminApprovedSection) adminApprovedSection.hidden = true;
-                    if (adminSubscribersSection) adminSubscribersSection.hidden = true;
                     renderDrawingsAdminSection();
+                });
+            }
+
+            if (tabStories) {
+                tabStories.addEventListener('click', () => {
+                    resetAdminTabs();
+                    tabStories.classList.add('active');
+                    if (adminStoriesSection) adminStoriesSection.hidden = false;
+                    renderStoriesAdminSection();
                 });
             }
         }
@@ -1037,6 +1042,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pendingDrawingsCountEl) {
             pendingDrawingsCountEl.textContent = localDrawings.filter(d => d.status === 'pending').length;
         }
+
+        // Stories Count
+        updateAdminStoriesCount();
 
         // 1. Pending Grid
         if (adminPendingGrid) {
@@ -1489,5 +1497,172 @@ document.addEventListener('DOMContentLoaded', () => {
         if (supabase) {
             supabase.from('cats').delete().eq('id', id).then();
         }
+    }
+
+    // ----------------------------------------------------
+    // STORIES ADMIN MANAGEMENT
+    // ----------------------------------------------------
+    async function getAdminStories() {
+        let stories = [];
+        if (supabase) {
+            try {
+                const { data, error } = await supabase
+                    .from('stories')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                if (!error && data) stories = data;
+            } catch (e) {
+                console.log('Supabase fetch stories error:', e);
+            }
+        }
+        // Merge with local stories backup if any
+        try {
+            const local = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+            local.forEach(ls => {
+                if (!stories.some(s => s.id === ls.id)) stories.push(ls);
+            });
+        } catch (le) {}
+        return stories;
+    }
+
+    async function updateAdminStoriesCount() {
+        const pendingStoriesCountEl = document.getElementById('pendingStoriesCount');
+        if (!pendingStoriesCountEl) return;
+        const stories = await getAdminStories();
+        const pending = stories.filter(s => s.status === 'pending');
+        pendingStoriesCountEl.textContent = pending.length;
+    }
+
+    async function renderStoriesAdminSection() {
+        const adminPendingStoriesGrid = document.getElementById('adminPendingStoriesGrid');
+        const adminApprovedStoriesGrid = document.getElementById('adminApprovedStoriesGrid');
+        const emptyAdminStoriesPending = document.getElementById('emptyAdminStoriesPending');
+        const emptyAdminStoriesApproved = document.getElementById('emptyAdminStoriesApproved');
+
+        const stories = await getAdminStories();
+        const pendingStories = stories.filter(s => s.status === 'pending');
+        const approvedStories = stories.filter(s => s.status === 'approved');
+
+        const pendingStoriesCountEl = document.getElementById('pendingStoriesCount');
+        if (pendingStoriesCountEl) pendingStoriesCountEl.textContent = pendingStories.length;
+
+        // 1. Pending Stories Grid
+        if (adminPendingStoriesGrid) {
+            adminPendingStoriesGrid.innerHTML = '';
+            if (pendingStories.length === 0) {
+                if (emptyAdminStoriesPending) emptyAdminStoriesPending.hidden = false;
+            } else {
+                if (emptyAdminStoriesPending) emptyAdminStoriesPending.hidden = true;
+                pendingStories.forEach(story => {
+                    const card = createAdminStoryCard(story, true);
+                    adminPendingStoriesGrid.appendChild(card);
+                });
+            }
+        }
+
+        // 2. Approved Stories Grid
+        if (adminApprovedStoriesGrid) {
+            adminApprovedStoriesGrid.innerHTML = '';
+            if (approvedStories.length === 0) {
+                if (emptyAdminStoriesApproved) emptyAdminStoriesApproved.hidden = false;
+            } else {
+                if (emptyAdminStoriesApproved) emptyAdminStoriesApproved.hidden = true;
+                approvedStories.forEach(story => {
+                    const card = createAdminStoryCard(story, false);
+                    adminApprovedStoriesGrid.appendChild(card);
+                });
+            }
+        }
+    }
+
+    function createAdminStoryCard(story, isPending) {
+        const card = document.createElement('div');
+        card.className = 'story-card';
+        const coverSrc = story.cover_image_url || 'magkas_logo.png';
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = story.content || '';
+        const preview = (tempDiv.textContent || '').slice(0, 120).trim() + '…';
+        const dateStr = story.created_at ? new Date(story.created_at).toLocaleDateString('el-GR') : '';
+
+        card.innerHTML = `
+            <div class="story-card-cover">
+                <img src="${coverSrc}" alt="${escapeHtml(story.title)}" class="story-cover-img" onerror="this.src='magkas_logo.png'">
+            </div>
+            <div class="story-card-body">
+                <h3 class="story-card-title">${escapeHtml(story.title)}</h3>
+                <div class="story-card-author">✍️ ${escapeHtml(story.author)}</div>
+                ${dateStr ? `<div class="story-card-date">📅 ${dateStr}</div>` : ''}
+                <p class="story-card-preview">${escapeHtml(preview)}</p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto;">
+                    ${isPending ? `
+                        <button class="btn btn-submit-upload approve-story-btn" style="flex: 1; padding: 8px 12px; font-size: 0.9rem; background: #10b981; color: white;">
+                            ✅ Έγκριση
+                        </button>
+                    ` : ''}
+                    <button class="btn btn-back-menu delete-story-btn" style="flex: 1; padding: 8px 12px; font-size: 0.9rem; background: #ef4444; color: white;">
+                        🗑️ Διαγραφή
+                    </button>
+                </div>
+            </div>
+        `;
+
+        if (isPending) {
+            const approveBtn = card.querySelector('.approve-story-btn');
+            if (approveBtn) {
+                approveBtn.addEventListener('click', async () => {
+                    await updateStoryStatus(story.id, 'approved');
+                    renderStoriesAdminSection();
+                    renderAdminDashboard();
+                });
+            }
+        }
+
+        const deleteBtn = card.querySelector('.delete-story-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', async () => {
+                if (confirm('Είσαι σίγουρος/η ότι θέλεις να διαγράψεις αυτή την ιστορία;')) {
+                    await deleteStory(story.id);
+                    renderStoriesAdminSection();
+                    renderAdminDashboard();
+                }
+            });
+        }
+
+        return card;
+    }
+
+    async function updateStoryStatus(id, newStatus) {
+        if (supabase) {
+            try {
+                await supabase.from('stories').update({ status: newStatus }).eq('id', id);
+            } catch (e) {
+                console.error('Update story status error:', e);
+            }
+        }
+        // Update local backup
+        try {
+            const local = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+            const idx = local.findIndex(s => s.id === id);
+            if (idx !== -1) {
+                local[idx].status = newStatus;
+                localStorage.setItem('igatamou_local_stories', JSON.stringify(local));
+            }
+        } catch (le) {}
+    }
+
+    async function deleteStory(id) {
+        if (supabase) {
+            try {
+                await supabase.from('stories').delete().eq('id', id);
+            } catch (e) {
+                console.error('Delete story error:', e);
+            }
+        }
+        // Delete from local backup
+        try {
+            let local = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+            local = local.filter(s => s.id !== id);
+            localStorage.setItem('igatamou_local_stories', JSON.stringify(local));
+        } catch (le) {}
     }
 });
