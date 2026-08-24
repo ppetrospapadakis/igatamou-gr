@@ -18,14 +18,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sync from Supabase DB ('cats' table drawing items + 'drawings' table fallback)
     async function syncFromSupabase() {
+        const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
         let localDrawings = JSON.parse(localStorage.getItem(SITE_CONFIG.localStoragePrefix + '_drawings') || '[]');
+        
+        // Filter local cache strictly by domain
+        if (isDog) {
+            localDrawings = localDrawings.filter(d => d.bio ? (d.bio.includes('[DOG]') || d.bio.includes('[OSKILOSMOU]')) : false);
+        } else {
+            localDrawings = localDrawings.filter(d => d.bio ? (!d.bio.includes('[DOG]') && !d.bio.includes('[OSKILOSMOU]')) : true);
+        }
 
         if (supabase) {
             try {
                 let dbDrawings = [];
 
                 // 1. Fetch from cats table (where drawings with id 'draw_...' or bio '🎨 [DRAWING]' are stored)
-                const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
                 const { data: catsData } = await supabase.from('cats').select('*');
                 if (catsData && Array.isArray(catsData)) {
                     const drawingCats = catsData.filter(c => {
@@ -50,8 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
 
-
-
                 if (dbDrawings.length > 0) {
                     const drawingMap = new Map();
                     localDrawings.forEach(d => drawingMap.set(d.id, d));
@@ -75,6 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     localDrawings = Array.from(drawingMap.values());
                     localStorage.setItem(SITE_CONFIG.localStoragePrefix + '_drawings', JSON.stringify(localDrawings));
+                } else if (isDog) {
+                    localDrawings = [];
+                    localStorage.setItem(SITE_CONFIG.localStoragePrefix + '_drawings', '[]');
                 }
             } catch (err) {
                 console.log('Supabase drawings sync notice:', err);

@@ -18,12 +18,49 @@ document.addEventListener('DOMContentLoaded', () => {
         petCountEl.textContent = count;
     }
 
-    // 2. Web Audio Synthesizer (Realistic Cat Meow & Purr)
+    // 2. Web Audio Synthesizer (Realistic Cat Meow & Purr / Dog Bark & Pant)
     function playCatSound(type = 'meow') {
         try {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!AudioContext) return;
             const ctx = new AudioContext();
+
+            if (isDog) {
+                if (type === 'meow') {
+                    // Puppy bark / woof
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    const now = ctx.currentTime;
+                    osc.frequency.setValueAtTime(320, now);
+                    osc.frequency.exponentialRampToValueAtTime(520, now + 0.08);
+                    osc.frequency.exponentialRampToValueAtTime(180, now + 0.22);
+
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.4, now + 0.04);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.26);
+                } else if (type === 'purr') {
+                    // Puppy happy pant / yip
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    const now = ctx.currentTime;
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(450, now);
+                    osc.frequency.exponentialRampToValueAtTime(650, now + 0.12);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.3);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.32);
+                }
+                return;
+            }
 
             if (type === 'meow') {
                 const osc = ctx.createOscillator();
@@ -131,11 +168,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => hand.remove(), 1450);
 
         // Banner & Particles
-        spawnScreenBanner('🎶 Purrrr... Χάδια! 💖');
+        spawnScreenBanner(isDog ? '🎶 Γαβ γαβ! Χάδια! 💖' : '🎶 Purrrr... Χάδια! 💖');
         spawnCatParticles(['💖', '🎀', '🐾', '🌸', '✨']);
 
         if (purrStatusEl) {
-            purrStatusEl.textContent = '😸 Νιάου! Η Μάγκας λατρεύει τα χάδια!';
+            purrStatusEl.textContent = isDog ? '🐶 Γαβ! Ο Φίλος λατρεύει τα χάδια!' : '😸 Νιάου! Η Μάγκας λατρεύει τα χάδια!';
             setTimeout(() => {
                 purrStatusEl.textContent = '💤';
             }, 3000);
@@ -152,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
             playCatSound('meow');
             triggerCatJump();
             if (purrStatusEl) {
-                purrStatusEl.textContent = '😸 Νιάου! 🐾';
+                purrStatusEl.textContent = isDog ? '🐶 Γαβ! 🐾' : '😸 Νιάου! 🐾';
                 setTimeout(() => {
                     purrStatusEl.textContent = '💤';
                 }, 2500);
@@ -178,12 +215,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             setTimeout(() => {
                 triggerCatJump();
-                spawnScreenBanner('⚽ ΓΚΟΛ! Η Μάγκας έπιασε τη μπάλα! 🐾');
+                spawnScreenBanner(isDog ? '⚽ ΓΚΟΛ! Ο Φίλος έπιασε τη μπάλα! 🐾' : '⚽ ΓΚΟΛ! Η Μάγκας έπιασε τη μπάλα! 🐾');
                 spawnCatParticles(['⭐', '⚽', '✨', '🐾']);
             }, 550);
 
             if (toyFeedback) {
-                toyFeedback.textContent = '⚽ Η Μάγκας έκανε φοβερό άλμα και έπιασε τη μπάλα! 🐾';
+                toyFeedback.textContent = isDog ? '⚽ Ο Φίλος έκανε φοβερό άλμα και έπιασε τη μπάλα! 🐾' : '⚽ Η Μάγκας έκανε φοβερό άλμα και έπιασε τη μπάλα! 🐾';
             }
 
             setTimeout(() => ball.remove(), 1550);
@@ -199,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const yarn = document.createElement('div');
             yarn.className = 'screen-overlay-item overlay-yarn-roll';
-            yarn.textContent = '🧶';
+            yarn.textContent = isDog ? '🎾' : '🧶';
             yarn.style.setProperty('--targetX', `${coords.x}px`);
             yarn.style.setProperty('--targetY', `${coords.y}px`);
             document.body.appendChild(yarn);
@@ -208,12 +245,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             setTimeout(() => {
                 triggerCatJump();
-                spawnScreenBanner('🧶 Μπλέχτηκε στο κουβάρι! 🎀');
-                spawnCatParticles(['🎀', '🧶', '✨', '💖']);
+                spawnScreenBanner(isDog ? '🎾 Ο Φίλος έπιασε το μπαλάκι! 🐾' : '🧶 Μπλέχτηκε στο κουβάρι! 🎀');
+                spawnCatParticles(isDog ? ['🎾', '⭐', '✨', '🐾', '🐶'] : ['🎀', '🧶', '✨', '💖']);
             }, 600);
 
             if (toyFeedback) {
-                toyFeedback.textContent = '🧶 Η Μάγκας μπλέχτηκε στο κουβάρι και κάνει τούμπες! 🎀';
+                toyFeedback.textContent = isDog ? '🎾 Ο Φίλος κυνήγησε το μπαλάκι και κουνάει την ουρίτσα του! 🐶' : '🧶 Η Μάγκας μπλέχτηκε στο κουβάρι και κάνει τούμπες! 🎀';
             }
 
             setTimeout(() => yarn.remove(), 1650);
@@ -221,33 +258,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ----------------------------------------------------
-    // 6. ACTION 4: FISH TREAT SWIMMING OVERLAY (🐟)
+    // 6. ACTION 4: TREAT (🦴 or 🐟)
     // ----------------------------------------------------
     if (btnTreat) {
         btnTreat.addEventListener('click', (e) => {
             const coords = getCatCoords();
 
-            const fish = document.createElement('div');
-            fish.className = 'screen-overlay-item overlay-fish-swim';
-            fish.textContent = '🐟';
-            fish.style.setProperty('--targetX', `${coords.x}px`);
-            fish.style.setProperty('--targetY', `${coords.y}px`);
-            document.body.appendChild(fish);
+            const treat = document.createElement('div');
+            treat.className = 'screen-overlay-item overlay-fish-swim';
+            treat.textContent = isDog ? '🦴' : '🐟';
+            treat.style.setProperty('--targetX', `${coords.x}px`);
+            treat.style.setProperty('--targetY', `${coords.y}px`);
+            document.body.appendChild(treat);
 
             playCatSound('meow');
 
             setTimeout(() => {
                 triggerCatJump();
                 playCatSound('purr');
-                spawnScreenBanner('🐟 ΜΙΑΜ! ΝΑΜ ΝΑΜ! 😻');
-                spawnCatParticles(['🐟', '✨', '😻', '🦴']);
+                spawnScreenBanner(isDog ? '🦴 ΜΙΑΜ! ΝΑΜ ΝΑΜ! 🐶' : '🐟 ΜΙΑΜ! ΝΑΜ ΝΑΜ! 😻');
+                spawnCatParticles(isDog ? ['🦴', '✨', '🐶', '💖'] : ['🐟', '✨', '😻', '🦴']);
             }, 700);
 
             if (toyFeedback) {
-                toyFeedback.textContent = '🐟 Μιαμ! Η Μάγκας έφαγε το λαχταριστό ψαράκι! 😻✨';
+                toyFeedback.textContent = isDog ? '🦴 Μιαμ! Ο Φίλος έφαγε το λαχταριστό κοκκαλάκι! 🐶✨' : '🐟 Μιαμ! Η Μάγκας έφαγε το λαχταριστό ψαράκι! 😻✨';
             }
 
-            setTimeout(() => fish.remove(), 1550);
+            setTimeout(() => treat.remove(), 1550);
         });
     }
 
@@ -301,7 +338,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (notifyMessage) {
                     notifyMessage.hidden = false;
-                    notifyMessage.innerHTML = `🎉 Τέλεια! Το email <strong>${email}</strong> καταχωρήθηκε! Η Μάγκας και η Αριάδνη θα σε ειδοποιήσουν αμέσως μόλις είμαστε έτοιμοι! 🐾🎀`;
+                    notifyMessage.innerHTML = isDog
+                        ? `🎉 Τέλεια! Το email <strong>${email}</strong> καταχωρήθηκε! Ο Φίλος και η Αριάδνη θα σε ειδοποιήσουν αμέσως μόλις είμαστε έτοιμοι! 🐾🦴`
+                        : `🎉 Τέλεια! Το email <strong>${email}</strong> καταχωρήθηκε! Η Μάγκας και η Αριάδνη θα σε ειδοποιήσουν αμέσως μόλις είμαστε έτοιμοι! 🐾🎀`;
                 }
                 notifyForm.reset();
                 playCatSound('meow');

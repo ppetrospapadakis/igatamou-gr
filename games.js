@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 { q: "Πόσο κάνει 40 - 15;", opts: ["25", "20", "30", "35"], a: "25" },
                 { q: "Πόσο κάνει 50 + 50;", opts: ["100", "90", "80", "110"], a: "100" },
                 { q: "Πόσο κάνει 75 - 25;", opts: ["50", "45", "55", "60"], a: "50" },
-                { q: "Αν η Μάγκας έχει 3 ψαράκια και βρει άλλα 4, πόσα έχει συνολικά;", opts: ["7", "6", "8", "5"], a: "7" },
-                { q: "Πόσα πόδια έχουν 2 γατούλες μαζί;", opts: ["8", "4", "6", "10"], a: "8", helper: "4 + 4 = 8" },
+                { q: isDog ? "Αν ο Φίλος έχει 3 κοκκαλάκια και βρει άλλα 4, πόσα έχει συνολικά;" : "Αν η Μάγκας έχει 3 ψαράκια και βρει άλλα 4, πόσα έχει συνολικά;", opts: ["7", "6", "8", "5"], a: "7" },
+                { q: isDog ? "Πόσα πόδια έχουν 2 σκύλοι μαζί;" : "Πόσα πόδια έχουν 2 γατούλες μαζί;", opts: ["8", "4", "6", "10"], a: "8", helper: "4 + 4 = 8" },
                 { q: "Πόσο κάνει 15 - 7;", opts: ["8", "7", "9", "6"], a: "8" },
                 { q: "Πόσο κάνει 25 + 15;", opts: ["40", "35", "45", "30"], a: "40" },
                 { q: "Πόσο κάνει 60 - 20;", opts: ["40", "30", "50", "45"], a: "40" },
@@ -751,7 +751,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const correctMessages = [
                 '🎉 Σωστά! Μπράβο!',
                 '✅ Τέλεια! Συνέχισε!',
-                '🐾 Ναι! Η Μάγκας χαίρεται!',
+                isDog ? '🐾 Ναι! Ο Φίλος χαίρεται!' : '🐾 Ναι! Η Μάγκας χαίρεται!',
                 '⭐ Εξαιρετικά! Καλή δουλειά!',
                 '🥳 Σωστό! Είσαι φοβερός/-ή!',
             ];
@@ -797,19 +797,19 @@ document.addEventListener('DOMContentLoaded', () => {
         let themeClass = '';
 
         if (correct < 10) {
-            emoji = '😿';
-            title = 'Η γατούλα κλαίει... 😿';
-            message = '«Μη στεναχωριέσαι! Η Μάγκας είναι σίγουρη ότι αν προσπαθήσεις ξανά θα τα πας πολύ καλύτερα! Πάτα "Παίξε ξανά"!»';
+            emoji = isDog ? '🐶😿' : '😿';
+            title = isDog ? 'Ο σκύλος στεναχωριέται... 🐶' : 'Η γατούλα κλαίει... 😿';
+            message = isDog ? '«Μη στεναχωριέσαι! Ο Φίλος είναι σίγουρος ότι αν προσπαθήσεις ξανά θα τα πας πολύ καλύτερα! Πάτα "Παίξε ξανά"!»' : '«Μη στεναχωριέσαι! Η Μάγκας είναι σίγουρη ότι αν προσπαθήσεις ξανά θα τα πας πολύ καλύτερα! Πάτα "Παίξε ξανά"!»';
             themeClass = 'result-sad';
         } else if (correct <= 14) {
-            emoji = '😸';
-            title = 'Καλή Προσπάθεια! 😸';
-            message = '«Πήγες καλά! Με λίγη εξάσκηση ακόμα θα γίνεις αληθινό ξεφτέρι! 🐱🐾»';
+            emoji = isDog ? '🐶😊' : '😸';
+            title = isDog ? 'Καλή Προσπάθεια! 🐶' : 'Καλή Προσπάθεια! 😸';
+            message = isDog ? '«Πήγες καλά! Με λίγη εξάσκηση ακόμα θα γίνεις αληθινό ξεφτέρι! 🐶🐾»' : '«Πήγες καλά! Με λίγη εξάσκηση ακόμα θα γίνεις αληθινό ξεφτέρι! 🐱🐾»';
             themeClass = 'result-ok';
         } else if (correct <= 16) {
-            emoji = '🐱✨';
-            title = 'Πολύ Καλά! 🐱✨';
-            message = '«Πολύ καλό σκορ! Η Μάγκας είναι περήφανη για σένα! 🎀»';
+            emoji = isDog ? '🐶✨' : '🐱✨';
+            title = isDog ? 'Πολύ Καλά! 🐶✨' : 'Πολύ Καλά! 🐱✨';
+            message = isDog ? '«Πολύ καλό σκορ! Ο Φίλος είναι περήφανος για σένα! 🦴»' : '«Πολύ καλό σκορ! Η Μάγκας είναι περήφανη για σένα! 🎀»';
             themeClass = 'result-good';
         } else if (correct <= 18) {
             emoji = '🌟';
@@ -2053,10 +2053,10 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
 
-            if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
-            if (quizResultTitle) quizResultTitle.textContent = 'ΤΕΛΕΙΑ! Πιάσατε 20 Ψαράκια! 😸🎉';
-            if (quizResultScoreText) quizResultScoreText.textContent = `${whackFishCaught} / 20 Ψαράκια`;
-            if (quizResultMessage) quizResultMessage.textContent = '«Απίστευτο! Τα κατάφερες και έπιασες 20 ψαράκια! Κέρδισες +80 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎀✨»';
+            if (quizResultEmoji) quizResultEmoji.textContent = isDog ? '🐶🎉' : '😸🎉';
+            if (quizResultTitle) quizResultTitle.textContent = isDog ? 'ΤΕΛΕΙΑ! Μαζέψατε 20 Κοκκαλάκια! 🐶🎉' : 'ΤΕΛΕΙΑ! Πιάσατε 20 Ψαράκια! 😸🎉';
+            if (quizResultScoreText) quizResultScoreText.textContent = isDog ? `${whackFishCaught} / 20 Κοκκαλάκια` : `${whackFishCaught} / 20 Ψαράκια`;
+            if (quizResultMessage) quizResultMessage.textContent = isDog ? '«Απίστευτο! Τα κατάφερες και μάζεψες 20 κοκκαλάκια! Κέρδισες +80 Σκυλο-Πόντους! Ο Φίλος είναι πανευτυχής! 🦴✨»' : '«Απίστευτο! Τα κατάφερες και έπιασες 20 ψαράκια! Κέρδισες +80 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎀✨»';
             
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
@@ -2066,10 +2066,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             playCatSoundEffect('win');
         } else {
-            if (quizResultEmoji) quizResultEmoji.textContent = '😿';
-            if (quizResultTitle) quizResultTitle.textContent = 'Η γατούλα είναι στενοχωρημένη... 😿';
-            if (quizResultScoreText) quizResultScoreText.textContent = `${whackFishCaught} / 20 Ψαράκια`;
-            if (quizResultMessage) quizResultMessage.textContent = `«Έπιασες ${whackFishCaught} από τα 20 ψαράκια. Μη στεναχωριέσαι, πάτα "Παίξε ξανά" και θα τα καταφέρεις! 🐾»`;
+            if (quizResultEmoji) quizResultEmoji.textContent = isDog ? '🐶😞' : '😿';
+            if (quizResultTitle) quizResultTitle.textContent = isDog ? 'Ο σκύλος στεναχωριέται... 🐶' : 'Η γατούλα είναι στενοχωρημένη... 😿';
+            if (quizResultScoreText) quizResultScoreText.textContent = isDog ? `${whackFishCaught} / 20 Κοκκαλάκια` : `${whackFishCaught} / 20 Ψαράκια`;
+            if (quizResultMessage) quizResultMessage.textContent = isDog ? `«Μάζεψες ${whackFishCaught} από τα 20 κοκκαλάκια. Μη στεναχωριέσαι, πάτα "Παίξε ξανά" και θα τα καταφέρεις! 🐾»` : `«Έπιασες ${whackFishCaught} από τα 20 ψαράκια. Μη στεναχωριέσαι, πάτα "Παίξε ξανά" και θα τα καταφέρεις! 🐾»`;
             
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
@@ -2303,10 +2303,10 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
 
-            if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
-            if (quizResultTitle) quizResultTitle.textContent = 'ΤΕΛΕΙΑ! Σκάσες όλα τα Μπαλόνια! 😸🎉';
+            if (quizResultEmoji) quizResultEmoji.textContent = isDog ? '🐶🎉' : '😸🎉';
+            if (quizResultTitle) quizResultTitle.textContent = isDog ? 'ΤΕΛΕΙΑ! Σκάσες όλα τα Μπαλόνια! 🐶🎉' : 'ΤΕΛΕΙΑ! Σκάσες όλα τα Μπαλόνια! 😸🎉';
             if (quizResultScoreText) quizResultScoreText.textContent = `${caught} / ${BUBBLES_TOTAL_GOOD} Μπαλόνια`;
-            if (quizResultMessage) quizResultMessage.textContent = '«Απίστευτο! Τα κατάφερες και έσκασες όλα τα 50 γατο-μπαλόνια! Κέρδισες +100 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎈✨»';
+            if (quizResultMessage) quizResultMessage.textContent = isDog ? '«Απίστευτο! Τα κατάφερες και έσκασες όλα τα 50 σκυλο-μπαλόνια! Κέρδισες +100 Σκυλο-Πόντους! Ο Φίλος είναι πανευτυχής! 🎈✨»' : '«Απίστευτο! Τα κατάφερες και έσκασες όλα τα 50 γατο-μπαλόνια! Κέρδισες +100 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎈✨»';
             
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
@@ -2462,7 +2462,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 chessPlayerTurn = false;
-                if (chessStatusText) chessStatusText.textContent = 'Σειρά της Μάγκας... 💭';
+                if (chessStatusText) chessStatusText.textContent = isDog ? 'Σειρά του Φίλου... 💭' : 'Σειρά της Μάγκας... 💭';
 
                 setTimeout(makeChessAIMove, 450);
                 return;
@@ -2896,10 +2896,10 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
 
-            if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
-            if (quizResultTitle) quizResultTitle.textContent = 'ΤΕΛΕΙΑ! Κέρδισες τη Γατο-Πασιέντζα! 😸🎉';
+            if (quizResultEmoji) quizResultEmoji.textContent = isDog ? '🐶🎉' : '😸🎉';
+            if (quizResultTitle) quizResultTitle.textContent = isDog ? 'ΤΕΛΕΙΑ! Κέρδισες τη Σκυλο-Πασιέντζα! 🐶🎉' : 'ΤΕΛΕΙΑ! Κέρδισες τη Γατο-Πασιέντζα! 😸🎉';
             if (scoreBadge) scoreBadge.innerHTML = `<span id="quizResultScoreLabel">Συνολικές Κινήσεις: </span><strong id="quizResultScoreText">${solitaireMoves} Κινήσεις</strong>`;
-            if (quizResultMessage) quizResultMessage.textContent = '«Απίστευτο! Ταξινόμησες όλες τις γατο-κάρτες στα 3 καλάθια! Κέρδισες +100 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎀✨»';
+            if (quizResultMessage) quizResultMessage.textContent = isDog ? '«Απίστευτο! Ταξινόμησες όλες τις σκυλο-κάρτες στα 3 καλάθια! Κέρδισες +100 Σκυλο-Πόντους! Ο Φίλος είναι πανευτυχής! 🦴✨»' : '«Απίστευτο! Ταξινόμησες όλες τις γατο-κάρτες στα 3 καλάθια! Κέρδισες +100 Γατο-Πόντους! Η Μάγκας είναι πανευτυχής! 🎀✨»';
             
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');

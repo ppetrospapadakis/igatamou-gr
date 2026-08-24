@@ -49,10 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function getLocalStories() {
         let localStories = [];
         try {
-            const key = (window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou') + '_local_stories';
+            const targetDomain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
+            const key = targetDomain + '_local_stories';
             localStories = JSON.parse(localStorage.getItem(key) || '[]');
+            if (Array.isArray(localStories)) {
+                return localStories.filter(s => s && s.status === 'approved' && ((s.domain || 'igatamou') === targetDomain));
+            }
         } catch(e) {}
-        return localStories.filter(s => s && s.status === 'approved');
+        return [];
     }
 
     async function initStoriesPage() {

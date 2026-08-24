@@ -99,6 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => flyingEl.remove(), 2200);
     }
 
+    const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
+
     // ----------------------------------------------------
     // 1. FOOD ACTION: SPAGHETTI (🍜)
     // ----------------------------------------------------
@@ -109,14 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnActionFood) {
         btnActionFood.addEventListener('click', () => {
             playCatSound('meow');
-            animateFlyingItem('🍜', btnActionFood, imgFood, () => {
+            animateFlyingItem(isDog ? '🍖' : '🍜', btnActionFood, imgFood, () => {
                 playCatSound('purr');
                 if (speechFood) {
-                    speechFood.textContent = '«Μιαμ μιαμ! Λαχταριστά σπαγγέτι! 😻🍜»';
+                    speechFood.textContent = isDog ? '«Μιαμ μιαμ! Λαχταριστή λιχουδιά! 🐶🍖»' : '«Μιαμ μιαμ! Λαχταριστά σπαγγέτι! 😻🍜»';
                     speechFood.classList.add('speech-highlight');
                     setTimeout(() => speechFood.classList.remove('speech-highlight'), 2500);
                 }
-                spawnParticles(imgFood, ['🍜', '😋', '💖', '✨']);
+                spawnParticles(imgFood, [isDog ? '🍖' : '🍜', '😋', '💖', '✨']);
             });
         });
     }
@@ -133,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
             playCatSound('meow');
             animateFlyingItem('🎾', btnActionPlay, imgPlay, () => {
                 if (speechPlay) {
-                    speechPlay.textContent = '«Γιούπι! Τέλειο μπαλάκι τένις για παιχνίδι! 🐱🎾»';
+                    speechPlay.textContent = isDog ? '«Γιούπι! Τέλειο μπαλάκι για τρέξιμο! 🐶🎾»' : '«Γιούπι! Τέλειο μπαλάκι τένις για παιχνίδι! 🐱🎾»';
                     speechPlay.classList.add('speech-highlight');
                     setTimeout(() => speechPlay.classList.remove('speech-highlight'), 2500);
                 }
@@ -176,11 +178,11 @@ document.addEventListener('DOMContentLoaded', () => {
             animateFlyingItem('🫳', btnActionPetting, imgPetting, () => {
                 playCatSound('purr');
                 if (speechPetting) {
-                    speechPetting.textContent = '«Purrrrr... 🎶 Τα καλύτερα χάδια στο σαγονάκι! 💖»';
+                    speechPetting.textContent = isDog ? '«Γαβ γαβ! 🎶 Τα καλύτερα χάδια στην κοιλίτσα! 🐶💖»' : '«Purrrrr... 🎶 Τα καλύτερα χάδια στο σαγονάκι! 💖»';
                     speechPetting.classList.add('speech-highlight');
                     setTimeout(() => speechPetting.classList.remove('speech-highlight'), 2500);
                 }
-                spawnParticles(imgPetting, ['💖', '🌸', '✨', '🐾']);
+                spawnParticles(imgPetting, ['💖', '✨', '🐾', '🥰']);
             });
         });
     }

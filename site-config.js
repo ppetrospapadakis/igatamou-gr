@@ -1,4 +1,4 @@
-﻿/**
+/**
  * site-config.js
  * Central configuration & automatic dynamic localization for multi-site support.
  * Supports: igatamou.gr (Cats) & oskilosmou.gr (Dogs)
@@ -79,14 +79,23 @@ const SITE_CONFIG = (() => {
         style.id = 'oskilosmou-theme-overrides';
         style.textContent = `
             :root {
+                --primary: #0284c7 !important;
                 --primary-color: #0284c7 !important;
                 --primary-hover: #0369a1 !important;
                 --accent-color: #0ea5e9 !important;
+                --bg-pink: #f0f9ff !important;
+                --bg-cream: #f8fafc !important;
                 --bg-gradient-start: #f0f9ff !important;
                 --bg-gradient-end: #e0f2fe !important;
             }
             body {
                 background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%) !important;
+            }
+            .logo-text {
+                color: #0284c7 !important;
+            }
+            .logo-text .highlight {
+                color: #0369a1 !important;
             }
             .header-nav .nav-btn:nth-child(1), .category-card:nth-child(1) { --accent: #0ea5e9; }
             .header-nav .nav-btn:nth-child(2), .category-card:nth-child(2) { --accent: #38bdf8; }
@@ -99,6 +108,13 @@ const SITE_CONFIG = (() => {
             }
             .gender-notice strong {
                 color: #0369a1 !important;
+            }
+            .btn-pet {
+                background: linear-gradient(135deg, #0284c7, #0ea5e9) !important;
+                box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35) !important;
+            }
+            .btn-pet:hover {
+                background: linear-gradient(135deg, #0369a1, #0284c7) !important;
             }
         `;
         document.head.appendChild(style);

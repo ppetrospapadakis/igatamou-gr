@@ -41,14 +41,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getCatsData() {
         const stored = localStorage.getItem(STORAGE_KEY);
-        if (!stored) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleCats));
-            return sampleCats;
+        let items = sampleCats;
+        if (stored) {
+            try {
+                items = JSON.parse(stored);
+                if (!Array.isArray(items)) items = sampleCats;
+            } catch (e) {
+                items = sampleCats;
+            }
         }
-        try {
-            return JSON.parse(stored);
-        } catch (e) {
-            return sampleCats;
+        if (isDog) {
+            return items.filter(c => {
+                const bio = c.bio || '';
+                return (bio.includes('[DOG]') || bio.includes('[OSKILOSMOU]') || c.domain === 'oskilosmou') && !bio.includes('[STORY]') && !bio.includes('[DRAWING]');
+            });
+        } else {
+            return items.filter(c => {
+                const bio = c.bio || '';
+                return !bio.includes('[DOG]') && !bio.includes('[OSKILOSMOU]') && c.domain !== 'oskilosmou' && !bio.includes('[STORY]') && !bio.includes('[DRAWING]');
+            });
         }
     }
 
