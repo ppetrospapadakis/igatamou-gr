@@ -826,16 +826,26 @@ hr.story-page-break::after {
     }
 
     .book-story-header {
+        display: block !important;
+        margin-bottom: 8px !important;
+        padding-bottom: 6px !important;
+        border-bottom: 2px dashed #fed7aa !important;
+        text-align: center !important;
+        flex-shrink: 0 !important;
+    }
+
+    .book-story-header .book-title {
+        font-family: 'Fredoka', cursive, sans-serif !important;
+        font-size: 1.22rem !important;
+        font-weight: 800 !important;
+        color: #701a75 !important;
+        margin: 0 !important;
+        line-height: 1.25 !important;
+        text-align: center !important;
+    }
+
+    .book-story-header .book-author {
         display: none !important;
-    }
-
-    .book-title {
-        font-size: 1.05rem !important;
-        margin: 0 0 1px 0 !important;
-    }
-
-    .book-author {
-        font-size: 0.80rem !important;
     }
 
     .book-content {

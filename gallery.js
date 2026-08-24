@@ -1766,7 +1766,7 @@ document.addEventListener('DOMContentLoaded', () => {
         adminBookPages = buildAdminStoryBookPages(story);
         adminCurrentBookPage = 0;
 
-        if (adminBookTitle) adminBookTitle.textContent = story.title;
+        if (adminBookTitle) adminBookTitle.innerHTML = `🐾 ${escapeHtml(story.title)} 🐾`;
         if (adminBookAuthor) adminBookAuthor.innerHTML = `✍️ ${escapeHtml(story.author)}`;
 
         const bookLeftCoverImg = document.querySelector('#bookModal #bookLeftCoverImg');
@@ -1802,7 +1802,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (adminBookModal) adminBookModal.scrollTop = 0;
 
         if (adminBookStoryHeader) {
-            adminBookStoryHeader.style.display = isCover ? 'none' : '';
+            adminBookStoryHeader.style.display = isCover ? 'none' : 'block';
         }
 
         const total = adminBookPages.length;

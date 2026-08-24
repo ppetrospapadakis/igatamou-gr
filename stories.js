@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bookPages = buildStoryBookPages(story);
         currentBookPage = 0;
 
-        if (bookTitle) bookTitle.textContent = story.title;
+        if (bookTitle) bookTitle.innerHTML = `🐾 ${escapeHtml(story.title)} 🐾`;
         if (bookAuthor) bookAuthor.innerHTML = `✍️ ${escapeHtml(story.author)}`;
 
         const bookLeftCoverImg = document.getElementById('bookLeftCoverImg');
@@ -254,9 +254,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (modalContainer) modalContainer.scrollTop = 0;
         if (bookModal) bookModal.scrollTop = 0;
 
-        // Header hidden on cover page or on mobile
+        // Header hidden only on cover page
         if (bookStoryHeader) {
-            bookStoryHeader.style.display = isCover ? 'none' : '';
+            bookStoryHeader.style.display = isCover ? 'none' : 'block';
         }
 
         const total = bookPages.length;
