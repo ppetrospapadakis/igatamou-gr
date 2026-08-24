@@ -25,9 +25,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 let dbDrawings = [];
 
                 // 1. Fetch from cats table (where drawings with id 'draw_...' or bio '🎨 [DRAWING]' are stored)
-                const { data: catsData } = await supabase.from('cats').select('*').eq('domain', SITE_CONFIG.domain);
+                const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
+                const { data: catsData } = await supabase.from('cats').select('*');
                 if (catsData && Array.isArray(catsData)) {
-                    const drawingCats = catsData.filter(c => (c.id && c.id.startsWith('draw_')) || (c.bio && c.bio.includes('🎨 [DRAWING]')));
+                    const drawingCats = catsData.filter(c => {
+                        const isDrawing = (c.id && c.id.startsWith('draw_')) || (c.bio && c.bio.includes('🎨 [DRAWING]'));
+                        if (!isDrawing) return false;
+                        const bio = c.bio || '';
+                        if (isDog) {
+                            return bio.includes('[DOG]') || bio.includes('[OSKILOSMOU]') || c.domain === 'oskilosmou';
+                        } else {
+                            return !bio.includes('[DOG]') && !bio.includes('[OSKILOSMOU]') && c.domain !== 'oskilosmou';
+                        }
+                    });
                     drawingCats.forEach(c => {
                         dbDrawings.push({
                             id: c.id,

@@ -381,6 +381,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // 2. Cloud Sync to Supabase `cats` table (seamlessly synced with 0 errors)
                 if (supabase) {
                     try {
+                        const curDomain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
                         await supabase.from('cats').upsert([{
                             id: targetId,
                             name: title,
@@ -388,13 +389,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                             bio: '📖 [STORY] ' + JSON.stringify({
                                 content: htmlContent,
                                 cover_image_url: coverUrl || 'magkas_logo.png',
-                                is_admin: isStoryAdmin
+                                is_admin: isStoryAdmin,
+                                domain: curDomain
                             }),
                             image: coverUrl || 'magkas_logo.png',
                             status: status,
                             likes: 0,
-                            date: new Date().toLocaleDateString('el-GR'),
-                            domain: SITE_CONFIG.domain
+                            date: new Date().toLocaleDateString('el-GR')
                         }]);
                     } catch (sErr) {
                         console.log('Supabase sync info:', sErr);

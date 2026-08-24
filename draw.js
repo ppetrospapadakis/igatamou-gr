@@ -1058,17 +1058,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 2. Save to Supabase DB cats table (and drawings table fallback)
             if (supabase) {
-                try {
+                    const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
                     await supabase.from('cats').insert([{
                         id: newDrawing.id,
                         name: newDrawing.name,
                         owner: newDrawing.name,
-                        bio: '🎨 [DRAWING]',
+                        bio: isDog ? '🎨 [DRAWING] [DOG]' : '🎨 [DRAWING]',
                         image: newDrawing.image_data,
                         status: 'pending',
                         likes: 0,
-                        date: new Date().toLocaleDateString('el-GR'),
-                        domain: SITE_CONFIG.domain
+                        date: new Date().toLocaleDateString('el-GR')
                     }]);
                 } catch (dbErr) {
                     console.log('Supabase cats drawing insert notice:', dbErr);

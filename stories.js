@@ -68,13 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. Fetch authoritative approved stories from Supabase
         if (supabase) {
             try {
-                const domain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
+                const targetDomain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
                 const { data, error } = await supabase
                     .from('cats')
                     .select('id, name, owner, bio, image, status, date')
                     .ilike('bio', '%STORY%')
-                    .eq('status', 'approved')
-                    .eq('domain', domain);
+                    .eq('status', 'approved');
 
                 if (!error && data !== null) {
                     const cloudStories = [];
@@ -82,23 +81,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (item.bio && item.bio.includes('[STORY]')) {
                             try {
                                 const parsed = JSON.parse(item.bio.replace(/^📖\s*\[STORY\]\s*/, ''));
-                                cloudStories.push({
-                                    id: item.id,
-                                    title: item.name,
-                                    author: item.owner,
-                                    content: parsed.content || '',
-                                    cover_image_url: item.image || parsed.cover_image_url || 'magkas_logo.png',
-                                    is_admin: parsed.is_admin || false,
-                                    status: item.status,
-                                    created_at: item.date || ''
-                                });
+                                const itemDomain = parsed.domain || item.domain || 'igatamou';
+                                if (itemDomain === targetDomain) {
+                                    cloudStories.push({
+                                        id: item.id,
+                                        title: item.name,
+                                        author: item.owner,
+                                        content: parsed.content || '',
+                                        cover_image_url: item.image || parsed.cover_image_url || 'magkas_logo.png',
+                                        is_admin: parsed.is_admin || false,
+                                        status: item.status,
+                                        created_at: item.date || ''
+                                    });
+                                }
                             } catch(pe) {}
                         }
                     });
 
                     // Update local cache to match server state exactly
                     try {
-                        const key = domain + '_local_stories';
+                        const key = targetDomain + '_local_stories';
                         localStorage.setItem(key, JSON.stringify(cloudStories));
                     } catch(se) {}
 

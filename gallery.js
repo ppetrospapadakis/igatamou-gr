@@ -2,8 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     // 1. SUPABASE CLIENT & DATA STORAGE INITIALIZATION
     // ----------------------------------------------------
-    const STORAGE_KEY = 'igatamou_user_cats';
-    const LIKED_CATS_KEY = 'igatamou_liked_cats';
+    const domainPrefix = window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou';
+    const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
+    const STORAGE_KEY = domainPrefix + '_user_cats';
+    const LIKED_CATS_KEY = domainPrefix + '_liked_cats';
     const ADMIN_AUTH_KEY = 'igatamou_admin_logged_in';
 
     const SUPABASE_URL = 'https://hqabeqlvnqdvipnspjog.supabase.co';
@@ -22,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    // Initial sample approved cat (Real Magkas Photo Album with 5 photos!)
-    const sampleCats = [
+    // Initial sample approved pets (Only for igatamou; empty for oskilosmou)
+    const sampleCats = isDog ? [] : [
         {
             id: 'cat_sample_1',
             name: 'Μάγκας',
@@ -188,13 +190,25 @@ document.addEventListener('DOMContentLoaded', () => {
     async function syncFromSupabase() {
         if (!supabase) return;
         try {
-            const domain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
-            const { data, error } = await supabase.from('cats').select('*').eq('domain', domain);
+            const { data, error } = await supabase.from('cats').select('*');
             if (!error && Array.isArray(data) && data.length > 0) {
+                // Filter out stories and drawings; match dog vs cat photos
+                const filteredData = data.filter(c => {
+                    const bio = c.bio || '';
+                    if (bio.includes('[STORY]') || bio.includes('[DRAWING]') || (c.id && c.id.startsWith('draw_'))) {
+                        return false;
+                    }
+                    if (isDog) {
+                        return bio.includes('[DOG]') || bio.includes('[OSKILOSMOU]') || c.domain === 'oskilosmou';
+                    } else {
+                        return !bio.includes('[DOG]') && !bio.includes('[OSKILOSMOU]') && c.domain !== 'oskilosmou';
+                    }
+                });
+
                 const localCats = getCatsData();
                 const map = new Map();
                 localCats.forEach(c => map.set(c.id, c));
-                data.forEach(c => {
+                filteredData.forEach(c => {
                     if (typeof c.gallery === 'string') {
                         try { c.gallery = JSON.parse(c.gallery); } catch(e) {}
                     }
@@ -755,16 +769,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // Insert to Supabase DB 'cats' table
             if (supabase) {
                 try {
+                    const insertBio = isDog ? ('🐶 [DOG] ' + (newCat.bio || '')) : (newCat.bio || '');
                     await supabase.from('cats').insert([{
                         id: newCat.id,
                         name: newCat.name,
                         owner: newCat.owner,
-                        bio: newCat.bio,
+                        bio: insertBio,
                         image: newCat.image,
                         status: newCat.status,
                         likes: newCat.likes,
-                        date: newCat.date,
-                        domain: window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou'
+                        date: newCat.date
                     }]);
                 } catch (dbErr) {
                     console.log('Supabase DB insert notice:', dbErr);
@@ -1513,35 +1527,38 @@ document.addEventListener('DOMContentLoaded', () => {
         let fetchedFromCloud = false;
         if (supabase) {
             try {
-                const domain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
                 // Fetch from cats table where stories are synced (only story rows)
                 const { data, error } = await supabase
                     .from('cats')
                     .select('id, name, owner, bio, image, status, date')
-                    .ilike('bio', '%STORY%')
-                    .eq('domain', domain);
+                    .ilike('bio', '%STORY%');
                 if (!error && data !== null) {
                     fetchedFromCloud = true;
                     data.forEach(item => {
                         if (item.bio && item.bio.includes('[STORY]')) {
                             try {
                                 const parsed = JSON.parse(item.bio.replace(/^📖\s*\[STORY\]\s*/, ''));
-                                stories.push({
-                                    id: item.id,
-                                    title: item.name,
-                                    author: item.owner,
-                                    content: parsed.content || '',
-                                    cover_image_url: item.image || parsed.cover_image_url || 'magkas_logo.png',
-                                    is_admin: parsed.is_admin || false,
-                                    status: item.status,
-                                    created_at: item.date || ''
-                                });
+                                const itemDomain = parsed.domain || item.domain || 'igatamou';
+                                const targetDomain = isDog ? 'oskilosmou' : 'igatamou';
+                                if (itemDomain === targetDomain) {
+                                    stories.push({
+                                        id: item.id,
+                                        title: item.name,
+                                        author: item.owner,
+                                        content: parsed.content || '',
+                                        cover_image_url: item.image || parsed.cover_image_url || 'magkas_logo.png',
+                                        is_admin: parsed.is_admin || false,
+                                        status: item.status,
+                                        created_at: item.date || ''
+                                    });
+                                }
                             } catch(pe) {}
                         }
                     });
                     // Save to local cache
                     try {
-                        localStorage.setItem('igatamou_local_stories', JSON.stringify(stories));
+                        const sKey = (isDog ? 'oskilosmou' : 'igatamou') + '_local_stories';
+                        localStorage.setItem(sKey, JSON.stringify(stories));
                     } catch (se) {}
                 }
             } catch (e) {
@@ -1552,7 +1569,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fallback to local cache only if offline / fetch failed
         if (!fetchedFromCloud) {
             try {
-                stories = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+                const sKey = (isDog ? 'oskilosmou' : 'igatamou') + '_local_stories';
+                stories = JSON.parse(localStorage.getItem(sKey) || '[]');
             } catch (le) {}
         }
 
