@@ -681,8 +681,9 @@ hr.story-page-break::after {
     text-align: center;
     height: 100%;
     width: 100%;
-    padding: 8px 4px;
+    padding: 10px 8px;
     box-sizing: border-box;
+    margin: auto 0;
 }
 
 .book-cover-badge {
@@ -716,13 +717,12 @@ hr.story-page-break::after {
 
 .book-cover-img-box {
     width: 100%;
-    max-width: 240px;
-    height: 160px;
-    border-radius: 16px;
+    max-width: 280px;
+    height: 220px;
+    border-radius: 18px;
     overflow: hidden;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-    border: 3px solid #fed7aa;
-    margin-bottom: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 0 0 4px #fed7aa;
+    margin-bottom: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -799,19 +799,20 @@ hr.story-page-break::after {
         display: none !important;
     }
 
-    .book-page-left {
+    .book-page-left,
+    #bookPageLeft {
         display: none !important;
     }
 
-    .book-page,
-    .book-page-right {
+    .book-page-right,
+    #bookPageRight {
         width: 100% !important;
         max-width: 100% !important;
         flex: 1 1 100% !important;
         min-height: 0 !important;
         display: flex !important;
         flex-direction: column !important;
-        padding: 16px 16px 8px 16px !important;
+        padding: 14px 14px 6px 14px !important;
         box-sizing: border-box !important;
     }
 
@@ -825,9 +826,7 @@ hr.story-page-break::after {
     }
 
     .book-story-header {
-        margin-bottom: 4px !important;
-        padding-bottom: 3px !important;
-        flex-shrink: 0 !important;
+        display: none !important;
     }
 
     .book-title {

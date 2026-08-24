@@ -1730,7 +1730,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const coverUrl = story.cover_image_url || 'magkas_logo.png';
         const coverPageHtml = `
             <div class="book-cover-page">
-                <div class="book-cover-badge">✨ Γατο-Ιστορίες 📖</div>
+                <div class="book-cover-badge">✨ Γατο-Ιστορία 🐾</div>
                 <h2 class="book-cover-title">${escapeHtml(story.title)}</h2>
                 <div class="book-cover-author">✍️ Από: <strong>${escapeHtml(story.author)}</strong></div>
                 <div class="book-cover-img-box">
@@ -1741,20 +1741,24 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
 
         const rawHtml = (story.content || '').trim();
-        if (!rawHtml) {
-            return [coverPageHtml, '<p>Δεν υπάρχει περιεχόμενο.</p>'];
+        const fallbackText = '<p>Δεν υπάρχει περιεχόμενο.</p>';
+
+        let textPages = [fallbackText];
+        if (rawHtml) {
+            // Split STRICTLY by Page Break markers inserted by author (or single page if no break)
+            const pageBreakRegex = /<hr[^>]*class=["'][^"']*story-page-break[^"']*["'][^>]*>|<hr[^>]*data-page-break[^>]*>|<!--page-break-->|<div[^>]*class=["'][^"']*story-page-break[^"']*["'][^>]*>.*?<\/div>/gi;
+            const parts = rawHtml.split(pageBreakRegex)
+                .map(p => p.trim())
+                .filter(p => p.length > 0);
+            textPages = parts.length > 0 ? parts : [rawHtml];
         }
 
-        // Split STRICTLY by Page Break markers inserted by author (or single page if no break)
-        const pageBreakRegex = /<hr[^>]*class=["'][^"']*story-page-break[^"']*["'][^>]*>|<hr[^>]*data-page-break[^>]*>|<!--page-break-->|<div[^>]*class=["'][^"']*story-page-break[^"']*["'][^>]*>.*?<\/div>/gi;
-
-        const parts = rawHtml.split(pageBreakRegex)
-            .map(p => p.trim())
-            .filter(p => p.length > 0);
-
-        const textPages = parts.length > 0 ? parts : [rawHtml];
-
-        return [coverPageHtml, ...textPages];
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            return [coverPageHtml, ...textPages];
+        } else {
+            return textPages;
+        }
     }
 
     function openAdminBookModal(story) {
@@ -1782,6 +1786,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderAdminBookPage() {
         if (!adminBookContent) return;
+        const isMobile = window.innerWidth <= 768;
+        const isCover = isMobile && adminCurrentBookPage === 0;
+
         adminBookContent.innerHTML = adminBookPages[adminCurrentBookPage] || '';
 
         // Reset scroll position to top when changing pages
@@ -1794,13 +1801,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (modalContainer) modalContainer.scrollTop = 0;
         if (adminBookModal) adminBookModal.scrollTop = 0;
 
-        if (adminBookStoryHeader) adminBookStoryHeader.style.display = adminCurrentBookPage === 0 ? 'none' : '';
+        if (adminBookStoryHeader) {
+            adminBookStoryHeader.style.display = isCover ? 'none' : '';
+        }
 
         const total = adminBookPages.length;
         const pageNum = adminCurrentBookPage + 1;
         if (adminBookPageNumRight) adminBookPageNumRight.textContent = `${pageNum}`;
         if (adminBookPageNumLeft) adminBookPageNumLeft.textContent = `${Math.max(1, pageNum - 1)}`;
-        if (adminBookPageIndicator) adminBookPageIndicator.textContent = adminCurrentBookPage === 0 ? `Εξώφυλλο (1 / ${total})` : `Σελίδα ${pageNum} / ${total}`;
+        if (adminBookPageIndicator) {
+            adminBookPageIndicator.textContent = isCover ? `Εξώφυλλο (1 / ${total})` : `Σελίδα ${pageNum} / ${total}`;
+        }
         if (adminBookPrevBtn) adminBookPrevBtn.disabled = adminCurrentBookPage === 0;
         if (adminBookNextBtn) adminBookNextBtn.disabled = adminCurrentBookPage >= total - 1;
     }
