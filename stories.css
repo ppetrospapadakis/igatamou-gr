@@ -886,13 +886,19 @@ hr.story-page-break::after {
         width: 100% !important;
     }
 
-    .book-nav-btn {
-        padding: 7px 14px !important;
-        font-size: 0.88rem !important;
-    }
-
     .book-page-indicator {
         font-size: 0.85rem !important;
+        white-space: nowrap !important;
+        flex-shrink: 1 !important;
+        min-width: 0 !important;
+        text-align: center !important;
+    }
+
+    .book-nav-btn {
+        padding: 7px 12px !important;
+        font-size: 0.85rem !important;
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
     }
 
     .book-cover-title {
