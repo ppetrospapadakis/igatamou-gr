@@ -1,38 +1,42 @@
 ﻿/**
  * site-config.js
- * Central configuration for multi-site support.
- * Detects domain and exports SITE_CONFIG for use in all JS files.
- * IMPORTANT: domain is oskilosmou.gr (not osklilosmou)
+ * Central configuration for multi-site support (igatamou.gr + oskilosmou.gr).
+ * Detects domain or ?site= query parameter.
  */
 const SITE_CONFIG = (() => {
     const host = window.location.hostname;
-    const isDog = host.includes('oskilosmou');
+    const urlParams = new URLSearchParams(window.location.search);
+    const siteParam = urlParams.get('site');
+
+    // IMPORTANT: domain check uses 'oskilosmou'
+    const isDog = host.includes('oskilosmou') || siteParam === 'oskilosmou' || siteParam === 'dog';
 
     if (isDog) {
         return {
             domain: 'oskilosmou',
             siteName: 'oskilosmou.gr',
-            siteTitle: '\u039f \u03a3\u03ba\u03cd\u03bb\u03bf\u03c2 \u039c\u03bf\u03c5!',
-            prefix: '\u03a3\u03ba\u03cd\u03bb\u03bf',
-            animal: '\u03c3\u03ba\u03cd\u03bb\u03bf\u03c2',
-            animalCapital: '\u03a3\u03ba\u03cd\u03bb\u03bf\u03c2',
-            animalPlural: '\u03c3\u03ba\u03cd\u03bb\u03bf\u03b9',
-            animalGenitiv: '\u03c3\u03ba\u03cd\u03bb\u03bf\u03c5',
-            animalEmoji: '\ud83d\udc36',
-            pawEmoji: '\ud83d\udc3e',
+            siteTitle: 'Ο Σκύλος Μου!',
+            prefix: 'Σκύλο',
+            animal: 'σκύλος',
+            animalCapital: 'Σκύλος',
+            animalPlural: 'σκύλοι',
+            animalGenitiv: 'σκύλου',
+            animalAccusative: 'σκύλο',
+            animalEmoji: '🐶',
+            pawEmoji: '🐾',
             logoSrc: 'dog_logo.png',
             logoAlt: 'oskilosmou.gr',
-            mascotName: '\u03a6\u03af\u03bb\u03bf\u03c2',
+            mascotName: 'Φίλος',
             localStoragePrefix: 'oskilosmou',
-            themeColorPrimary: '#0284c7',
-            themeColorAccent: '#0ea5e9',
+            themeColorPrimary: '#0284c7', // Bright friendly light-blue
+            themeColorAccent: '#0369a1',
             themeColorLight: '#e0f2fe',
             navLinks: {
-                gallery:  '\ud83d\udcf8 \u03a3\u03ba\u03cd\u03bb\u03bf-\u0386\u03bb\u03bc\u03c0\u03bf\u03c5\u03bc \ud83d\udc3e',
-                drawings: '\ud83c\udfa8 \u03a3\u03ba\u03cd\u03bb\u03bf-\u0396\u03c9\u03b3\u03c1\u03b1\u03c6\u03b9\u03ad\u03c2 \ud83d\udc3e',
-                stories:  '\ud83d\udcd6 \u03a3\u03ba\u03cd\u03bb\u03bf-\u0399\u03c3\u03c4\u03bf\u03c1\u03af\u03b5\u03c2 \ud83d\udc3e',
-                likes:    '\ud83d\udca1 \u03a3\u03ba\u03cd\u03bb\u03bf-\u03a3\u03c5\u03bc\u03b2\u03bf\u03c5\u03bb\u03ad\u03c2 \ud83d\udc3e',
-                games:    '\ud83c\udfae \u03a3\u03ba\u03cd\u03bb\u03bf-\u03a0\u03b1\u03b9\u03c7\u03bd\u03af\u03b4\u03b9\u03b1 \ud83d\udc3e'
+                gallery:  '📸 Σκύλο-Άλμπουμ 🐾',
+                drawings: '🎨 Σκύλο-Ζωγραφιές 🐾',
+                stories:  '📖 Σκύλο-Ιστορίες 🐾',
+                likes:    '💡 Σκύλο-Συμβουλές 🐾',
+                games:    '🎮 Σκύλο-Παιχνίδια 🐾'
             }
         };
     } else {
@@ -40,35 +44,104 @@ const SITE_CONFIG = (() => {
             domain: 'igatamou',
             siteName: 'igatamou.gr',
             siteTitle: 'igatamou.gr!',
-            prefix: '\u0393\u03b1\u03c4\u03bf',
-            animal: '\u03b3\u03ac\u03c4\u03b1',
-            animalCapital: '\u0393\u03ac\u03c4\u03b1',
-            animalPlural: '\u03b3\u03ac\u03c4\u03b5\u03c2',
-            animalGenitiv: '\u03b3\u03ac\u03c4\u03b1\u03c2',
-            animalEmoji: '\ud83d\udc31',
-            pawEmoji: '\ud83d\udc3e',
+            prefix: 'Γατο',
+            animal: 'γάτα',
+            animalCapital: 'Γάτα',
+            animalPlural: 'γάτες',
+            animalGenitiv: 'γάτας',
+            animalAccusative: 'γάτα',
+            animalEmoji: '🐱',
+            pawEmoji: '🐾',
             logoSrc: 'magkas_logo.png',
             logoAlt: 'igatamou.gr',
-            mascotName: '\u039c\u03ac\u03b3\u03ba\u03b1\u03c2',
+            mascotName: 'Μάγκας',
             localStoragePrefix: 'igatamou',
             themeColorPrimary: '#7c2d12',
             themeColorAccent: '#831843',
             themeColorLight: '#fef3c7',
             navLinks: {
-                gallery:  '\ud83d\udcf8 \u0393\u03b1\u03c4\u03bf-\u0386\u03bb\u03bc\u03c0\u03bf\u03c5\u03bc \ud83d\udc3e',
-                drawings: '\ud83c\udfa8 \u0393\u03b1\u03c4\u03bf-\u0396\u03c9\u03b3\u03c1\u03b1\u03c6\u03b9\u03ad\u03c2 \ud83d\udc3e',
-                stories:  '\ud83d\udcd6 \u0393\u03b1\u03c4\u03bf-\u0399\u03c3\u03c4\u03bf\u03c1\u03af\u03b5\u03c2 \ud83d\udc3e',
-                likes:    '\ud83d\udca1 \u0393\u03b1\u03c4\u03bf-\u03a3\u03c5\u03bc\u03b2\u03bf\u03c5\u03bb\u03ad\u03c2 \ud83d\udc3e',
-                games:    '\ud83c\udfae \u0393\u03b1\u03c4\u03bf-\u03a0\u03b1\u03b9\u03c7\u03bd\u03af\u03b4\u03b9\u03b1 \ud83d\udc3e'
+                gallery:  '📸 Γατο-Άλμπουμ 🐾',
+                drawings: '🎨 Γατο-Ζωγραφιές 🐾',
+                stories:  '📖 Γατο-Ιστορίες 🐾',
+                likes:    '💡 Γατο-Συμβουλές 🐾',
+                games:    '🎮 Γατο-Παιχνίδια 🐾'
             }
         };
     }
 })();
 
-// Apply CSS theme variables immediately (before DOM load to avoid flash)
+// Auto-inject CSS Theme variables and dog styling if on oskilosmou.gr
 (function applyTheme() {
-    const root = document.documentElement;
-    root.style.setProperty('--site-color-primary', SITE_CONFIG.themeColorPrimary);
-    root.style.setProperty('--site-color-accent', SITE_CONFIG.themeColorAccent);
-    root.style.setProperty('--site-color-light', SITE_CONFIG.themeColorLight);
+    if (SITE_CONFIG.domain === 'oskilosmou') {
+        const style = document.createElement('style');
+        style.id = 'oskilosmou-theme-overrides';
+        style.textContent = `
+            :root {
+                --primary-color: #0284c7 !important;
+                --primary-hover: #0369a1 !important;
+                --bg-gradient-start: #f0f9ff !important;
+                --bg-gradient-end: #e0f2fe !important;
+            }
+            body {
+                background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%) !important;
+            }
+            .header-nav .nav-btn:nth-child(1), .category-card:nth-child(1) { --accent: #0ea5e9; }
+            .header-nav .nav-btn:nth-child(2), .category-card:nth-child(2) { --accent: #38bdf8; }
+            .header-nav .nav-btn:nth-child(3), .category-card:nth-child(3) { --accent: #0284c7; }
+            .header-nav .nav-btn:nth-child(4), .category-card:nth-child(4) { --accent: #2563eb; }
+            .header-nav .nav-btn:nth-child(5), .category-card:nth-child(5) { --accent: #4f46e5; }
+        `;
+        document.head.appendChild(style);
+    }
 })();
+
+// Auto DOM Localization on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    if (SITE_CONFIG.domain !== 'oskilosmou') return;
+
+    // 1. Update Title tag
+    if (document.title) {
+        document.title = document.title
+            .replace(/igatamou\.gr/gi, 'oskilosmou.gr')
+            .replace(/γατ\w+/gi, 'σκύλο')
+            .replace(/Γατ\w+/gi, 'Σκύλο')
+            .replace(/🐱/g, '🐶');
+    }
+
+    // 2. Update Nav Buttons
+    const navLinks = document.querySelectorAll('.header-nav a.nav-btn, .nav-container a.nav-btn, nav a.nav-btn');
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href') || '';
+        if (href.includes('gallery.html')) link.textContent = SITE_CONFIG.navLinks.gallery;
+        else if (href.includes('drawings-gallery.html') || href.includes('draw.html')) link.textContent = SITE_CONFIG.navLinks.drawings;
+        else if (href.includes('stories.html') || href.includes('story-editor.html')) link.textContent = SITE_CONFIG.navLinks.stories;
+        else if (href.includes('cat-likes.html')) link.textContent = SITE_CONFIG.navLinks.likes;
+        else if (href.includes('games.html')) link.textContent = SITE_CONFIG.navLinks.games;
+    });
+
+    // 3. Update Logo Image and Text
+    const logoImgs = document.querySelectorAll('img.logo-img, .header-logo img, .site-logo img');
+    logoImgs.forEach(img => {
+        img.src = SITE_CONFIG.logoSrc;
+        img.alt = SITE_CONFIG.logoAlt;
+    });
+
+    const logoTexts = document.querySelectorAll('.logo-text, .site-title, .header-title');
+    logoTexts.forEach(el => {
+        el.innerHTML = el.innerHTML.replace(/igatamou\.gr/gi, '<strong>oskilosmou.gr</strong>');
+    });
+
+    // 4. Update Footer Text
+    const footers = document.querySelectorAll('footer p, .footer p');
+    footers.forEach(f => {
+        f.innerHTML = f.innerHTML.replace(/igatamou\.gr/gi, 'oskilosmou.gr');
+    });
+
+    // 5. Update Floating Paw Emojis
+    const floatingPaws = document.querySelectorAll('.floating-paw');
+    floatingPaws.forEach(paw => {
+        if (paw.textContent.includes('🐱')) {
+            paw.textContent = '🐶';
+        }
+    });
+});
