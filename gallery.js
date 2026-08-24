@@ -8,6 +8,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const LIKED_CATS_KEY = domainPrefix + '_liked_cats';
     const ADMIN_AUTH_KEY = 'igatamou_admin_logged_in';
 
+    // Purge stale cross-domain data from localStorage
+    // This handles browsers that have old cat data cached before domain isolation was added
+    (function purgeStaleCache() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            const items = JSON.parse(raw);
+            if (!Array.isArray(items)) return;
+            const clean = items.filter(c => {
+                const bio = c.bio || '';
+                if (isDog) {
+                    return bio.includes('[DOG]') || bio.includes('[OSKILOSMOU]') || c.domain === 'oskilosmou';
+                } else {
+                    return !bio.includes('[DOG]') && !bio.includes('[OSKILOSMOU]') && c.domain !== 'oskilosmou';
+                }
+            });
+            if (clean.length !== items.length) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
+                console.log(`[${domainPrefix}] Purged ${items.length - clean.length} cross-domain items from cache`);
+            }
+        } catch(e) {}
+    })();
+
     const SUPABASE_URL = 'https://hqabeqlvnqdvipnspjog.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhxYWJlcWx2bnFkdmlwbnNwam9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU0MDQzNDMsImV4cCI6MjEwMDk4MDM0M30.nmB5WOUN-WFQRhRxS14yCLK7X5I8OqJbWk-lRtR0yDg';
 
@@ -203,18 +226,30 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const { data, error } = await supabase.from('cats').select('*');
             if (!error && Array.isArray(data) && data.length > 0) {
-                // Filter out stories and drawings; match dog vs cat photos
+                // Filter out stories and drawings; strictly match dog vs cat photos
+                // On oskilosmou: ONLY records with explicit [DOG]/[OSKILOSMOU] tag OR domain='oskilosmou'
+                // Records with null/missing domain are considered igatamou (legacy cat records)
                 const filteredData = data.filter(c => {
                     const bio = c.bio || '';
                     if (bio.includes('[STORY]') || bio.includes('[DRAWING]') || (c.id && c.id.startsWith('draw_'))) {
                         return false;
                     }
                     if (isDog) {
+                        // Strict: must explicitly be tagged as dog content
                         return bio.includes('[DOG]') || bio.includes('[OSKILOSMOU]') || c.domain === 'oskilosmou';
                     } else {
+                        // Cat site: only records without dog tags, and null/igatamou domain
                         return !bio.includes('[DOG]') && !bio.includes('[OSKILOSMOU]') && c.domain !== 'oskilosmou';
                     }
                 });
+
+                if (isDog && filteredData.length === 0) {
+                    // No dog-tagged records exist yet — show empty state, do not merge cat data
+                    saveCatsData([]);
+                    if (galleryGrid) renderPublicGallery();
+                    if (adminApprovedGrid) renderAdminDashboard();
+                    return;
+                }
 
                 const localCats = getCatsData();
                 const map = new Map();
