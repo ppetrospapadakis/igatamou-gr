@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
+    const domainKey = window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou';
+
     // ----------------------------------------------------
     // 1. GAME DATA & QUESTION DATABASE (~100 QUESTIONS, SHUFFLED OPTIONS)
     // ----------------------------------------------------
@@ -19,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 { q: "Πόσο κάνει 40 - 15;", opts: ["25", "20", "30", "35"], a: "25" },
                 { q: "Πόσο κάνει 50 + 50;", opts: ["100", "90", "80", "110"], a: "100" },
                 { q: "Πόσο κάνει 75 - 25;", opts: ["50", "45", "55", "60"], a: "50" },
-                { q: isDog ? "Αν ο Φίλος έχει 3 κοκκαλάκια και βρει άλλα 4, πόσα έχει συνολικά;" : "Αν η Μάγκας έχει 3 ψαράκια και βρει άλλα 4, πόσα έχει συνολικά;", opts: ["7", "6", "8", "5"], a: "7" },
-                { q: isDog ? "Πόσα πόδια έχουν 2 σκύλοι μαζί;" : "Πόσα πόδια έχουν 2 γατούλες μαζί;", opts: ["8", "4", "6", "10"], a: "8", helper: "4 + 4 = 8" },
+                { q: "Αν έχεις 3 κοκκαλάκια και βρεις άλλα 4, πόσα έχεις συνολικά;", opts: ["7", "6", "8", "5"], a: "7" },
+                { q: "Πόσα πόδια έχουν 2 τετράποδα ζώα μαζί;", opts: ["8", "4", "6", "10"], a: "8", helper: "4 + 4 = 8" },
                 { q: "Πόσο κάνει 15 - 7;", opts: ["8", "7", "9", "6"], a: "8" },
                 { q: "Πόσο κάνει 25 + 15;", opts: ["40", "35", "45", "30"], a: "40" },
                 { q: "Πόσο κάνει 60 - 20;", opts: ["40", "30", "50", "45"], a: "40" },
@@ -192,9 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
             { q: "Ποια Ήπειρος είναι καλυμμένη από πάγους;", opts: ["Ανταρκτική ❄️", "Αφρική 🌍", "Ευρώπη 🏰", "Ασία 🌏"], a: "Ανταρκτική ❄️" }
         ]
     };
-
-    const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
-    const domainKey = window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou';
 
     const memoryEmojis = isDog ? {
         easy: ['🐶', '🐕', '🐩', '🐾'],
