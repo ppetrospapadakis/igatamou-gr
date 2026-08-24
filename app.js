@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. DOM Element References
-    let count = parseInt(localStorage.getItem('igatamou_pet_count') || '0', 10);
+    const domainKey = window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou';
+    const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
+    let count = parseInt(localStorage.getItem(domainKey + '_pet_count') || '0', 10);
     const petCountEl = document.getElementById('petCount');
     const petBtn = document.getElementById('petBtn');
     const mascotInteractive = document.getElementById('mascotInteractive');
@@ -112,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function triggerPettingAction(e) {
         count++;
         if (petCountEl) petCountEl.textContent = count;
-        localStorage.setItem('igatamou_pet_count', count.toString());
+        localStorage.setItem(domainKey + '_pet_count', count.toString());
 
         playCatSound('meow');
         triggerCatJump();
