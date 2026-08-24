@@ -193,7 +193,14 @@ document.addEventListener('DOMContentLoaded', () => {
         ]
     };
 
-    const memoryEmojis = {
+    const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
+    const domainKey = window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou';
+
+    const memoryEmojis = isDog ? {
+        easy: ['🐶', '🐕', '🐩', '🐾'],
+        medium: ['🐶', '🐕', '🐩', '🦮', '🐾', '🎾'],
+        hard: ['🐶', '🐕', '🐩', '🦮', '🐾', '🎾', '🦴', '⭐']
+    } : {
         easy: ['🐱', '😸', '😻', '🐾'],
         medium: ['🐱', '😸', '😻', '😽', '🐾', '🧶'],
         hard: ['🐱', '😸', '😻', '😽', '🐾', '🧶', '🐟', '🎀']
@@ -206,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentDifficulty = 'easy'; // 'easy', 'medium', 'hard'
     let currentQuestions = [];
     let currentQIndex = 0;
-    let score = parseInt(localStorage.getItem('igatamou_game_score') || '0', 10);
+    let score = parseInt(localStorage.getItem(domainKey + '_game_score') || '0', 10);
     let streak = 0;
     let memoryFlippedCards = [];
     let memoryMatchedPairs = 0;
@@ -1025,15 +1032,18 @@ document.addEventListener('DOMContentLoaded', () => {
             tttGrid.appendChild(cell);
         }
 
+        const pEmoji = isDog ? '🐶' : '🐱';
+        const aiEmoji = isDog ? '🦴' : '🐟';
+
         if (startsFirst === 'ai') {
             tttPlayerTurn = false;
-            if (tttStatusText) tttStatusText.textContent = `Σειρά της Μάγκας... 💭 (${currentDifficulty.toUpperCase()})`;
-            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Ξεκινάω πρώτη εγώ με το Ψαράκι 🐟!"`;
+            if (tttStatusText) tttStatusText.textContent = isDog ? `Σειρά του Φίλου... 💭 (${currentDifficulty.toUpperCase()})` : `Σειρά της Μάγκας... 💭 (${currentDifficulty.toUpperCase()})`;
+            if (catSpeechBubble) catSpeechBubble.textContent = isDog ? `💬 "Ξεκινάω πρώτος εγώ με το Κοκκαλάκι 🦴!"` : `💬 "Ξεκινάω πρώτη εγώ με το Ψαράκι 🐟!"`;
             setTimeout(makeTicTacToeAIMove, 450);
         } else {
             tttPlayerTurn = true;
-            if (tttStatusText) tttStatusText.textContent = `Σειρά σου: 🐱 (${currentDifficulty.toUpperCase()})`;
-            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Βάλε τη Γατούλα 🐱 για να νικήσεις το Ψαράκι 🐟!"`;
+            if (tttStatusText) tttStatusText.textContent = `Σειρά σου: ${pEmoji} (${currentDifficulty.toUpperCase()})`;
+            if (catSpeechBubble) catSpeechBubble.textContent = isDog ? `💬 "Βάλε το Σκυλάκι 🐶 για να νικήσεις το Κοκκαλάκι 🦴!"` : `💬 "Βάλε τη Γατούλα 🐱 για να νικήσεις το Ψαράκι 🐟!"`;
         }
     }
 
@@ -1041,17 +1051,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tttBoard[index] || !tttPlayerTurn || tttGameOver) return;
 
         tttBoard[index] = '🐱';
-        cellEl.textContent = '🐱';
+        cellEl.textContent = isDog ? '🐶' : '🐱';
         playCatSoundEffect('click');
 
         if (checkBoardWin(tttBoard, '🐱')) {
             tttGameOver = true;
             highlightWinningCombo('🐱');
             if (tttStatusText) tttStatusText.textContent = '🎉 Νίκησες! 🥳';
-            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Μπράβο! Νίκησες τη Μάγκας! +10 Πόντοι! 🎉"`;
+            if (catSpeechBubble) catSpeechBubble.textContent = isDog ? `💬 "Μπράβο! Νίκησες τον Φίλο! +10 Πόντοι! 🎉"` : `💬 "Μπράβο! Νίκησες τη Μάγκας! +10 Πόντοι! 🎉"`;
             score += 10;
             streak++;
-            localStorage.setItem('igatamou_game_score', score.toString());
+            localStorage.setItem(domainKey + '_game_score', score.toString());
             updateScoreUI();
             playCatSoundEffect('correct');
             triggerCorrectAnswerReaction();
@@ -1066,7 +1076,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         tttPlayerTurn = false;
-        if (tttStatusText) tttStatusText.textContent = 'Σειρά της Μάγκας... 💭';
+        if (tttStatusText) tttStatusText.textContent = isDog ? 'Σειρά του Φίλου... 💭' : 'Σειρά της Μάγκας... 💭';
 
         setTimeout(makeTicTacToeAIMove, 400);
     }
@@ -1105,12 +1115,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         tttBoard[aiChoice] = '🐟';
         const cellEl = tttGrid.children[aiChoice];
-        if (cellEl) cellEl.textContent = '🐟';
+        if (cellEl) cellEl.textContent = isDog ? '🦴' : '🐟';
 
         if (checkBoardWin(tttBoard, '🐟')) {
             tttGameOver = true;
             highlightWinningCombo('🐟');
-            if (tttStatusText) tttStatusText.textContent = '🐟 Κέρδισε το Ψαράκι!';
+            if (tttStatusText) tttStatusText.textContent = isDog ? '🦴 Κέρδισε το Κοκκαλάκι!' : '🐟 Κέρδισε το Ψαράκι!';
             if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Έχασες! Δοκίμασε ξανά! 🐾"`;
             triggerWrongAnswerReaction();
             return;
@@ -1123,7 +1133,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         tttPlayerTurn = true;
-        if (tttStatusText) tttStatusText.textContent = `Σειρά σου: 🐱 (${currentDifficulty.toUpperCase()})`;
+        const pEmoji = isDog ? '🐶' : '🐱';
+        if (tttStatusText) tttStatusText.textContent = `Σειρά σου: ${pEmoji} (${currentDifficulty.toUpperCase()})`;
     }
 
     function findWinningTicTacToeMove(symbol) {
@@ -2396,16 +2407,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (piece) {
                     const isCat = piece.includes('🐱');
+                    const myEmoji = isDog ? '🐶' : '🐱';
+                    const enemyEmoji = isDog ? '🦴' : '🐟';
                     let displayContent = '';
 
                     if (piece.includes('👑')) {
-                        displayContent = isCat ? '👑🐱' : '👑🐟';
+                        displayContent = isCat ? ('👑' + myEmoji) : ('👑' + enemyEmoji);
                     } else if (piece.includes('🐴')) {
-                        displayContent = isCat ? '🐴🐱' : '🐴🐟';
+                        displayContent = isCat ? ('🐴' + myEmoji) : ('🐴' + enemyEmoji);
                     } else if (piece.includes('🏰')) {
-                        displayContent = isCat ? '🏰🐱' : '🏰🐟';
+                        displayContent = isCat ? ('🏰' + myEmoji) : ('🏰' + enemyEmoji);
                     } else {
-                        displayContent = isCat ? '🐱' : '🐟';
+                        displayContent = isCat ? myEmoji : enemyEmoji;
                     }
 
                     const pieceTeamClass = isCat ? 'cat-piece' : 'fish-piece';
