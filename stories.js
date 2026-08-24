@@ -49,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function getLocalStories() {
         let localStories = [];
         try {
-            localStories = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+            const key = (window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou') + '_local_stories';
+            localStories = JSON.parse(localStorage.getItem(key) || '[]');
         } catch(e) {}
         return localStories.filter(s => s && s.status === 'approved');
     }
@@ -67,11 +68,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. Fetch authoritative approved stories from Supabase
         if (supabase) {
             try {
+                const domain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
                 const { data, error } = await supabase
                     .from('cats')
                     .select('id, name, owner, bio, image, status, date')
                     .ilike('bio', '%STORY%')
-                    .eq('status', 'approved');
+                    .eq('status', 'approved')
+                    .eq('domain', domain);
 
                 if (!error && data !== null) {
                     const cloudStories = [];
@@ -95,7 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Update local cache to match server state exactly
                     try {
-                        localStorage.setItem('igatamou_local_stories', JSON.stringify(cloudStories));
+                        const key = domain + '_local_stories';
+                        localStorage.setItem(key, JSON.stringify(cloudStories));
                     } catch(se) {}
 
                     if (storiesLoading) storiesLoading.hidden = true;

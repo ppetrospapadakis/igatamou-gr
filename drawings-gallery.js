@@ -18,14 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sync from Supabase DB ('cats' table drawing items + 'drawings' table fallback)
     async function syncFromSupabase() {
-        let localDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
+        let localDrawings = JSON.parse(localStorage.getItem(SITE_CONFIG.localStoragePrefix + '_drawings') || '[]');
 
         if (supabase) {
             try {
                 let dbDrawings = [];
 
                 // 1. Fetch from cats table (where drawings with id 'draw_...' or bio '🎨 [DRAWING]' are stored)
-                const { data: catsData } = await supabase.from('cats').select('*');
+                const { data: catsData } = await supabase.from('cats').select('*').eq('domain', SITE_CONFIG.domain);
                 if (catsData && Array.isArray(catsData)) {
                     const drawingCats = catsData.filter(c => (c.id && c.id.startsWith('draw_')) || (c.bio && c.bio.includes('🎨 [DRAWING]')));
                     drawingCats.forEach(c => {
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
 
                     localDrawings = Array.from(drawingMap.values());
-                    localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
+                    localStorage.setItem(SITE_CONFIG.localStoragePrefix + '_drawings', JSON.stringify(localDrawings));
                 }
             } catch (err) {
                 console.log('Supabase drawings sync notice:', err);
@@ -158,11 +158,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 drawing.likes = (drawing.likes || 0) + 1;
                 card.querySelector('.like-count').textContent = drawing.likes;
 
-                const currentDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
+                const currentDrawings = JSON.parse(localStorage.getItem(SITE_CONFIG.localStoragePrefix + '_drawings') || '[]');
                 const target = currentDrawings.find(d => d.id === drawing.id);
                 if (target) {
                     target.likes = drawing.likes;
-                    localStorage.setItem('igatamou_drawings', JSON.stringify(currentDrawings));
+                    localStorage.setItem(SITE_CONFIG.localStoragePrefix + '_drawings', JSON.stringify(currentDrawings));
                 }
 
                 if (supabase) {

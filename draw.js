@@ -1052,9 +1052,9 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             // 1. Save to localStorage
-            const localDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
+            const localDrawings = JSON.parse(localStorage.getItem(SITE_CONFIG.localStoragePrefix + '_drawings') || '[]');
             localDrawings.unshift(newDrawing);
-            localStorage.setItem('igatamou_drawings', JSON.stringify(localDrawings));
+            localStorage.setItem(SITE_CONFIG.localStoragePrefix + '_drawings', JSON.stringify(localDrawings));
 
             // 2. Save to Supabase DB cats table (and drawings table fallback)
             if (supabase) {
@@ -1067,7 +1067,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         image: newDrawing.image_data,
                         status: 'pending',
                         likes: 0,
-                        date: new Date().toLocaleDateString('el-GR')
+                        date: new Date().toLocaleDateString('el-GR'),
+                        domain: SITE_CONFIG.domain
                     }]);
                 } catch (dbErr) {
                     console.log('Supabase cats drawing insert notice:', dbErr);

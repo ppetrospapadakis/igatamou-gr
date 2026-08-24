@@ -188,7 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function syncFromSupabase() {
         if (!supabase) return;
         try {
-            const { data, error } = await supabase.from('cats').select('*');
+            const domain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
+            const { data, error } = await supabase.from('cats').select('*').eq('domain', domain);
             if (!error && Array.isArray(data) && data.length > 0) {
                 const localCats = getCatsData();
                 const map = new Map();
@@ -485,7 +486,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     gallery: JSON.stringify(cat.gallery),
                     status: cat.status,
                     likes: cat.likes,
-                    date: cat.date
+                    date: cat.date,
+                    domain: window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou'
                 }).then();
             }
 
@@ -761,7 +763,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         image: newCat.image,
                         status: newCat.status,
                         likes: newCat.likes,
-                        date: newCat.date
+                        date: newCat.date,
+                        domain: window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou'
                     }]);
                 } catch (dbErr) {
                     console.log('Supabase DB insert notice:', dbErr);
@@ -1235,7 +1238,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 image: targetCat.image,
                                 status: targetCat.status,
                                 likes: targetCat.likes,
-                                date: targetCat.date
+                                date: targetCat.date,
+                                domain: window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou'
                             }]);
                             await supabase.from('cats').delete().eq('id', sourceCat.id);
                         } catch (err) {}
@@ -1321,15 +1325,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // DRAWINGS ADMIN MANAGEMENT
     // ----------------------------------------------------
     async function renderDrawingsAdminSection() {
-        let localDrawings = JSON.parse(localStorage.getItem('igatamou_drawings') || '[]');
+        const domainKey = window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou';
+        let localDrawings = JSON.parse(localStorage.getItem(domainKey + '_drawings') || '[]');
         renderDrawingsGrids(localDrawings);
 
         if (supabase) {
             try {
                 let dbDrawings = [];
+                const domain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
 
                 // 1. Fetch from cats table (where drawings are stored)
-                const { data: catsData } = await supabase.from('cats').select('*');
+                const { data: catsData } = await supabase.from('cats').select('*').eq('domain', domain);
                 if (catsData && Array.isArray(catsData)) {
                     const drawingCats = catsData.filter(c => (c.id && c.id.startsWith('draw_')) || (c.bio && c.bio.includes('🎨 [DRAWING]')));
                     drawingCats.forEach(c => {
@@ -1507,11 +1513,13 @@ document.addEventListener('DOMContentLoaded', () => {
         let fetchedFromCloud = false;
         if (supabase) {
             try {
+                const domain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
                 // Fetch from cats table where stories are synced (only story rows)
                 const { data, error } = await supabase
                     .from('cats')
                     .select('id, name, owner, bio, image, status, date')
-                    .ilike('bio', '%STORY%');
+                    .ilike('bio', '%STORY%')
+                    .eq('domain', domain);
                 if (!error && data !== null) {
                     fetchedFromCloud = true;
                     data.forEach(item => {

@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function loadStoryForEditing(id) {
         // Try local storage first
-        let local = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+        let local = JSON.parse(localStorage.getItem(SITE_CONFIG.localStoragePrefix + '_local_stories') || '[]');
         let story = local.find(s => s.id === id);
 
         // If not found locally, try Supabase cats table
@@ -369,14 +369,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 };
 
                 // 1. Save / Update in localStorage
-                let localStories = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+                let localStories = JSON.parse(localStorage.getItem(SITE_CONFIG.localStoragePrefix + '_local_stories') || '[]');
                 const existingIdx = localStories.findIndex(s => s.id === targetId);
                 if (existingIdx !== -1) {
                     localStories[existingIdx] = storyData;
                 } else {
                     localStories.unshift(storyData);
                 }
-                localStorage.setItem('igatamou_local_stories', JSON.stringify(localStories));
+                localStorage.setItem(SITE_CONFIG.localStoragePrefix + '_local_stories', JSON.stringify(localStories));
 
                 // 2. Cloud Sync to Supabase `cats` table (seamlessly synced with 0 errors)
                 if (supabase) {
@@ -393,7 +393,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                             image: coverUrl || 'magkas_logo.png',
                             status: status,
                             likes: 0,
-                            date: new Date().toLocaleDateString('el-GR')
+                            date: new Date().toLocaleDateString('el-GR'),
+                            domain: SITE_CONFIG.domain
                         }]);
                     } catch (sErr) {
                         console.log('Supabase sync info:', sErr);
