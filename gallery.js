@@ -1502,27 +1502,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     // STORIES ADMIN MANAGEMENT
     // ----------------------------------------------------
-    const OFFICIAL_MAGKAS_STORY = {
-        id: 'story_official_magkas',
-        title: 'Η Μάγκας και το Μυστικό Ψάρι',
-        author: 'Αριάδνη, 7 ετών',
-        cover_image_url: 'magkas_logo.png',
-        is_admin: true,
-        status: 'approved',
-        created_at: '2025-01-01',
-        content: '<h2>Κεφάλαιο 1: Η Ανακάλυψη</h2><p>Μια ζεστή καλοκαιρινή μέρα, η Μάγκας κοιτούσε έξω από το παράθυρο και είδε κάτι να λάμπει στο δέντρο της αυλής. Τινάχτηκε έξω με μια αναπήδηση...</p><p>«Τι είναι αυτό;» σκέφτηκε με τα μεγάλα της πράσινα μάτια να αστράφτουν από περιέργεια.</p><h2>Κεφάλαιο 2: Η Περιπέτεια</h2><p>Ανέβηκε στο δέντρο — ένα, δύο, τρία άλματα — και βρήκε ένα μυστηριώδες κουτί με ψάρια ζωγραφιστά επάνω! Μέσα ήταν μια επιστολή που έγραφε:</p><blockquote>«Αγαπητή Μάγκας, αυτά τα ψάρια είναι για σένα! Από τον μυστικό σου θαυμαστή 🐟»</blockquote><p>Η Μάγκας χαμογέλασε με όλη της την καρδιά. Ήταν η καλύτερη μέρα της ζωής της! 🐾✨</p>'
-    };
-
     async function getAdminStories() {
         let stories = [];
+        let fetchedFromCloud = false;
         if (supabase) {
             try {
                 // Fetch from cats table where stories are synced (only story rows)
-                const { data } = await supabase
+                const { data, error } = await supabase
                     .from('cats')
                     .select('id, name, owner, bio, image, status, date')
                     .ilike('bio', '%STORY%');
-                if (data && data.length) {
+                if (!error && data !== null) {
+                    fetchedFromCloud = true;
                     data.forEach(item => {
                         if (item.bio && item.bio.includes('[STORY]')) {
                             try {
@@ -1540,27 +1531,22 @@ document.addEventListener('DOMContentLoaded', () => {
                             } catch(pe) {}
                         }
                     });
+                    // Save to local cache
+                    try {
+                        localStorage.setItem('igatamou_local_stories', JSON.stringify(stories));
+                    } catch (se) {}
                 }
             } catch (e) {
                 console.log('Supabase fetch stories notice:', e);
             }
         }
 
-        // Merge with local stories backup if any
-        let local = [];
-        try {
-            local = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
-            // Initialize official story on first load if not explicitly deleted
-            if (!localStorage.getItem('igatamou_stories_initialized')) {
-                local.unshift(OFFICIAL_MAGKAS_STORY);
-                localStorage.setItem('igatamou_local_stories', JSON.stringify(local));
-                localStorage.setItem('igatamou_stories_initialized', 'true');
-            }
-        } catch (le) {}
-
-        local.forEach(ls => {
-            if (!stories.some(s => s.id === ls.id)) stories.push(ls);
-        });
+        // Fallback to local cache only if offline / fetch failed
+        if (!fetchedFromCloud) {
+            try {
+                stories = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
+            } catch (le) {}
+        }
 
         return stories;
     }

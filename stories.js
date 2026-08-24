@@ -9,17 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try { supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e) {}
     }
 
-    const OFFICIAL_MAGKAS_STORY = {
-        id: 'story_official_magkas',
-        title: 'Η Μάγκας και το Μυστικό Ψάρι',
-        author: 'Αριάδνη, 7 ετών',
-        cover_image_url: 'magkas_logo.png',
-        is_admin: true,
-        status: 'approved',
-        created_at: '2025-01-01',
-        content: '<h2>Κεφάλαιο 1: Η Ανακάλυψη</h2><p>Μια ζεστή καλοκαιρινή μέρα, η Μάγκας κοιτούσε έξω από το παράθυρο και είδε κάτι να λάμπει στο δέντρο της αυλής. Τινάχτηκε έξω με μια αναπήδηση...</p><p>«Τι είναι αυτό;» σκέφτηκε με τα μεγάλα της πράσινα μάτια να αστράφτουν από περιέργεια.</p><hr class="story-page-break" data-page-break="true"><h2>Κεφάλαιο 2: Η Περιπέτεια</h2><p>Ανέβηκε στο δέντρο — ένα, δύο, τρία άλματα — και βρήκε ένα μυστηριώδες κουτί με ψάρια ζωγραφιστά επάνω! Μέσα ήταν μια επιστολή που έγραφε:</p><blockquote>«Αγαπητή Μάγκας, αυτά τα ψάρια είναι για σένα! Από τον μυστικό σου θαυμαστή 🐟»</blockquote><p>Η Μάγκας χαμογέλασε με όλη της την καρδιά. Ήταν η καλύτερη μέρα της ζωής της! 🐾✨</p>'
-    };
-
     function escapeHtml(str) {
         return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
     }
@@ -61,17 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let localStories = [];
         try {
             localStories = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
-            if (!localStorage.getItem('igatamou_stories_initialized')) {
-                localStories.unshift(OFFICIAL_MAGKAS_STORY);
-                localStorage.setItem('igatamou_local_stories', JSON.stringify(localStories));
-                localStorage.setItem('igatamou_stories_initialized', 'true');
-            }
         } catch(e) {}
-        return localStories.filter(s => s.status === 'approved');
+        return localStories.filter(s => s && s.status === 'approved');
     }
 
     async function initStoriesPage() {
-        // 1. INSTANT RENDER (0ms) from local cache / defaults
+        // 1. Render from local cache if any exists
         const cachedStories = getLocalStories();
         if (cachedStories.length > 0) {
             if (storiesLoading) storiesLoading.hidden = true;
@@ -80,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renderStoryCards(cachedStories);
         }
 
-        // 2. FAST BACKGROUND SYNC with targeted query (only story rows, minimal payload)
+        // 2. Fetch authoritative approved stories from Supabase
         if (supabase) {
             try {
                 const { data, error } = await supabase
@@ -89,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .ilike('bio', '%STORY%')
                     .eq('status', 'approved');
 
-                if (!error && data && data.length > 0) {
+                if (!error && data !== null) {
                     const cloudStories = [];
                     data.forEach(item => {
                         if (item.bio && item.bio.includes('[STORY]')) {
@@ -109,21 +93,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
 
-                    // Merge cloud with local
-                    const mergedMap = new Map();
-                    cachedStories.forEach(s => mergedMap.set(s.id, s));
-                    cloudStories.forEach(s => mergedMap.set(s.id, s));
-                    const finalStories = Array.from(mergedMap.values());
-
-                    // Save merged cache
+                    // Update local cache to match server state exactly
                     try {
-                        localStorage.setItem('igatamou_local_stories', JSON.stringify(finalStories));
+                        localStorage.setItem('igatamou_local_stories', JSON.stringify(cloudStories));
                     } catch(se) {}
 
                     if (storiesLoading) storiesLoading.hidden = true;
-                    if (emptyStories) emptyStories.hidden = finalStories.length > 0;
-                    if (storiesGrid) storiesGrid.hidden = false;
-                    renderStoryCards(finalStories);
+                    if (emptyStories) emptyStories.hidden = cloudStories.length > 0;
+                    if (storiesGrid) {
+                        storiesGrid.hidden = cloudStories.length === 0;
+                        renderStoryCards(cloudStories);
+                    }
                     return;
                 }
             } catch(e) {
@@ -131,13 +111,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Fallback if no cache was shown
+        // Fallback if offline and nothing in cache
         if (storiesLoading) storiesLoading.hidden = true;
         const current = getLocalStories();
         if (current.length > 0) {
+            if (emptyStories) emptyStories.hidden = true;
             if (storiesGrid) storiesGrid.hidden = false;
             renderStoryCards(current);
         } else {
+            if (emptyStories) emptyStories.hidden = false;
+            if (storiesGrid) storiesGrid.hidden = true;
+        }
+    }
             if (emptyStories) emptyStories.hidden = false;
         }
     }

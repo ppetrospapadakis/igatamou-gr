@@ -19,20 +19,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const isAdmin = urlParams.get('admin') === '1' || sessionStorage.getItem('igatamou_admin_logged_in') === 'true';
 
     // ----------------------------------------------------
-    // 2. DEFAULT OFFICIAL STORY (Seed if needed)
-    // ----------------------------------------------------
-    const OFFICIAL_MAGKAS_STORY = {
-        id: 'story_official_magkas',
-        title: 'Η Μάγκας και το Μυστικό Ψάρι',
-        author: 'Αριάδνη, 7 ετών',
-        cover_image_url: 'magkas_logo.png',
-        is_admin: true,
-        status: 'approved',
-        created_at: '2025-01-01',
-        content: '<h2>Κεφάλαιο 1: Η Ανακάλυψη</h2><p>Μια ζεστή καλοκαιρινή μέρα, η Μάγκας κοιτούσε έξω από το παράθυρο και είδε κάτι να λάμπει στο δέντρο της αυλής. Τινάχτηκε έξω με μια αναπήδηση...</p><p>«Τι είναι αυτό;» σκέφτηκε με τα μεγάλα της πράσινα μάτια να αστράφτουν από περιέργεια.</p><hr class="story-page-break" data-page-break="true"><h2>Κεφάλαιο 2: Η Περιπέτεια</h2><p>Ανέβηκε στο δέντρο — ένα, δύο, τρία άλματα — και βρήκε ένα μυστηριώδες κουτί με ψάρια ζωγραφιστά επάνω! Μέσα ήταν μια επιστολή που έγραφε:</p><blockquote>«Αγαπητή Μάγκας, αυτά τα ψάρια είναι για σένα! Από τον μυστικό σου θαυμαστή 🐟»</blockquote><p>Η Μάγκας χαμογέλασε με όλη της την καρδιά. Ήταν η καλύτερη μέρα της ζωής της! 🐾✨</p>'
-    };
-
-    // ----------------------------------------------------
     // 3. QUILL RICH TEXT EDITOR INITIALIZATION
     // ----------------------------------------------------
     let quill = null;
@@ -207,12 +193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         let local = JSON.parse(localStorage.getItem('igatamou_local_stories') || '[]');
         let story = local.find(s => s.id === id);
 
-        // If not found and it's the official story
-        if (!story && id === 'story_official_magkas') {
-            story = OFFICIAL_MAGKAS_STORY;
-        }
-
-        // If still not found, try Supabase cats table
+        // If not found locally, try Supabase cats table
         if (!story && supabase) {
             try {
                 const { data } = await supabase.from('cats').select('*').eq('id', id).single();
