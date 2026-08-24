@@ -123,9 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (storiesGrid) storiesGrid.hidden = true;
         }
     }
-            if (emptyStories) emptyStories.hidden = false;
-        }
-    }
 
     function getPlainTextPreview(html, maxLen = 150) {
         const div = document.createElement('div');
