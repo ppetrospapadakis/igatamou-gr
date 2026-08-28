@@ -276,6 +276,52 @@ function applyDogLocalization() {
         [/Γατο-Σπιτάκι/gi, 'Σκυλο-Σπιτάκι'],
         [/Γατο-Σούπερ Ήρωας/gi, 'Σκυλο-Σούπερ Ήρωας'],
 
+        // Pet Tips - Masculine Rules for Dog
+        [/Μάθε τι της αρέσει να τρώει!/gi, 'Μάθε τι του αρέσει να τρώει!'],
+        [/Μάθε τι της αρέσει να τρώει/gi, 'Μάθε τι του αρέσει να τρώει'],
+        [/Τι της αρέσει να παίζει!/gi, 'Τι του αρέσει να παίζει!'],
+        [/Τι της αρέσει να παίζει/gi, 'Τι του αρέσει να παίζει'],
+        [/Πού της αρέσει να κοιμάται!/gi, 'Πού του αρέσει να κοιμάται!'],
+        [/Πού της αρέσει να κοιμάται/gi, 'Πού του αρέσει να κοιμάται'],
+        [/Πού της αρέσει να την χαϊδεύεις!/gi, 'Πού του αρέσει να τον χαϊδεύεις!'],
+        [/πού της αρέσει να την χαϊδεύεις!/gi, 'πού του αρέσει να τον χαϊδεύεις!'],
+        [/πού της αρέσει να την χαϊδεύεις/gi, 'πού του αρέσει να τον χαϊδεύεις'],
+        [/Πού της αρέσει να την χαϊδεύεις/gi, 'Πού του αρέσει να τον χαϊδεύεις'],
+        [/τι της αρέσει να τρώει/gi, 'τι του αρέσει να τρώει'],
+        [/τι της αρέσει να παίζει/gi, 'τι του αρέσει να παίζει'],
+        [/πού της αρέσει να κοιμάται/gi, 'πού του αρέσει να κοιμάται'],
+        [/πού της αρέσει να χαϊδεύεται/gi, 'πού του αρέσει να χαϊδεύεται'],
+        [/Βάλ'της π\.χ\. λίγα σπαγγέτι στο πιάτο της!/gi, 'Βάλ\'του π.χ. μια λαχταριστή λιχουδιά στο πιάτο του!'],
+        [/Βάλ'της/gi, 'Βάλ\'του'],
+        [/στο πιάτο της!/gi, 'στο πιάτο του!'],
+        [/στο πιάτο της/gi, 'στο πιάτο του'],
+        [/σου νιαουρίσει χαρούμενα/gi, 'σου γαβγίσει χαρούμενα'],
+        [/ότι της αρέσουν πολύ!/gi, 'ότι του αρέσουν πολύ!'],
+        [/ότι της αρέσει πάρα πολύ!/gi, 'ότι του αρέσει πάρα πολύ!'],
+        [/ότι της αρέσει πολύ!/gi, 'ότι του αρέσει πολύ!'],
+        [/ότι της αρέσει/gi, 'ότι του αρέσει'],
+        [/της αρέσει/gi, 'του αρέσει'],
+        [/της αρέσουν/gi, 'του αρέσουν'],
+        [/Πέταξέ της/gi, 'Πέταξέ του'],
+        [/πέταξέ της/gi, 'πέταξέ του'],
+        [/Άφησε δίπλα της/gi, 'Άφησε δίπλα του'],
+        [/άφησε δίπλα της/gi, 'άφησε δίπλα του'],
+        [/δίπλα της/gi, 'δίπλα του'],
+        [/Χάιδεψέ την απαλά κάτω από το σαγόνι και πίσω από τα αυτιά!/gi, 'Χάιδεψέ τον απαλά στην κοιλίτσα και πίσω από τα αυτιά!'],
+        [/Χάιδεψέ την απαλά κάτω από το σαγόνι/gi, 'Χάιδεψέ τον απαλά στην κοιλίτσα'],
+        [/Χάιδεψέ την/gi, 'Χάιδεψέ τον'],
+        [/χάιδεψέ την/gi, 'χάιδεψέ τον'],
+        [/να την χαϊδεύεις/gi, 'να τον χαϊδεύεις'],
+        [/στο σαγονάκι!/gi, 'στην κοιλίτσα!'],
+        [/στο σαγονάκι/gi, 'στην κοιλίτσα'],
+        [/γουργουρίζει και να κλείνει τα μάτια/gi, 'κουνάει την ουρά και να χαίρεται'],
+        [/τις αντιδράσεις της/gi, 'τις αντιδράσεις του'],
+        [/Δώσε Σπαγγέτι στη Μάγκα!/gi, 'Δώσε Λιχουδιά στον Φίλο!'],
+        [/Δώσε Σπαγγέτι/gi, 'Δώσε Λιχουδιά'],
+        [/δώσε σπαγγέτι/gi, 'δώσε λιχουδιά'],
+        [/σπαγγέτι/gi, 'λιχουδιά'],
+        [/Σπαγγέτι/gi, 'Λιχουδιά'],
+
         // Grammatical Prepositions & Articles
         [/της δικής σου γατούλας/gi, 'του δικού σου σκύλου'],
         [/τη δική σου γατούλα/gi, 'τον δικό σου σκύλο'],
@@ -498,9 +544,16 @@ function applyDogLocalization() {
     const btnYarn = document.getElementById('btnYarn');
     if (btnYarn) btnYarn.innerHTML = '🎾 Ρίξε Μπαλάκι';
 
-    // Remove the FOUC guard — reveal the page now that dog content is applied
-    const guard = document.getElementById('_fouc_guard');
-    if (guard) guard.remove();
+    // Remove all FOUC guards — reveal the page now that dog content is 100% applied
+    function revealDogPage() {
+        ['_fouc_guard', '_dog_fouc_guard'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        });
+        if (document.body) document.body.style.visibility = 'visible';
+        document.documentElement.style.visibility = 'visible';
+    }
+    revealDogPage();
 }
 
 // Run immediately and on DOM load events
@@ -509,9 +562,13 @@ if (document.readyState === 'loading') {
 } else {
     applyDogLocalization();
 }
-// Fallback: ensure guard is removed even if applyDogLocalization didn't run
+// Fallback: ensure guard is removed even if applyDogLocalization had an issue
 window.addEventListener('load', function() {
     applyDogLocalization();
-    const guard = document.getElementById('_fouc_guard');
-    if (guard) guard.remove();
+    ['_fouc_guard', '_dog_fouc_guard'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    });
+    if (document.body) document.body.style.visibility = 'visible';
+    document.documentElement.style.visibility = 'visible';
 });
