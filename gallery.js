@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!supabase) return;
         try {
             const { data, error } = await supabase.from('cats').select('*');
-            if (!error && Array.isArray(data) && data.length > 0) {
+            if (!error && Array.isArray(data)) {
                 // Filter out stories and drawings; strictly match dog vs cat photos
                 // On oskilosmou: ONLY records with explicit [DOG]/[OSKILOSMOU] tag OR domain='oskilosmou'
                 // Records with null/missing domain are considered igatamou (legacy cat records)
@@ -243,9 +243,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                if (isDog && filteredData.length === 0) {
-                    // No dog-tagged records exist yet — show empty state, do not merge cat data
-                    saveCatsData([]);
+                if (isDog) {
+                    // On dog site: ONLY store and render filtered dog data (or empty)
+                    saveCatsData(filteredData);
                     if (galleryGrid) renderPublicGallery();
                     if (adminApprovedGrid) renderAdminDashboard();
                     return;
