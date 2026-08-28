@@ -1,0 +1,9 @@
+﻿{
+  "redirects": [
+    {
+      "source": "/cat-likes.html",
+      "destination": "/pet-tips.html",
+      "permanent": true
+    }
+  ]
+}

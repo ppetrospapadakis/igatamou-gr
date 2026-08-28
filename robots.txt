@@ -1,4 +1,4 @@
-# robots.txt for igatamou.gr
+﻿# robots.txt for igatamou.gr
 User-agent: *
 Allow: /
 Allow: /index.html
@@ -6,7 +6,7 @@ Allow: /games.html
 Allow: /gallery.html
 Allow: /draw.html
 Allow: /drawings-gallery.html
-Allow: /cat-likes.html
+Allow: /pet-tips.html
 Allow: /llms.txt
 
 # AI Search Crawlers
@@ -29,3 +29,4 @@ Allow: /
 Disallow: /admin.html
 
 Sitemap: https://www.igatamou.gr/sitemap.xml
+
