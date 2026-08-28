@@ -1,7 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Universal Domain Check
+    const isDog = typeof checkIsDogDomain === 'function' 
+        ? checkIsDogDomain() 
+        : ((window.SITE_CONFIG && window.SITE_CONFIG.domain === 'oskilosmou') || window.location.hostname.includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('dog'));
+    const domainKey = isDog ? 'oskilosmou' : 'igatamou';
+
     // 1. DOM Element References
-    const domainKey = window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou';
-    const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
     let count = parseInt(localStorage.getItem(domainKey + '_pet_count') || '0', 10);
     const petCountEl = document.getElementById('petCount');
     const petBtn = document.getElementById('petBtn');

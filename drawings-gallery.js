@@ -13,22 +13,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const isDog = typeof checkIsDogDomain === 'function' 
+        ? checkIsDogDomain() 
+        : ((window.SITE_CONFIG && window.SITE_CONFIG.domain === 'oskilosmou') || window.location.hostname.includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('dog'));
+    const storagePrefix = isDog ? 'oskilosmou' : 'igatamou';
+
     // Purge any stale cross-domain drawings from localStorage
     (function purgeStaleDrawingsCache() {
         try {
-            const _prefix = window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou';
-            const _isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
-            const _key = _prefix + '_drawings';
+            const _key = storagePrefix + '_drawings';
             const _raw = localStorage.getItem(_key);
             if (!_raw) return;
             const _items = JSON.parse(_raw);
             if (!Array.isArray(_items)) return;
             const _clean = _items.filter(d => {
                 const bio = d.bio || '';
-                if (_isDog) {
-                    return bio.includes('[DOG]') || bio.includes('[OSKILOSMOU]') || d.domain === 'oskilosmou';
+                const dom = d.domain || '';
+                if (isDog) {
+                    return bio.includes('[DOG]') || bio.includes('[OSKILOSMOU]') || dom === 'oskilosmou';
                 } else {
-                    return !bio.includes('[DOG]') && !bio.includes('[OSKILOSMOU]') && d.domain !== 'oskilosmou';
+                    return !bio.includes('[DOG]') && !bio.includes('[OSKILOSMOU]') && dom !== 'oskilosmou';
                 }
             });
             if (_clean.length !== _items.length) {
@@ -42,8 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sync from Supabase DB ('cats' table drawing items + 'drawings' table fallback)
     async function syncFromSupabase() {
-        const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
-        let localDrawings = JSON.parse(localStorage.getItem(SITE_CONFIG.localStoragePrefix + '_drawings') || '[]');
+        let localDrawings = JSON.parse(localStorage.getItem(storagePrefix + '_drawings') || '[]');
 
         if (supabase) {
             try {
@@ -188,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="drawing-author">🎨 Από τον/την: <strong>${escapeHtml(drawing.name)}</strong></div>
                     <div class="drawing-date">📅 ${formattedDate}</div>
                     <button class="drawing-like-btn" data-id="${drawing.id}">
-                        💖 <span class="like-count">${likesCount}</span> Γατο-Χάδια
+                        💖 <span class="like-count">${likesCount}</span> ${isDog ? 'Σκυλο-Χάδια' : 'Γατο-Χάδια'}
                     </button>
                 </div>
             `;

@@ -9,8 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try { supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e) {}
     }
 
-    // Purge any stale cross-domain stories from localStorage
-    const _targetDomain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
+    const isDog = typeof checkIsDogDomain === 'function' 
+        ? checkIsDogDomain() 
+        : ((window.SITE_CONFIG && window.SITE_CONFIG.domain === 'oskilosmou') || window.location.hostname.includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('dog'));
+    const _targetDomain = isDog ? 'oskilosmou' : 'igatamou';
     const _storiesKey = _targetDomain + '_local_stories';
     try {
         const _raw = localStorage.getItem(_storiesKey);
@@ -112,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         title: item.name,
                                         author: item.owner,
                                         content: parsed.content || '',
-                                        cover_image_url: item.image || parsed.cover_image_url || 'magkas_logo.png',
+                                        cover_image_url: item.image || parsed.cover_image_url || (isDog ? 'dog_logo.png' : 'magkas_logo.png'),
                                         is_admin: parsed.is_admin || false,
                                         status: item.status,
                                         created_at: item.date || ''
@@ -254,9 +256,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const bookLeftCoverImg = document.getElementById('bookLeftCoverImg');
         const bookLeftTitle = document.getElementById('bookLeftTitle');
         const bookLeftAuthor = document.getElementById('bookLeftAuthor');
+        const defaultCover = isDog ? 'dog_logo.png' : 'magkas_logo.png';
         if (bookLeftCoverImg) {
-            bookLeftCoverImg.src = story.cover_image_url || 'magkas_logo.png';
-            bookLeftCoverImg.onerror = () => { bookLeftCoverImg.src = 'magkas_logo.png'; };
+            bookLeftCoverImg.src = story.cover_image_url || defaultCover;
+            bookLeftCoverImg.onerror = () => { bookLeftCoverImg.src = defaultCover; };
         }
         if (bookLeftTitle) bookLeftTitle.textContent = story.title;
         if (bookLeftAuthor) bookLeftAuthor.textContent = `✍️ ${story.author}`;

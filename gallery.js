@@ -2,8 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------
     // 1. SUPABASE CLIENT & DATA STORAGE INITIALIZATION
     // ----------------------------------------------------
-    const domainPrefix = window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou';
-    const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
+    const isDog = typeof checkIsDogDomain === 'function' 
+        ? checkIsDogDomain() 
+        : ((window.SITE_CONFIG && window.SITE_CONFIG.domain === 'oskilosmou') || window.location.hostname.includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('dog'));
+    const domainPrefix = isDog ? 'oskilosmou' : 'igatamou';
     const STORAGE_KEY = domainPrefix + '_user_cats';
     const LIKED_CATS_KEY = domainPrefix + '_liked_cats';
     const ADMIN_AUTH_KEY = 'igatamou_admin_logged_in';

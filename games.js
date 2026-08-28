@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
-    const domainKey = window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou';
+    const isDog = typeof checkIsDogDomain === 'function' 
+        ? checkIsDogDomain() 
+        : ((window.SITE_CONFIG && window.SITE_CONFIG.domain === 'oskilosmou') || window.location.hostname.includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('dog'));
+    const domainKey = isDog ? 'oskilosmou' : 'igatamou';
 
     // ----------------------------------------------------
     // 1. GAME DATA & QUESTION DATABASE (~100 QUESTIONS, SHUFFLED OPTIONS)
@@ -570,7 +572,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return currentDifficulty ? currentDifficulty.toUpperCase() : '';
         }
 
-        const catTitles = {
+        const catTitles = isDog ? {
+            math: "🧮 Μαθηματικά",
+            spelling: "✏️ Ορθογραφία",
+            english: "🔤 Αγγλικά (English Dogs)",
+            riddles: "💡 Γρίφοι & Σκέψη",
+            nature: "🌿 Γνώσεις & Φύση",
+            geography: "🗺️ Γεωγραφία",
+            memory: "🧩 Παιχνίδι Μνήμης",
+            tictactoe: "❌⭕ Σκύλο-Τρίλιζα",
+            snake: "🐍🐾 Σκύλο-Φιδάκι",
+            tetris: "🧩🧱 Σκύλο-Τέτρις",
+            whack: "🔨🦴 Πιάσε το Κοκκαλάκι!",
+            bubbles: "🎈🐾 Σκύλο-Μπαλόνια",
+            chess: "👑♟️ Μίνι Σκύλο-Σκάκι",
+            solitaire: "🂠🐶 Σκύλο-Πασιέντζα"
+        } : {
             math: "🧮 Μαθηματικά",
             spelling: "✏️ Ορθογραφία",
             english: "🔤 Αγγλικά (English Cats)",
@@ -1011,6 +1028,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let tttGameOver = false;
 
     let tttFirstPlayer = 'player'; // 'player', 'ai', 'random'
+
+    // Domain-aware TicTacToe symbols
+    const tttPlayerSymbol = isDog ? '🐶' : '🐱';
+    const tttAISymbol     = isDog ? '🦴' : '🐟';
 
     function setupTicTacToeGame() {
         tttBoard = Array(9).fill(null);

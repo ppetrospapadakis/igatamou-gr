@@ -99,7 +99,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => flyingEl.remove(), 2200);
     }
 
-    const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
+    const isDog = typeof checkIsDogDomain === 'function' 
+        ? checkIsDogDomain() 
+        : ((window.SITE_CONFIG && window.SITE_CONFIG.domain === 'oskilosmou') || window.location.hostname.includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('dog'));
 
     // ----------------------------------------------------
     // 1. FOOD ACTION: SPAGHETTI (🍜)

@@ -16,6 +16,39 @@
     --radius-full: 999px;
 }
 
+/* Instant Dog Site CSS Overrides (Zero delay before render) */
+html.site-dog {
+    --primary: #0284c7 !important;
+    --primary-color: #0284c7 !important;
+    --primary-hover: #0369a1 !important;
+    --accent-color: #0ea5e9 !important;
+    --bg-pink: #f0f9ff !important;
+    --bg-cream: #f8fafc !important;
+}
+
+html.site-dog body {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%) !important;
+}
+
+html.site-dog img.logo-avatar-img,
+html.site-dog .logo-avatar-img,
+html.site-dog .logo img {
+    content: url('dog_logo.png') !important;
+}
+
+html.site-dog img.mascot-img,
+html.site-dog #mascotImage {
+    content: url('dog_mascot.jpg') !important;
+}
+
+html.site-dog .logo-text {
+    color: #0284c7 !important;
+}
+
+html.site-dog .logo-text .highlight {
+    color: #0369a1 !important;
+}
+
 html {
     overflow-y: scroll;
     scrollbar-gutter: stable;

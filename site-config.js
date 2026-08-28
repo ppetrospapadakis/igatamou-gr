@@ -4,24 +4,37 @@
  * Supports: igatamou.gr (Cats) & oskilosmou.gr (Dogs)
  */
 
-// Prevent flash of igatamou content on oskilosmou.gr:
-// Hide the body immediately (synchronously, before render) and reveal after localization runs.
-// Also fix the tab title and favicon immediately to prevent flash of cat content.
-(function() {
-    const h = window.location.hostname.toLowerCase();
-    const sp = (new URLSearchParams(window.location.search).get('site') || '').toLowerCase();
-    const _isDog = h.includes('oskilosmou') || h.includes('osklilosmou') || sp === 'oskilosmou' || sp === 'dog' || sp === 'skilos';
-    if (_isDog) {
-        // 1. Hide body until localization is applied
-        const s = document.createElement('style');
-        s.id = '_fouc_guard';
-        s.textContent = 'body { visibility: hidden !important; }';
-        document.head.appendChild(s);
+// Universal Robust Domain Detector
+function checkIsDogDomain() {
+    try {
+        const h = (window.location.hostname || '').toLowerCase();
+        const s = (new URLSearchParams(window.location.search || '').get('site') || '').toLowerCase();
+        return h.includes('oskilosmou') || h.includes('osklilosmou') || s === 'oskilosmou' || s === 'dog' || s === 'skilos';
+    } catch (e) {
+        return false;
+    }
+}
+window.checkIsDogDomain = checkIsDogDomain;
 
-        // 2. Fix tab title immediately (synchronous — runs while <head> is still parsing)
+// 1. Instant Synchronous Head Setup (Zero-delay before render)
+(function initHeadSetup() {
+    const isDog = checkIsDogDomain();
+    if (isDog) {
+        // Tag HTML element immediately
+        if (document.documentElement) {
+            document.documentElement.classList.add('site-dog');
+            document.documentElement.setAttribute('data-site', 'oskilosmou');
+        }
+
+        // Fix tab title immediately
         if (document.title) {
             document.title = document.title
                 .replace(/igatamou\.gr/gi, 'oskilosmou.gr')
+                .replace(/Γατο-Άλμπουμ/gi, 'Σκύλο-Άλμπουμ')
+                .replace(/Γατο-Ζωγραφιές/gi, 'Σκύλο-Ζωγραφιές')
+                .replace(/Γατο-Ιστορίες/gi, 'Σκύλο-Ιστορίες')
+                .replace(/Γατο-Συμβουλές/gi, 'Σκύλο-Συμβουλές')
+                .replace(/Γατο-Παιχνίδια/gi, 'Σκύλο-Παιχνίδια')
                 .replace(/Γατο-/gi, 'Σκύλο-')
                 .replace(/γατο-/gi, 'σκύλο-')
                 .replace(/γατ(ούλ|ίσι|ών|ά|ες|α)\w*/gi, 'σκύλος')
@@ -31,7 +44,7 @@
                 .replace(/🐱/g, '🐶');
         }
 
-        // 3. Fix favicon immediately
+        // Fix favicon immediately
         const existingIcon = document.querySelector('link[rel*="icon"]');
         if (existingIcon) {
             existingIcon.href = 'dog_logo.png';
@@ -42,16 +55,33 @@
             icon.href = 'dog_logo.png';
             document.head.appendChild(icon);
         }
+
+        // Instant CSS replacement for images (prevents even 1ms of cat graphics rendering)
+        const instantStyle = document.createElement('style');
+        instantStyle.id = 'instant-dog-assets';
+        instantStyle.textContent = `
+            html.site-dog img.logo-avatar-img,
+            html.site-dog .logo-avatar-img,
+            html.site-dog .logo img {
+                content: url('dog_logo.png') !important;
+            }
+            html.site-dog img.mascot-img,
+            html.site-dog #mascotImage {
+                content: url('dog_mascot.jpg') !important;
+            }
+        `;
+        document.head.appendChild(instantStyle);
+
+        // Preload dog images into memory
+        try {
+            new Image().src = 'dog_logo.png';
+            new Image().src = 'dog_mascot.jpg';
+        } catch(e) {}
     }
 })();
 
 const SITE_CONFIG = (() => {
-    const host = window.location.hostname.toLowerCase();
-    const urlParams = new URLSearchParams(window.location.search);
-    const siteParam = (urlParams.get('site') || '').toLowerCase();
-
-    // Check domain or testing query parameter
-    const isDog = host.includes('oskilosmou') || host.includes('osklilosmou') || siteParam === 'oskilosmou' || siteParam === 'dog' || siteParam === 'skilos';
+    const isDog = checkIsDogDomain();
 
     if (isDog) {
         return {
@@ -113,6 +143,7 @@ const SITE_CONFIG = (() => {
         };
     }
 })();
+window.SITE_CONFIG = SITE_CONFIG;
 
 // Auto-inject CSS Theme variables and dog styling if on oskilosmou.gr
 (function applyTheme() {
@@ -176,32 +207,46 @@ function applyDogLocalization() {
             .replace(/Γατο-Ιστορίες/gi, 'Σκύλο-Ιστορίες')
             .replace(/Γατο-Συμβουλές/gi, 'Σκύλο-Συμβουλές')
             .replace(/Γατο-Παιχνίδια/gi, 'Σκύλο-Παιχνίδια')
+            .replace(/Γατο-/gi, 'Σκύλο-')
+            .replace(/γατο-/gi, 'σκύλο-')
             .replace(/γατ\w+/gi, 'σκύλο')
             .replace(/Γατ\w+/gi, 'Σκύλο')
             .replace(/🐱/g, '🐶');
     }
 
-    // 2. Replacements Dictionary for Text Nodes (Longest / Most Specific First)
+    // 2. Replacements Dictionary for Text Nodes (Ordered from longest/most specific to general)
     const replacements = [
-        // Exact Full Sentences & Headers
+        // Exact Full Sentences, Headers & Specific UI Blocks
         [/Ανέβασε τη φωτογραφία της δικής σου γατούλας!/gi, 'Ανέβασε τη φωτογραφία του δικού σου σκύλου!'],
         [/Δείξε μας τη γατούλα σου, μάζεψε χάδια & δες όλες τις γατούλες της παρέας μας!/gi, 'Δείξε μας τον σκύλο σου, μάζεψε χάδια & δες όλους τους σκύλους της παρέας μας!'],
         [/Δες όλες τις γατούλες της παρέας μας & δώσε τους ένα γατο-χάδι!/gi, 'Δες όλους τους σκύλους της παρέας μας & δώσε τους ένα σκυλο-χάδι!'],
         [/Δες όλες τις υπέροχες ζωγραφιές που έφτιαξαν τα παιδιά & δώσε τους ένα γατο-χάδι!/gi, 'Δες όλες τις υπέροχες ζωγραφιές που έφτιαξαν τα παιδιά & δώσε τους ένα σκυλο-χάδι!'],
         [/Ζωγράφισε τη δική σου Γατούλα & Χρωμάτισε Έτοιμα Σχέδια!/gi, 'Ζωγράφισε τον δικό σου Σκύλο & Χρωμάτισε Έτοιμα Σχέδια!'],
+        [/Ζωγράφισε τη δική σου Γατούλα/gi, 'Ζωγράφισε τον δικό σου Σκύλο'],
+        [/Ζωγράφισε τη Γάτα!/gi, 'Ζωγράφισε τον Σκύλο!'],
+        [/Ζωγράφισε τη Γάτα/gi, 'Ζωγράφισε τον Σκύλο'],
         [/Στείλε τη στη Μάγκα για να μπει στο Άλμπουμ!/gi, 'Στείλε τη στον Φίλο για να μπει στο Άλμπουμ!'],
+        [/Στείλε τη στη Μάγκα/gi, 'Στείλε τη στον Φίλο'],
+        [/Στείλ' τη στη Μάγκα/gi, 'Στείλ\' τη στον Φίλο'],
+        [/Αποθήκευση & Αποστολή στη Μάγκα! 🐾/gi, 'Αποθήκευση & Αποστολή στον Φίλο! 🐾'],
+        [/Αποθήκευση & Αποστολή στη Μάγκα/gi, 'Αποθήκευση & Αποστολή στον Φίλο'],
         [/Δες τις Γατο-Ζωγραφιές & Φτιάξε τη δική σου!/gi, 'Δες τις Σκύλο-Ζωγραφιές & Φτιάξε τη δική σου!'],
+        [/Δες τις Γατο-Ζωγραφιές/gi, 'Δες τις Σκύλο-Ζωγραφιές'],
         [/Διάβασε & Γράψε τις δικές σου Γατο-Ιστορίες!/gi, 'Διάβασε & Γράψε τις δικές σου Σκύλο-Ιστορίες!'],
         [/Μπες στις Γατο-Ιστορίες & Γράψε τη δική σου!/gi, 'Μπες στις Σκύλο-Ιστορίες & Γράψε τη δική σου!'],
         [/Μπες στο Γατο-Άλμπουμ & Ανέβασε Φωτογραφία!/gi, 'Μπες στο Σκύλο-Άλμπουμ & Ανέβασε Φωτογραφία!'],
         [/Μάθε τι αρέσει στη Γάτα σου!/gi, 'Μάθε τι αρέσει στον Σκύλο σου!'],
         [/Μάθε τι αρέσει στη γάτα σου!/gi, 'Μάθε τι αρέσει στον σκύλο σου!'],
+        [/Μάθε τι αρέσει στη γάτα σου/gi, 'Μάθε τι αρέσει στον σκύλο σου'],
         [/Έλα να Παίξουμε & να Μάθουμε με τη Μάγκα!/gi, 'Έλα να Παίξουμε & να Μάθουμε με τον Φίλο!'],
+        [/Έλα να Παίξουμε & να Μάθουμε με τη Μάγκα/gi, 'Έλα να Παίξουμε & να Μάθουμε με τον Φίλο'],
         [/Γράψου στο Γατο-Newsletter & μάθαινε πρώτος\/η για νέα παιχνίδια & εκπλήξεις!/gi, 'Γράψου στο Σκυλο-Newsletter & μάθαινε πρώτος/η για νέα παιχνίδια & εκπλήξεις!'],
         [/Η Μάγκας είναι μια γλυκύτατη, ναζιάρα θηλυκή γατούλα/gi, 'Ο Φίλος είναι ένας γλυκύτατος, πιστός και παιχνιδιάρης σκυλάκος'],
         [/Η Μάγκας φέρνει τις ιστορίες\.\.\./gi, 'Ο Φίλος φέρνει τις ιστορίες...'],
         [/Γίνε ο πρώτος που θα γράψει μια ιστορία για τη γατούλα του!/gi, 'Γίνε ο πρώτος που θα γράψει μια ιστορία για τον σκύλο του!'],
         [/Δεν υπάρχουν ακόμα εγκεκριμένες ιστορίες\./gi, 'Δεν υπάρχουν ακόμα ιστορίες για σκύλους.'],
+        [/Δεν υπάρχουν ακόμα εγκεκριμένες ζωγραφιές στο Άλμπουμ!/gi, 'Δεν υπάρχουν ακόμα εγκεκριμένες ζωγραφιές σκύλων στο Άλμπουμ!'],
+        [/Γίνε ο\/η πρώτος\/η που θα ζωγραφίσει και θα στείλει τη γατούλα του!/gi, 'Γίνε ο/η πρώτος/η που θα ζωγραφίσει και θα στείλει τον σκύλο του!'],
         [/Ανέβασε τη Φωτογραφία της Γατούλας σου!/gi, 'Ανέβασε τη Φωτογραφία του Σκύλου σου!'],
         [/Ανέβασε τη Γατούλα σου!/gi, 'Ανέβασε τον Σκύλο σου!'],
         [/Γατο-Άλμπουμ: Οι Γατούλες μας!/gi, 'Σκύλο-Άλμπουμ: Οι Σκύλοι μας!'],
@@ -215,6 +260,21 @@ function applyDogLocalization() {
         [/η γατούλα μας/gi, 'ο σκύλος μας'],
         [/Οι Γατούλες μας/gi, 'Οι Σκύλοι μας'],
         [/οι γατούλες μας/gi, 'οι σκύλοι μας'],
+
+        // Stencils in draw.html
+        [/Γατούλα με Κορδελάκι/gi, 'Σκυλάκος με Κορδελάκι'],
+        [/Γατούλα με Ψαράκι/gi, 'Σκυλάκος με Κοκκαλάκι'],
+        [/Γατο-Πατήσιες/gi, 'Σκυλο-Πατήσιες'],
+        [/Γατούλα που Κοιμάται/gi, 'Σκυλάκος που Κοιμάται'],
+        [/Βασιλική Γατούλα/gi, 'Βασιλικός Σκυλάκος'],
+        [/Γατούλα με Κουβάρι/gi, 'Σκυλάκος με Μπαλάκι'],
+        [/Γατο-Αστροναύτης/gi, 'Σκυλο-Αστροναύτης'],
+        [/Γατο-Πάρτι Γενεθλίων/gi, 'Σκυλο-Πάρτι Γενεθλίων'],
+        [/Γατο-Πάρτι/gi, 'Σκυλο-Πάρτι'],
+        [/Cool Γατούλα με Γυαλιά/gi, 'Cool Σκυλάκος με Γυαλιά'],
+        [/Γατο-Σπιτάκι & Ήλιος/gi, 'Σκυλο-Σπιτάκι & Ήλιος'],
+        [/Γατο-Σπιτάκι/gi, 'Σκυλο-Σπιτάκι'],
+        [/Γατο-Σούπερ Ήρωας/gi, 'Σκυλο-Σούπερ Ήρωας'],
 
         // Grammatical Prepositions & Articles
         [/της δικής σου γατούλας/gi, 'του δικού σου σκύλου'],
@@ -270,11 +330,16 @@ function applyDogLocalization() {
         [/Χάδεψες τη Μάγκα/gi, 'Χάδεψες τον Φίλο'],
         [/στη Μάγκα!/gi, 'στον Φίλο!'],
         [/στη Μάγκα/gi, 'στον Φίλο'],
+        [/στη Μάγκας/gi, 'στον Φίλο'],
         [/με τη Μάγκα!/gi, 'με τον Φίλο!'],
         [/με τη Μάγκα/gi, 'με τον Φίλο'],
+        [/με τη Μάγκας/gi, 'με τον Φίλο'],
         [/για τη Μάγκα/gi, 'για τον Φίλο'],
+        [/για τη Μάγκας/gi, 'για τον Φίλο'],
         [/από τη Μάγκα/gi, 'από τον Φίλο'],
+        [/από τη Μάγκας/gi, 'από τον Φίλο'],
         [/τη Μάγκα/gi, 'τον Φίλο'],
+        [/τη Μάγκας/gi, 'τον Φίλο'],
         [/Η Μάγκας/gi, 'Ο Φίλος'],
         [/η Μάγκας/gi, 'ο Φίλος'],
         [/Μάγκας/gi, 'Φίλος'],
@@ -285,22 +350,30 @@ function applyDogLocalization() {
         [/igatamou/gi, 'oskilosmou'],
         [/Γατο-Άλμπουμ/gi, 'Σκύλο-Άλμπουμ'],
         [/Γατο-Ζωγραφιές/gi, 'Σκύλο-Ζωγραφιές'],
+        [/Γατο-Ζωγραφιά/gi, 'Σκύλο-Ζωγραφιά'],
+        [/γατο-ζωγραφιές/gi, 'σκυλο-ζωγραφιές'],
+        [/γατο-ζωγραφιά/gi, 'σκυλο-ζωγραφιά'],
         [/Γατο-Ιστορίες/gi, 'Σκύλο-Ιστορίες'],
         [/Γατο-Ιστορία/gi, 'Σκύλο-Ιστορία'],
+        [/γατο-ιστορίες/gi, 'σκυλο-ιστορίες'],
+        [/γατο-ιστορία/gi, 'σκυλο-ιστορία'],
         [/Γατο-Συμβουλές/gi, 'Σκύλο-Συμβουλές'],
+        [/γατο-συμβουλές/gi, 'σκυλο-συμβουλές'],
         [/Γατο-Παιχνίδια/gi, 'Σκύλο-Παιχνίδια'],
+        [/γατο-παιχνίδια/gi, 'σκυλο-παιχνίδια'],
         [/Γατο-Σχολείο/gi, 'Σκυλο-Σχολείο'],
         [/Γατο-Newsletter/gi, 'Σκυλο-Newsletter'],
         [/γατο-χάδια/gi, 'σκυλο-χάδια'],
         [/Γατο-Χάδια/gi, 'Σκυλο-Χάδια'],
         [/γατο-χάδι/gi, 'σκυλο-χάδι'],
         [/Γατο-Χάδι/gi, 'Σκυλο-Χάδι'],
-        [/γατο-παιχνίδια/gi, 'σκυλο-παιχνίδια'],
         [/γατο-νιαουρίσματα/gi, 'σκυλο-γαυγίσματα'],
         [/γατο-αγάπη/gi, 'σκυλο-αγάπη'],
         [/Γατίσιο & Παιχνιδιάρικο/gi, 'Σκυλίσιο & Παιχνιδιάρικο'],
         [/Γατίσιο/gi, 'Σκυλίσιο'],
         [/γατίσιο/gi, 'σκυλίσιο'],
+        [/γατίσια/gi, 'σκυλίσια'],
+        [/Γατίσια/gi, 'Σκυλίσια'],
         [/νιαουρίσματα/gi, 'γαυγίσματα'],
         [/νιαούρισμα/gi, 'γαύγισμα'],
         [/νιαουρίσματος/gi, 'γαυγίσματος'],
@@ -332,7 +405,7 @@ function applyDogLocalization() {
         [/🧶/g, '🎾']
     ];
 
-    // Walk all text nodes
+    // Walk all text nodes - DO NOT use regex.test() to avoid stateful lastIndex bugs
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
     let node;
     while ((node = walker.nextNode())) {
@@ -340,14 +413,12 @@ function applyDogLocalization() {
             continue;
         }
         let text = node.nodeValue;
-        let modified = false;
-        for (const [regex, replacement] of replacements) {
-            if (regex.test(text)) {
-                text = text.replace(regex, replacement);
-                modified = true;
-            }
+        const originalText = text;
+        for (let i = 0; i < replacements.length; i++) {
+            const [regex, replacement] = replacements[i];
+            text = text.replace(regex, replacement);
         }
-        if (modified) {
+        if (text !== originalText) {
             node.nodeValue = text;
         }
     }
@@ -369,7 +440,8 @@ function applyDogLocalization() {
         const ph = input.getAttribute('placeholder') || '';
         if (ph) {
             let newPh = ph;
-            for (const [regex, replacement] of replacements) {
+            for (let i = 0; i < replacements.length; i++) {
+                const [regex, replacement] = replacements[i];
                 newPh = newPh.replace(regex, replacement);
             }
             input.setAttribute('placeholder', newPh);
@@ -399,7 +471,7 @@ if (document.readyState === 'loading') {
 } else {
     applyDogLocalization();
 }
-// Fallback: ensure guard is removed even if applyDogLocalization didn't run (non-dog sites)
+// Fallback: ensure guard is removed even if applyDogLocalization didn't run
 window.addEventListener('load', function() {
     applyDogLocalization();
     const guard = document.getElementById('_fouc_guard');

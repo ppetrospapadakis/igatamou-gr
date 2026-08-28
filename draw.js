@@ -379,6 +379,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const isDog = typeof checkIsDogDomain === 'function' 
+        ? checkIsDogDomain() 
+        : ((window.SITE_CONFIG && window.SITE_CONFIG.domain === 'oskilosmou') || window.location.hostname.includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('dog'));
+
     function drawStencil(stencilType) {
         clearCanvas();
         if (stencilType === 'blank') return;
@@ -390,55 +394,111 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.lineJoin = 'round';
 
         if (stencilType === 'cat_bow') {
-            // Cute Cat Head with Ribbon Bow
-            ctx.beginPath();
-            ctx.arc(400, 320, 160, 0, Math.PI * 2);
-            ctx.stroke();
+            if (isDog) {
+                // Cute Puppy Face with Floppy Ears and Ribbon Bow
+                ctx.beginPath();
+                ctx.arc(400, 330, 150, 0, Math.PI * 2);
+                ctx.stroke();
 
-            // Ears
-            ctx.beginPath();
-            ctx.moveTo(270, 230); ctx.lineTo(240, 100); ctx.lineTo(340, 170);
-            ctx.moveTo(530, 230); ctx.lineTo(560, 100); ctx.lineTo(460, 170);
-            ctx.stroke();
+                // Floppy Dog Ears
+                ctx.beginPath();
+                ctx.moveTo(270, 240);
+                ctx.bezierCurveTo(200, 240, 180, 420, 260, 430);
+                ctx.bezierCurveTo(290, 430, 290, 320, 285, 270);
+                ctx.stroke();
 
-            // Eyes
-            ctx.fillStyle = '#0f172a';
-            ctx.beginPath();
-            ctx.arc(330, 280, 18, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(470, 280, 18, 0, Math.PI * 2);
-            ctx.fill();
+                ctx.beginPath();
+                ctx.moveTo(530, 240);
+                ctx.bezierCurveTo(600, 240, 620, 420, 540, 430);
+                ctx.bezierCurveTo(510, 430, 510, 320, 515, 270);
+                ctx.stroke();
 
-            // Nose
-            ctx.beginPath();
-            ctx.arc(400, 320, 10, 0, Math.PI * 2);
-            ctx.fill();
+                // Puppy Eyes
+                ctx.fillStyle = '#0f172a';
+                ctx.beginPath();
+                ctx.arc(335, 290, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(465, 290, 18, 0, Math.PI * 2);
+                ctx.fill();
 
-            // Mouth
-            ctx.beginPath();
-            ctx.moveTo(400, 330); ctx.lineTo(400, 345);
-            ctx.arc(385, 345, 15, 0, Math.PI, false);
-            ctx.moveTo(400, 345);
-            ctx.arc(415, 345, 15, 0, Math.PI, false);
-            ctx.stroke();
+                // Big Puppy Nose
+                ctx.beginPath();
+                ctx.ellipse(400, 345, 24, 16, 0, 0, Math.PI * 2);
+                ctx.fill();
 
-            // Whiskers
-            ctx.beginPath();
-            ctx.moveTo(310, 320); ctx.lineTo(200, 300);
-            ctx.moveTo(310, 335); ctx.lineTo(200, 340);
-            ctx.moveTo(490, 320); ctx.lineTo(600, 300);
-            ctx.moveTo(490, 335); ctx.lineTo(600, 340);
-            ctx.stroke();
+                // Puppy Mouth & Tongue
+                ctx.beginPath();
+                ctx.moveTo(400, 360); ctx.lineTo(400, 385);
+                ctx.arc(380, 385, 20, 0, Math.PI, false);
+                ctx.moveTo(400, 385);
+                ctx.arc(420, 385, 20, 0, Math.PI, false);
+                ctx.stroke();
 
-            // Bow Ribbon on Ear
-            ctx.beginPath();
-            ctx.arc(260, 130, 16, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(260, 130); ctx.lineTo(220, 100); ctx.lineTo(220, 160); ctx.closePath();
-            ctx.moveTo(260, 130); ctx.lineTo(300, 100); ctx.lineTo(300, 160); ctx.closePath();
-            ctx.stroke();
+                // Happy Tongue
+                ctx.beginPath();
+                ctx.arc(400, 405, 18, 0, Math.PI);
+                ctx.stroke();
+
+                // Bow Ribbon on Head
+                ctx.beginPath();
+                ctx.arc(400, 180, 16, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(400, 180); ctx.lineTo(340, 150); ctx.lineTo(340, 210); ctx.closePath();
+                ctx.moveTo(400, 180); ctx.lineTo(460, 150); ctx.lineTo(460, 210); ctx.closePath();
+                ctx.stroke();
+            } else {
+                // Cute Cat Head with Ribbon Bow
+                ctx.beginPath();
+                ctx.arc(400, 320, 160, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Ears
+                ctx.beginPath();
+                ctx.moveTo(270, 230); ctx.lineTo(240, 100); ctx.lineTo(340, 170);
+                ctx.moveTo(530, 230); ctx.lineTo(560, 100); ctx.lineTo(460, 170);
+                ctx.stroke();
+
+                // Eyes
+                ctx.fillStyle = '#0f172a';
+                ctx.beginPath();
+                ctx.arc(330, 280, 18, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(470, 280, 18, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Nose
+                ctx.beginPath();
+                ctx.arc(400, 320, 10, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Mouth
+                ctx.beginPath();
+                ctx.moveTo(400, 330); ctx.lineTo(400, 345);
+                ctx.arc(385, 345, 15, 0, Math.PI, false);
+                ctx.moveTo(400, 345);
+                ctx.arc(415, 345, 15, 0, Math.PI, false);
+                ctx.stroke();
+
+                // Whiskers
+                ctx.beginPath();
+                ctx.moveTo(310, 320); ctx.lineTo(200, 300);
+                ctx.moveTo(310, 335); ctx.lineTo(200, 340);
+                ctx.moveTo(490, 320); ctx.lineTo(600, 300);
+                ctx.moveTo(490, 335); ctx.lineTo(600, 340);
+                ctx.stroke();
+
+                // Bow Ribbon on Ear
+                ctx.beginPath();
+                ctx.arc(260, 130, 16, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(260, 130); ctx.lineTo(220, 100); ctx.lineTo(220, 160); ctx.closePath();
+                ctx.moveTo(260, 130); ctx.lineTo(300, 100); ctx.lineTo(300, 160); ctx.closePath();
+                ctx.stroke();
+            }
 
         } else if (stencilType === 'cat_fish') {
             // Cat next to Fish
@@ -1048,18 +1108,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 image_data: fileUrl,
                 status: 'pending',
                 likes: 0,
-                created_at: new Date().toISOString()
+                created_at: new Date().toISOString(),
+                domain: isDog ? 'oskilosmou' : 'igatamou',
+                bio: isDog ? '🎨 [DRAWING] [DOG]' : '🎨 [DRAWING]'
             };
 
             // 1. Save to localStorage
-            const localDrawings = JSON.parse(localStorage.getItem(SITE_CONFIG.localStoragePrefix + '_drawings') || '[]');
+            const storagePrefix = isDog ? 'oskilosmou' : 'igatamou';
+            const localDrawings = JSON.parse(localStorage.getItem(storagePrefix + '_drawings') || '[]');
             localDrawings.unshift(newDrawing);
-            localStorage.setItem(SITE_CONFIG.localStoragePrefix + '_drawings', JSON.stringify(localDrawings));
+            localStorage.setItem(storagePrefix + '_drawings', JSON.stringify(localDrawings));
 
-            // 2. Save to Supabase DB cats table (and drawings table fallback)
+            // 2. Save to Supabase DB cats table
             if (supabase) {
                 try {
-                    const isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
                     await supabase.from('cats').insert([{
                         id: newDrawing.id,
                         name: newDrawing.name,
@@ -1069,7 +1131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         status: 'pending',
                         likes: 0,
                         date: new Date().toLocaleDateString('el-GR'),
-                        domain: window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou'
+                        domain: isDog ? 'oskilosmou' : 'igatamou'
                     }]);
                 } catch (dbErr) {
                     console.log('Supabase cats drawing insert notice:', dbErr);

@@ -378,24 +378,29 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 localStorage.setItem(SITE_CONFIG.localStoragePrefix + '_local_stories', JSON.stringify(localStories));
 
-                // 2. Cloud Sync to Supabase `cats` table (seamlessly synced with 0 errors)
+                // 2. Cloud Sync to Supabase `cats` table
                 if (supabase) {
                     try {
-                        const curDomain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
+                        const isDog = typeof checkIsDogDomain === 'function' 
+                            ? checkIsDogDomain() 
+                            : ((window.SITE_CONFIG && window.SITE_CONFIG.domain === 'oskilosmou') || window.location.hostname.includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('oskilosmou') || (new URLSearchParams(window.location.search).get('site') || '').includes('dog'));
+                        const defaultCover = isDog ? 'dog_logo.png' : 'magkas_logo.png';
+                        const curDomain = isDog ? 'oskilosmou' : 'igatamou';
                         await supabase.from('cats').upsert([{
                             id: targetId,
                             name: title,
                             owner: author,
                             bio: '📖 [STORY] ' + JSON.stringify({
                                 content: htmlContent,
-                                cover_image_url: coverUrl || 'magkas_logo.png',
+                                cover_image_url: coverUrl || defaultCover,
                                 is_admin: isStoryAdmin,
                                 domain: curDomain
                             }),
-                            image: coverUrl || 'magkas_logo.png',
+                            image: coverUrl || defaultCover,
                             status: status,
                             likes: 0,
-                            date: new Date().toLocaleDateString('el-GR')
+                            date: new Date().toLocaleDateString('el-GR'),
+                            domain: curDomain
                         }]);
                     } catch (sErr) {
                         console.log('Supabase sync info:', sErr);
@@ -420,8 +425,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             } catch (err) {
                 console.error('Submit error:', err);
                 showError('Κάτι πήγε στραβά κατά την αποθήκευση. Δοκίμασε ξανά!');
+                const isDog = typeof checkIsDogDomain === 'function' ? checkIsDogDomain() : false;
                 submitStoryBtn.disabled = false;
-                submitStoryBtn.textContent = editingStoryData ? '💾 Αποθήκευση Αλλαγών! 🐾' : '💾 Αποστολή στη Μάγκα! 🐾';
+                submitStoryBtn.textContent = editingStoryData ? '💾 Αποθήκευση Αλλαγών! 🐾' : (isDog ? '💾 Αποστολή στον Φίλο! 🐾' : '💾 Αποστολή στη Μάγκα! 🐾');
             }
         });
     }
