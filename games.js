@@ -1259,10 +1259,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let snakeInterval = null;
     let snake = [];
     let snakeDir = 'RIGHT';
-    let snakeFood = { x: 5, y: 5, icon: '🐟' };
+    let snakeFood = { x: 5, y: 5, icon: isDog ? '🦴' : '🐟' };
     let snakeObstacles = [];
     let snakePoints = 0;
-    const foodIcons = ['🐟', '🥛', '🍗', '🧶', '🎀'];
+    const foodIcons = isDog ? ['🦴', '🥩', '🍗', '🎾', '⭐'] : ['🐟', '🥛', '🍗', '🧶', '🎀'];
 
     let isSnakePaused = false;
     let isSnakeRunning = false;
@@ -1281,7 +1281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentDifficulty === 'medium') speedMs = 260;
         if (currentDifficulty === 'hard') speedMs = 260;
 
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Μάζεψε λιχουδιές! (Σούρε το δάχτυλο ή χρησιμοποίησε κουμπιά) 🐟"`;
+        if (catSpeechBubble) catSpeechBubble.textContent = isDog ? `💬 "Μάζεψε λιχουδιές! (Σούρε το δάχτυλο ή χρησιμοποίησε κουμπιά) 🦴"` : `💬 "Μάζεψε λιχουδιές! (Σούρε το δάχτυλο ή χρησιμοποίησε κουμπιά) 🐟"`;
 
         snake = [
             { x: 7, y: 7 },
@@ -1849,18 +1849,18 @@ document.addEventListener('DOMContentLoaded', () => {
             whackPauseBtn.classList.remove('is-paused');
         }
 
-        if (questionNumber) questionNumber.textContent = `🔨🐟 Πιάσε το Ψαράκι! (${currentDifficulty.toUpperCase()})`;
-        if (questionText) questionText.textContent = '🎯 Πιάσε 20 ψαράκια για να κερδίσεις!';
+        if (questionNumber) questionNumber.textContent = isDog ? `🔨🦴 Πιάσε το Κοκκαλάκι! (${currentDifficulty.toUpperCase()})` : `🔨🐟 Πιάσε το Ψαράκι! (${currentDifficulty.toUpperCase()})`;
+        if (questionText) questionText.textContent = isDog ? '🎯 Πιάσε 20 κοκκαλάκια για να κερδίσεις!' : '🎯 Πιάσε 20 ψαράκια για να κερδίσεις!';
         if (visualHelper) {
             visualHelper.innerHTML = `
                 <div class="whack-instructions">
-                     💡 <strong>Οδηγίες:</strong> Πάτα τα ψαράκια 🐟 (+1 πόντος)! 
+                     💡 <strong>Οδηγίες:</strong> ${isDog ? 'Πάτα τα κοκκαλάκια 🦴 (+1 πόντος)!' : 'Πάτα τα ψαράκια 🐟 (+1 πόντος)!'} 
                     <span style="color:#d63031; font-weight:bold;">Προσοχή:</span> Μην αγγίζεις τα άλλα αντικείμενα (💣, 🦔, 💩, 👟) γιατί σου αφαιρούν 1 πόντο!
                 </div>
             `;
         }
 
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Πιάσε 20 ψαράκια 🐟!"`;
+        if (catSpeechBubble) catSpeechBubble.textContent = isDog ? `💬 "Πιάσε 20 κοκκαλάκια 🦴!"` : `💬 "Πιάσε 20 ψαράκια 🐟!"`;
 
         if (whackGrid) {
             whackGrid.innerHTML = '';
@@ -1869,7 +1869,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 hole.className = 'whack-hole';
                 const item = document.createElement('div');
                 item.className = 'whack-item';
-                item.textContent = '🐟';
+                item.textContent = isDog ? '🦴' : '🐟';
                 item.addEventListener('click', () => handleWhackClick(hole, item));
                 hole.appendChild(item);
                 whackGrid.appendChild(hole);
@@ -1885,8 +1885,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const title = overlay.querySelector('.start-overlay-title');
                 const desc = overlay.querySelector('.start-overlay-desc');
                 const btn = overlay.querySelector('.btn-overlay-start');
-                if (title) title.textContent = 'Πιάσε το Ψαράκι!';
-                if (desc) desc.textContent = 'Χτύπα τα ψαράκια και απόφευγε τις βόμβες!';
+                if (title) title.textContent = isDog ? 'Πιάσε το Κοκκαλάκι!' : 'Πιάσε το Ψαράκι!';
+                if (desc) desc.textContent = isDog ? 'Χτύπα τα κοκκαλάκια και απόφευγε τις βόμβες!' : 'Χτύπα τα ψαράκια και απόφευγε τις βόμβες!';
                 if (btn) btn.textContent = '▶️ Έναρξη';
             }
         } else {
@@ -1970,7 +1970,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const items = ['💣', '🦔', '💩', '👟', '📦', '💣'];
-        const chosenIcon = isFish ? '🐟' : items[Math.floor(Math.random() * items.length)];
+        const chosenIcon = isFish ? (isDog ? '🦴' : '🐟') : items[Math.floor(Math.random() * items.length)];
 
         if (isFish) whackFishSpawned++;
         else whackOtherSpawned++;
@@ -2009,7 +2009,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const PAUSE_MS = 1000; // 1 second pause + highlight
 
-        if (item.textContent === '🐟') {
+        if (item.textContent === '🐟' || item.textContent === '🦴' || item.getAttribute('data-type') === 'fish') {
             // --- Correct: caught a fish ---
             whackFishCaught++;
             score += 5;
@@ -2139,12 +2139,12 @@ document.addEventListener('DOMContentLoaded', () => {
             bubblesPauseBtn.classList.remove('is-paused');
         }
 
-        if (questionNumber) questionNumber.textContent = `🎈 Γατο-Μπαλόνια (${currentDifficulty.toUpperCase()})`;
+        if (questionNumber) questionNumber.textContent = isDog ? `🎈 Σκυλο-Μπαλόνια (${currentDifficulty.toUpperCase()})` : `🎈 Γατο-Μπαλόνια (${currentDifficulty.toUpperCase()})`;
         if (questionText) questionText.textContent = `🎯 Περνούν συνολικά ${BUBBLES_TOTAL_GOOD} μπαλόνια — σκάσε όσα μπορείς!`;
         if (visualHelper) {
             visualHelper.innerHTML = `
                 <div class="bubbles-instructions">
-                    💡 <strong>Οδηγίες:</strong> Σκάσε τα καλά μπαλόνια (🎈, 🐱, 🧶, 🐟, 🎀)! 
+                    💡 <strong>Οδηγίες:</strong> ${isDog ? 'Σκάσε τα καλά μπαλόνια (🎈, 🐶, 🎾, 🦴, ⭐)!' : 'Σκάσε τα καλά μπαλόνια (🎈, 🐱, 🧶, 🐟, 🎀)!'} 
                     <span style="color:#d63031; font-weight:bold;">Προσοχή:</span> Μην αγγίζεις τις βόμβες 💣 (αφαιρούν 1 πόντο)!
                 </div>
             `;
@@ -2165,7 +2165,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const title = overlay.querySelector('.start-overlay-title');
                 const desc = overlay.querySelector('.start-overlay-desc');
                 const btn = overlay.querySelector('.btn-overlay-start');
-                if (title) title.textContent = 'Γατο-Μπαλόνια';
+                if (title) title.textContent = isDog ? 'Σκυλο-Μπαλόνια' : 'Γατο-Μπαλόνια';
                 if (desc) desc.textContent = 'Σκάσε τα καλά μπαλόνια και απόφευγε τις βόμβες!';
                 if (btn) btn.textContent = '▶️ Έναρξη';
             }
@@ -2256,7 +2256,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const bubble = document.createElement('div');
         bubble.className = 'floating-bubble';
 
-        const goodIcons = ['🎈', '🐱', '🧶', '🐟', '🎀'];
+        const goodIcons = isDog ? ['🎈', '🐶', '🎾', '🦴', '⭐'] : ['🎈', '🐱', '🧶', '🐟', '🎀'];
         const chosenIcon = isBomb ? '💣' : goodIcons[Math.floor(Math.random() * goodIcons.length)];
         bubble.textContent = chosenIcon;
 
@@ -2693,7 +2693,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const deck = [];
         ['cat', 'fish', 'yarn'].forEach(suit => {
-            const icon = suit === 'cat' ? '🐱' : (suit === 'fish' ? '🐟' : '🧶');
+            const icon = suit === 'cat' ? (isDog ? '🐶' : '🐱') : (suit === 'fish' ? (isDog ? '🦴' : '🐟') : (isDog ? '🎾' : '🧶'));
             for (let v = 1; v <= maxVal; v++) {
                 deck.push({ suit, icon, val: v });
             }
@@ -2709,12 +2709,12 @@ document.addEventListener('DOMContentLoaded', () => {
             solitaireColumns[index % 3].push(card);
         });
 
-        if (questionNumber) questionNumber.textContent = `🂠🐱 Γατο-Πασιέντζα (${currentDifficulty.toUpperCase()})`;
+        if (questionNumber) questionNumber.textContent = isDog ? `🂠🐶 Σκυλο-Πασιέντζα (${currentDifficulty.toUpperCase()})` : `🂠🐱 Γατο-Πασιέντζα (${currentDifficulty.toUpperCase()})`;
         if (questionText) questionText.textContent = `Ταξινόμησε τους αριθμούς (1 ➔ ${maxVal}) στα 3 καλάθια!`;
         if (visualHelper) {
             visualHelper.innerHTML = `
                 <div class="solitaire-instructions">
-                    💡 <strong>Οδηγίες:</strong> Πάτα την πάνω κάρτα από μια στήλη και μετά πάτα το αντίστοιχο καλάθι (🐱, 🐟, 🧶) με τη σειρά (1 ➔ 2 ➔ 3)!
+                    💡 <strong>Οδηγίες:</strong> ${isDog ? 'Πάτα την πάνω κάρτα από μια στήλη και μετά πάτα το αντίστοιχο καλάθι (🐶, 🦴, 🎾) με τη σειρά (1 ➔ 2 ➔ 3)!' : 'Πάτα την πάνω κάρτα από μια στήλη και μετά πάτα το αντίστοιχο καλάθι (🐱, 🐟, 🧶) με τη σειρά (1 ➔ 2 ➔ 3)!'}
                 </div>
             `;
         }
@@ -2735,36 +2735,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const fishTop = solitaireFoundations.fish.length ? solitaireFoundations.fish[solitaireFoundations.fish.length - 1] : null;
         const yarnTop = solitaireFoundations.yarn.length ? solitaireFoundations.yarn[solitaireFoundations.yarn.length - 1] : null;
 
+        const dogCatSuit = isDog ? '🐶' : '🐱';
+        const dogFishSuit = isDog ? '🦴' : '🐟';
+        const dogYarnSuit = isDog ? '🎾' : '🧶';
+
         solitaireBoard.innerHTML = `
             <div class="solitaire-foundations-row">
                 <div class="solitaire-foundation-basket" data-suit="cat">
-                    <small>🧺 Γατούλες (${solitaireFoundations.cat.length}/${maxVal})</small>
+                    <small>🧺 ${isDog ? 'Σκυλάκια' : 'Γατούλες'} (${solitaireFoundations.cat.length}/${maxVal})</small>
                     ${catTop ? `
                         <div class="solitaire-card-item card-in-basket">
-                            <span class="card-suit">🐱</span>
+                            <span class="card-suit">${dogCatSuit}</span>
                             <span class="card-val">${catTop.val}</span>
                         </div>
-                    ` : '<span class="basket-placeholder">🐱 1</span>'}
+                    ` : `<span class="basket-placeholder">${dogCatSuit} 1</span>`}
                 </div>
 
                 <div class="solitaire-foundation-basket" data-suit="fish">
-                    <small>🧺 Ψαράκια (${solitaireFoundations.fish.length}/${maxVal})</small>
+                    <small>🧺 ${isDog ? 'Κοκκαλάκια' : 'Ψαράκια'} (${solitaireFoundations.fish.length}/${maxVal})</small>
                     ${fishTop ? `
                         <div class="solitaire-card-item card-in-basket">
-                            <span class="card-suit">🐟</span>
+                            <span class="card-suit">${dogFishSuit}</span>
                             <span class="card-val">${fishTop.val}</span>
                         </div>
-                    ` : '<span class="basket-placeholder">🐟 1</span>'}
+                    ` : `<span class="basket-placeholder">${dogFishSuit} 1</span>`}
                 </div>
 
                 <div class="solitaire-foundation-basket" data-suit="yarn">
-                    <small>🧺 Κουβάρια (${solitaireFoundations.yarn.length}/${maxVal})</small>
+                    <small>🧺 ${isDog ? 'Μπαλάκια' : 'Κουβάρια'} (${solitaireFoundations.yarn.length}/${maxVal})</small>
                     ${yarnTop ? `
                         <div class="solitaire-card-item card-in-basket">
-                            <span class="card-suit">🧶</span>
+                            <span class="card-suit">${dogYarnSuit}</span>
                             <span class="card-val">${yarnTop.val}</span>
                         </div>
-                    ` : '<span class="basket-placeholder">🧶 1</span>'}
+                    ` : `<span class="basket-placeholder">${dogYarnSuit} 1</span>`}
                 </div>
             </div>
 

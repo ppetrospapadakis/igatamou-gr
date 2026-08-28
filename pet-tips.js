@@ -113,14 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnActionFood) {
         btnActionFood.addEventListener('click', () => {
             playCatSound('meow');
-            animateFlyingItem(isDog ? '🍖' : '🍜', btnActionFood, imgFood, () => {
+            animateFlyingItem('🍜', btnActionFood, imgFood, () => {
                 playCatSound('purr');
                 if (speechFood) {
-                    speechFood.textContent = isDog ? '«Μιαμ μιαμ! Λαχταριστή λιχουδιά! 🐶🍖»' : '«Μιαμ μιαμ! Λαχταριστά σπαγγέτι! 😻🍜»';
+                    speechFood.textContent = isDog ? '«Μιαμ μιαμ! Λαχταριστά σπαγγέτι! 🐶🍜»' : '«Μιαμ μιαμ! Λαχταριστά σπαγγέτι! 😻🍜»';
                     speechFood.classList.add('speech-highlight');
                     setTimeout(() => speechFood.classList.remove('speech-highlight'), 2500);
                 }
-                spawnParticles(imgFood, [isDog ? '🍖' : '🍜', '😋', '💖', '✨']);
+                spawnParticles(imgFood, ['🍜', '😋', '💖', '✨']);
             });
         });
     }
