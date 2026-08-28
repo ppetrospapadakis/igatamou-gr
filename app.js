@@ -265,7 +265,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const coords = getCatCoords();
 
             const treat = document.createElement('div');
-            treat.className = 'screen-overlay-item overlay-fish-swim';
+            treat.className = isDog
+                ? 'screen-overlay-item overlay-bone-toss'
+                : 'screen-overlay-item overlay-fish-swim';
             treat.textContent = isDog ? '🦴' : '🐟';
             treat.style.setProperty('--targetX', `${coords.x}px`);
             treat.style.setProperty('--targetY', `${coords.y}px`);
