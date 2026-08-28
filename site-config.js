@@ -6,15 +6,42 @@
 
 // Prevent flash of igatamou content on oskilosmou.gr:
 // Hide the body immediately (synchronously, before render) and reveal after localization runs.
+// Also fix the tab title and favicon immediately to prevent flash of cat content.
 (function() {
     const h = window.location.hostname.toLowerCase();
     const sp = (new URLSearchParams(window.location.search).get('site') || '').toLowerCase();
     const _isDog = h.includes('oskilosmou') || h.includes('osklilosmou') || sp === 'oskilosmou' || sp === 'dog' || sp === 'skilos';
     if (_isDog) {
+        // 1. Hide body until localization is applied
         const s = document.createElement('style');
         s.id = '_fouc_guard';
         s.textContent = 'body { visibility: hidden !important; }';
         document.head.appendChild(s);
+
+        // 2. Fix tab title immediately (synchronous — runs while <head> is still parsing)
+        if (document.title) {
+            document.title = document.title
+                .replace(/igatamou\.gr/gi, 'oskilosmou.gr')
+                .replace(/Γατο-/gi, 'Σκύλο-')
+                .replace(/γατο-/gi, 'σκύλο-')
+                .replace(/γατ(ούλ|ίσι|ών|ά|ες|α)\w*/gi, 'σκύλος')
+                .replace(/Γατ(ούλ|ίσι|ών|ά|ες|α)\w*/gi, 'Σκύλος')
+                .replace(/Γατ\w+/gi, 'Σκύλος')
+                .replace(/γατ\w+/gi, 'σκύλος')
+                .replace(/🐱/g, '🐶');
+        }
+
+        // 3. Fix favicon immediately
+        const existingIcon = document.querySelector('link[rel*="icon"]');
+        if (existingIcon) {
+            existingIcon.href = 'dog_logo.png';
+        } else {
+            const icon = document.createElement('link');
+            icon.rel = 'icon';
+            icon.type = 'image/png';
+            icon.href = 'dog_logo.png';
+            document.head.appendChild(icon);
+        }
     }
 })();
 
