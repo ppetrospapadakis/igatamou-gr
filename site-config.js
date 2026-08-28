@@ -3,6 +3,21 @@
  * Central configuration & automatic dynamic localization for multi-site support.
  * Supports: igatamou.gr (Cats) & oskilosmou.gr (Dogs)
  */
+
+// Prevent flash of igatamou content on oskilosmou.gr:
+// Hide the body immediately (synchronously, before render) and reveal after localization runs.
+(function() {
+    const h = window.location.hostname.toLowerCase();
+    const sp = (new URLSearchParams(window.location.search).get('site') || '').toLowerCase();
+    const _isDog = h.includes('oskilosmou') || h.includes('osklilosmou') || sp === 'oskilosmou' || sp === 'dog' || sp === 'skilos';
+    if (_isDog) {
+        const s = document.createElement('style');
+        s.id = '_fouc_guard';
+        s.textContent = 'body { visibility: hidden !important; }';
+        document.head.appendChild(s);
+    }
+})();
+
 const SITE_CONFIG = (() => {
     const host = window.location.hostname.toLowerCase();
     const urlParams = new URLSearchParams(window.location.search);
@@ -345,6 +360,10 @@ function applyDogLocalization() {
     if (btnTreat) btnTreat.innerHTML = '🦴 Δώσε Κοκκαλάκι';
     const btnYarn = document.getElementById('btnYarn');
     if (btnYarn) btnYarn.innerHTML = '🎾 Ρίξε Μπαλάκι';
+
+    // Remove the FOUC guard — reveal the page now that dog content is applied
+    const guard = document.getElementById('_fouc_guard');
+    if (guard) guard.remove();
 }
 
 // Run immediately and on DOM load events
@@ -353,4 +372,9 @@ if (document.readyState === 'loading') {
 } else {
     applyDogLocalization();
 }
-window.addEventListener('load', applyDogLocalization);
+// Fallback: ensure guard is removed even if applyDogLocalization didn't run (non-dog sites)
+window.addEventListener('load', function() {
+    applyDogLocalization();
+    const guard = document.getElementById('_fouc_guard');
+    if (guard) guard.remove();
+});
