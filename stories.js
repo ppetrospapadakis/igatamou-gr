@@ -9,6 +9,26 @@ document.addEventListener('DOMContentLoaded', () => {
         try { supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e) {}
     }
 
+    // Purge any stale cross-domain stories from localStorage
+    const _targetDomain = window.SITE_CONFIG ? SITE_CONFIG.domain : 'igatamou';
+    const _storiesKey = _targetDomain + '_local_stories';
+    try {
+        const _raw = localStorage.getItem(_storiesKey);
+        if (_raw) {
+            const _items = JSON.parse(_raw);
+            if (Array.isArray(_items)) {
+                const _clean = _items.filter(s => {
+                    const d = s.domain || 'igatamou';
+                    return d === _targetDomain;
+                });
+                if (_clean.length !== _items.length) {
+                    localStorage.setItem(_storiesKey, JSON.stringify(_clean));
+                }
+            }
+        }
+    } catch(e) {}
+
+
     function escapeHtml(str) {
         return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
     }

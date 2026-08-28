@@ -13,6 +13,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Purge any stale cross-domain drawings from localStorage
+    (function purgeStaleDrawingsCache() {
+        try {
+            const _prefix = window.SITE_CONFIG ? SITE_CONFIG.localStoragePrefix : 'igatamou';
+            const _isDog = window.SITE_CONFIG ? (SITE_CONFIG.domain === 'oskilosmou') : false;
+            const _key = _prefix + '_drawings';
+            const _raw = localStorage.getItem(_key);
+            if (!_raw) return;
+            const _items = JSON.parse(_raw);
+            if (!Array.isArray(_items)) return;
+            const _clean = _items.filter(d => {
+                const bio = d.bio || '';
+                if (_isDog) {
+                    return bio.includes('[DOG]') || bio.includes('[OSKILOSMOU]') || d.domain === 'oskilosmou';
+                } else {
+                    return !bio.includes('[DOG]') && !bio.includes('[OSKILOSMOU]') && d.domain !== 'oskilosmou';
+                }
+            });
+            if (_clean.length !== _items.length) {
+                localStorage.setItem(_key, JSON.stringify(_clean));
+            }
+        } catch(e) {}
+    })();
+
     const drawingsGrid = document.getElementById('drawingsGrid');
     const emptyDrawings = document.getElementById('emptyDrawings');
 
