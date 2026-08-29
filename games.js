@@ -898,7 +898,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentDifficulty === 'medium') diffLabel = 'ΜΕΣΑΙΟ';
         if (currentDifficulty === 'hard') diffLabel = 'ΔΥΣΚΟΛΟ';
         if (questionNumber) questionNumber.textContent = `Παιχνίδι Μνήμης (${diffLabel})`;
-        if (questionText) questionText.textContent = 'Βρες τα ζευγάρια με τις γατούλες!';
+        if (questionText) questionText.textContent = isDog ? 'Βρες τα ζευγάρια με τα σκυλάκια!' : 'Βρες τα ζευγάρια με τις γατούλες!';
 
         memoryAttempts = 0;
         memoryFlippedCards = [];
@@ -1310,7 +1310,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const title = overlay.querySelector('.start-overlay-title');
                 const desc = overlay.querySelector('.start-overlay-desc');
                 const btn = overlay.querySelector('.btn-overlay-start');
-                if (title) title.textContent = 'Γατο-Φιδάκι';
+                if (title) title.textContent = isDog ? 'Σκυλο-Φιδάκι' : 'Γατο-Φιδάκι';
                 if (desc) desc.textContent = 'Μάζεψε όσες περισσότερες λιχουδιές μπορείς!';
                 if (btn) btn.textContent = '▶️ Έναρξη';
             }
@@ -1589,7 +1589,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const title = overlay.querySelector('.start-overlay-title');
                 const desc = overlay.querySelector('.start-overlay-desc');
                 const btn = overlay.querySelector('.btn-overlay-start');
-                if (title) title.textContent = 'Γατο-Τέτρις';
+                if (title) title.textContent = isDog ? 'Σκυλο-Τέτρις' : 'Γατο-Τέτρις';
                 if (desc) desc.textContent = 'Ταίριαξε τα τουβλάκια και σχημάτισε γραμμές!';
                 if (btn) btn.textContent = '▶️ Έναρξη';
             }
@@ -2409,8 +2409,8 @@ document.addEventListener('DOMContentLoaded', () => {
         chessSelectedSq = null;
         chessPlayerTurn = true;
 
-        if (chessStatusText) chessStatusText.textContent = `Σειρά σου: 🐱 (${currentDifficulty.toUpperCase()})`;
-        if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Μετακίνησε τις γατούλες 🐱! (Πάτα κομμάτι ➔ πάτα πράσινο τετράγωνο)"`;
+        if (chessStatusText) chessStatusText.textContent = isDog ? `Σειρά σου: 🐶 (${currentDifficulty.toUpperCase()})` : `Σειρά σου: 🐱 (${currentDifficulty.toUpperCase()})`;
+        if (catSpeechBubble) catSpeechBubble.textContent = isDog ? `💬 "Μετακίνησε τα σκυλάκια 🐶! (Πάτα κομμάτι ➔ πάτα πράσινο τετράγωνο)"` : `💬 "Μετακίνησε τις γατούλες 🐱! (Πάτα κομμάτι ➔ πάτα πράσινο τετράγωνο)"`;
 
         renderChessBoard();
     }
