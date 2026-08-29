@@ -3031,10 +3031,82 @@ body.arena-fullscreen-active {
     }
 
     .arena-header {
+        display: flex !important;
         flex-direction: column !important;
-        align-items: stretch !important;
+        align-items: center !important;
         text-align: center !important;
         gap: 10px !important;
+        width: 100% !important;
+    }
+
+    /* Back & Fullscreen buttons: merged center on mobile */
+    #backToMenuBtn, #toggleFullscreenBtn {
+        width: 100% !important;
+        max-width: 340px !important;
+        margin: 0 auto !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .difficulty-bar {
+        justify-content: center !important;
+        margin: 0 auto !important;
+    }
+
+    .arena-stats-box {
+        justify-content: center !important;
+        margin: 0 auto !important;
+    }
+
+    /* Canvas and arcade containers centered and full mobile width */
+    .arcade-game-container {
+        padding: 0 !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
+    }
+
+    .canvas-wrapper {
+        width: fit-content !important;
+        max-width: calc(100vw - 32px) !important;
+        margin: 0 auto !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
+        padding: 6px !important;
+    }
+
+    #snakeCanvas, #tetrisCanvas {
+        display: block !important;
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    .arcade-status-bar {
+        width: 100% !important;
+        max-width: 360px !important;
+        margin: 0 auto 14px auto !important;
+        display: flex !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        box-sizing: border-box !important;
+    }
+
+    .whack-board-wrapper {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        margin: 0 auto !important;
+    }
+
+    .bubbles-box {
+        margin: 0 auto !important;
+        max-width: calc(100vw - 32px) !important;
     }
 
     .arena-cat-title {

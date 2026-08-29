@@ -1376,19 +1376,42 @@ document.addEventListener('DOMContentLoaded', () => {
         let newX = 5;
         let newY = 5;
         let attempts = 0;
-        while (!valid && attempts < 250) {
-            attempts++;
-            newX = Math.floor(Math.random() * 15);
-            newY = Math.floor(Math.random() * 15);
-            const onSnake = snake.some(s => s.x === newX && s.y === newY);
-            const onObstacle = snakeObstacles.some(o => o.x === newX && o.y === newY);
-            if (!onSnake && !onObstacle) {
-                valid = true;
+
+        // Build all free cells to detect board-full condition
+        const freeCells = [];
+        for (let x = 0; x < 15; x++) {
+            for (let y = 0; y < 15; y++) {
+                const onSnake = snake.some(s => s.x === x && s.y === y);
+                const onObstacle = snakeObstacles.some(o => o.x === x && o.y === y);
+                if (!onSnake && !onObstacle) freeCells.push({ x, y });
             }
         }
+
+        if (freeCells.length === 0) {
+            // Board is full - player WON!
+            stopSnakeGame();
+            isSnakePaused = false;
+            if (catSpeechBubble) catSpeechBubble.textContent = `💬 "Απίστευτο! Γέμισες το ταμπλό! ${snakePoints} λιχουδιές! 🏆"`;
+            triggerCorrectAnswerReaction();
+            const overlay = document.getElementById('snakeStartOverlay');
+            if (overlay) {
+                overlay.hidden = false;
+                overlay.classList.remove('is-hidden');
+                const title = overlay.querySelector('.start-overlay-title');
+                const desc = overlay.querySelector('.start-overlay-desc');
+                const btn = overlay.querySelector('.btn-overlay-start');
+                if (title) title.textContent = '🏆 Νίκη! Γέμισες το ταμπλό!';
+                if (desc) desc.textContent = isDog ? `Μάζεψες ${snakePoints} λιχουδιές! 🦴` : `Μάζεψες ${snakePoints} λιχουδιές! 🐟`;
+                if (btn) btn.textContent = '🔄 Παίξε Ξανά';
+            }
+            return;
+        }
+
+        // Pick a random free cell
+        const chosen = freeCells[Math.floor(Math.random() * freeCells.length)];
         snakeFood = {
-            x: newX,
-            y: newY,
+            x: chosen.x,
+            y: chosen.y,
             icon: foodIcons[Math.floor(Math.random() * foodIcons.length)]
         };
     }
@@ -1422,7 +1445,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const desc = overlay.querySelector('.start-overlay-desc');
                 const btn = overlay.querySelector('.btn-overlay-start');
                 if (title) title.textContent = '💥 Τέλος Παιχνιδιού!';
-                if (desc) desc.textContent = `Μάζεψες ${snakePoints} λιχουδιές! 🐟`;
+                if (desc) desc.textContent = isDog ? `Μάζεψες ${snakePoints} λιχουδιές! 🦴` : `Μάζεψες ${snakePoints} λιχουδιές! 🐟`;
                 if (btn) btn.textContent = '🔄 Παίξε Ξανά';
             }
             return;
@@ -1432,8 +1455,8 @@ document.addEventListener('DOMContentLoaded', () => {
         snake.unshift(head);
 
         if (head.x === snakeFood.x && head.y === snakeFood.y) {
-            snakePoints += 5;
-            score += 5;
+            snakePoints += 1;
+            score += 1;
             if (snakeScore) snakeScore.textContent = snakePoints.toString();
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
@@ -1449,10 +1472,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawSnakeCanvas() {
         if (!snakeCanvas) return;
         const ctx = snakeCanvas.getContext('2d');
-        const isFullscreen = isFullscreenActive() && window.innerWidth >= 720;
-        const isDesktop = window.innerWidth >= 900;
-        const scale = isFullscreen ? 2.4 : (isDesktop ? 1.6 : 1.0);
-        const dim = Math.round(300 * scale);
+        const isFullscreen = isFullscreenActive();
+        const isMobile = window.innerWidth < 600;
+        const availW = Math.min(window.innerWidth - 32, 480); // 16px padding each side
+
+        let dim;
+        if (isFullscreen) {
+            dim = Math.round(Math.min(window.innerWidth, window.innerHeight) * 0.85);
+        } else if (isMobile) {
+            dim = availW; // fill mobile width
+        } else {
+            dim = window.innerWidth >= 900 ? 480 : 360;
+        }
+        dim = Math.round(dim);
         const size = dim / 15;
 
         if (snakeCanvas.width !== dim || snakeCanvas.height !== dim) {
@@ -1748,11 +1780,20 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawTetrisCanvas() {
         if (!tetrisCanvas) return;
         const ctx = tetrisCanvas.getContext('2d');
-        const isFullscreen = isFullscreenActive() && window.innerWidth >= 720;
-        const isDesktop = window.innerWidth >= 900;
-        const scale = isFullscreen ? 1.65 : (isDesktop ? 1.5 : 1.0);
-        const canvasW = 240 * scale;
-        const canvasH = 400 * scale;
+        const isFullscreen = isFullscreenActive();
+        const isMobile = window.innerWidth < 600;
+        const availW = Math.min(window.innerWidth - 32, 360);
+
+        let scale;
+        if (isFullscreen) {
+            scale = Math.min(window.innerWidth, window.innerHeight * 0.6) / 240;
+        } else if (isMobile) {
+            scale = availW / 240;
+        } else {
+            scale = window.innerWidth >= 900 ? 1.5 : 1.2;
+        }
+        const canvasW = Math.round(240 * scale);
+        const canvasH = Math.round(400 * scale);
         const size = 20 * scale;
 
         if (tetrisCanvas.width !== canvasW) {
