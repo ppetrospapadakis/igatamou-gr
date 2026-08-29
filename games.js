@@ -1478,7 +1478,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. Draw snake
         snake.forEach((segment, index) => {
             if (index === 0) {
-                ctx.fillText('🐱', segment.x * size + size / 2, segment.y * size + size / 2);
+                ctx.fillText(isDog ? '🐶' : '🐱', segment.x * size + size / 2, segment.y * size + size / 2);
             } else {
                 ctx.fillStyle = '#ff5e7e';
                 ctx.beginPath();
