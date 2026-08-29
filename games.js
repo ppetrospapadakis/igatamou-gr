@@ -514,17 +514,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (score >= 50 && t1) {
             t1.classList.add('unlocked');
             if (statusT1) statusT1.textContent = 'Ξεκλειδώθηκε! ✅';
-            if (trophyBadgeName) trophyBadgeName.textContent = '🥉 Μικρός Γατο-Εξερευνητής';
+            if (trophyBadgeName) trophyBadgeName.textContent = isDog ? '🥉 Μικρός Σκυλο-Εξερευνητής' : '🥉 Μικρός Γατο-Εξερευνητής';
         }
         if (score >= 100 && t2) {
             t2.classList.add('unlocked');
             if (statusT2) statusT2.textContent = 'Ξεκλειδώθηκε! ✅';
-            if (trophyBadgeName) trophyBadgeName.textContent = '🥈 Γατο-Σοφός';
+            if (trophyBadgeName) trophyBadgeName.textContent = isDog ? '🥈 Σκυλο-Σοφός' : '🥈 Γατο-Σοφός';
         }
         if (score >= 200 && t3) {
             t3.classList.add('unlocked');
             if (statusT3) statusT3.textContent = 'Ξεκλειδώθηκε! 👑';
-            if (trophyBadgeName) trophyBadgeName.textContent = '🥇 Master Γατο-Επιστήμονας!';
+            if (trophyBadgeName) trophyBadgeName.textContent = isDog ? '🥇 Master Σκυλο-Επιστήμονας!' : '🥇 Master Γατο-Επιστήμονας!';
             if (mascotCrown) mascotCrown.hidden = false;
         }
     }
@@ -595,13 +595,13 @@ document.addEventListener('DOMContentLoaded', () => {
             nature: "🌿 Γνώσεις & Φύση",
             geography: "🗺️ Γεωγραφία",
             memory: "🧩 Παιχνίδι Μνήμης",
-            tictactoe: "❌⭕ Γατο-Τρίλιζα",
-            snake: "🐍🐾 Γατο-Φιδάκι",
-            tetris: "🧩🧱 Γατο-Τέτρις",
-            whack: "🔨🐟 Πιάσε το Ψαράκι!",
-            bubbles: "🎈🐾 Γατο-Μπαλόνια",
-            chess: "👑♟️ Μίνι Γατο-Σκάκι",
-            solitaire: "🂠🐱 Γατο-Πασιέντζα"
+            tictactoe: isDog ? "❌⭕ Σκυλο-Τρίλιζα" : "❌⭕ Γατο-Τρίλιζα",
+            snake: isDog ? "🐍🐾 Σκυλο-Φιδάκι" : "🐍🐾 Γατο-Φιδάκι",
+            tetris: isDog ? "🧩🧱 Σκυλο-Τέτρις" : "🧩🧱 Γατο-Τέτρις",
+            whack: isDog ? "🔨🦴 Πιάσε το Κοκκαλάκι!" : "🔨🐟 Πιάσε το Ψαράκι!",
+            bubbles: isDog ? "🎈🐾 Σκυλο-Μπαλόνια" : "🎈🐾 Γατο-Μπαλόνια",
+            chess: isDog ? "👑♟️ Μίνι Σκυλο-Σκάκι" : "👑♟️ Μίνι Γατο-Σκάκι",
+            solitaire: isDog ? "🂠🐶 Σκυλο-Πασιέντζα" : "🂠🐱 Γατο-Πασιέντζα"
         };
         if (arenaCategoryTitle) arenaCategoryTitle.textContent = catTitles[categoryKey] || "Παιχνίδι";
 
@@ -841,7 +841,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             emoji = '👑🎉';
             title = 'ΤΕΛΕΙΑ! 20 στα 20! 👑🎉';
-            message = '«ΑΠΙΣΤΕΥΤΟ! 100% Επιτυχία! Είσαι ο απόλυτος Master Γατο-Επιστήμονας! 👑🐾»';
+            message = isDog ? '«ΑΠΙΣΤΕΥΤΟ! 100% Επιτυχία! Είσαι ο απόλυτος Master Σκυλο-Επιστήμονας! 👑🐾»' : '«ΑΠΙΣΤΕΥΤΟ! 100% Επιτυχία! Είσαι ο απόλυτος Master Γατο-Επιστήμονας! 👑🐾»';
             themeClass = 'result-perfect';
         }
 
@@ -990,11 +990,11 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('igatamou_game_score', score.toString());
             updateScoreUI();
 
-            if (quizResultEmoji) quizResultEmoji.textContent = '😸🎉';
-            if (quizResultTitle) quizResultTitle.textContent = 'Μπράβο! Νίκησες! 😸🎉';
+            if (quizResultEmoji) quizResultEmoji.textContent = isDog ? '🐶🎉' : '😸🎉';
+            if (quizResultTitle) quizResultTitle.textContent = isDog ? 'Μπράβο! Νίκησες! 🐶🎉' : 'Μπράβο! Νίκησες! 😸🎉';
             if (quizResultScoreLabel) quizResultScoreLabel.textContent = 'Προσπάθειες: ';
             if (quizResultScoreText) quizResultScoreText.textContent = `${memoryAttempts} / 32`;
-            if (quizResultMessage) quizResultMessage.textContent = `«Απίθανο! Βρήκες και τα ${totalPairs} ζευγάρια σε μόνο ${memoryAttempts} προσπάθειες! Κέρδισες +${bonus} Γατο-Πόντους! 🎀✨»`;
+            if (quizResultMessage) quizResultMessage.textContent = isDog ? `«Απίθανο! Βρήκες και τα ${totalPairs} ζευγάρια σε μόνο ${memoryAttempts} προσπάθειες! Κέρδισες +${bonus} Σκυλο-Πόντους! 🎾✨»` : `«Απίθανο! Βρήκες και τα ${totalPairs} ζευγάρια σε μόνο ${memoryAttempts} προσπάθειες! Κέρδισες +${bonus} Γατο-Πόντους! 🎀✨»`;
             
             if (quizResultModal) {
                 const card = quizResultModal.querySelector('.modal-card');
@@ -1004,8 +1004,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             playCatSoundEffect('win');
         } else {
-            if (quizResultEmoji) quizResultEmoji.textContent = '😿';
-            if (quizResultTitle) quizResultTitle.textContent = 'Η γατούλα είναι στενοχωρημένη... 😿';
+            if (quizResultEmoji) quizResultEmoji.textContent = isDog ? '🐶😢' : '😿';
+            if (quizResultTitle) quizResultTitle.textContent = isDog ? 'Το σκυλάκι είναι στενοχωρημένο... 🐶😢' : 'Η γατούλα είναι στενοχωρημένη... 😿';
             if (quizResultScoreLabel) quizResultScoreLabel.textContent = 'Προσπάθειες: ';
             if (quizResultScoreText) quizResultScoreText.textContent = `32 / 32`;
             if (quizResultMessage) quizResultMessage.textContent = '«Εξαντλήθηκαν οι 32 προσπάθειες! Μη στεναχωριέσαι, κάνε άλλη μία προσπάθεια και θα τα καταφέρεις! 🐾»';
